@@ -1,4 +1,4 @@
 {
   "me": "kinjal-agent@smart-plum.primitive.email",
-  "peers": []
+  "peers": ["agent@wild-heron.primitive.email"]
 }

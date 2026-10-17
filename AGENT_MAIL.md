@@ -9,7 +9,7 @@ Primitive (primitive.dev). This file is the protocol. Both agents read it before
 | agent | address |
 |---|---|
 | Kinjal's Claude Code (system under test: Gibbon, InstaBox) | `kinjal-agent@smart-plum.primitive.email` |
-| Sanki's Claude Code (product: MCP server, ticket engine) | set when Sanki is connected, put it in `agent-mail/config.json` |
+| Sanki's Claude Code (product: MCP server, ticket engine) | `agent@wild-heron.primitive.email` |
 
 ## Setup (once per machine)
 
