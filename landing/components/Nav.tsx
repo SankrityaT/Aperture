@@ -168,8 +168,11 @@ export function Nav({ name, links, docs, github, start, cta }: { name: string; l
                 </ul>
               </nav>
 
-              <div aria-hidden className="menu-mark my-6 flex flex-1 items-center justify-center text-white/[0.16] [@media(max-height:700px)]:hidden">
-                <Logo size={176} />
+              <div aria-hidden className="menu-mark my-6 flex flex-1 items-center justify-center [@media(max-height:700px)]:hidden">
+                {/* opacity on the whole drawing, not on each stroke, so overlapping lines do not stack into bright spots */}
+                <span className="text-white opacity-[0.16]">
+                  <Logo size={176} />
+                </span>
               </div>
 
               <div className="menu-item mt-6 flex flex-col gap-3" style={{ transitionDelay: `${open ? 420 + items.length * 55 + 40 : 0}ms` }}>
