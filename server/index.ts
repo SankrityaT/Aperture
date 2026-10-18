@@ -16,13 +16,13 @@ import { OWNER_PAGE } from "./src/owner-page.js";
 import type { Op } from "./src/types.js";
 
 // A failed browser action must never take the whole server down.
-process.on("unhandledRejection", (e) => console.error("[wicket] unhandled rejection:", e instanceof Error ? e.message : e));
+process.on("unhandledRejection", (e) => console.error("[aperture] unhandled rejection:", e instanceof Error ? e.message : e));
 
 const server = new MCPServer({
-  name: "wicket",
-  title: "Wicket",
-  version: "0.1.0",
-  description: "A safe door into a legacy records system. Every change is previewed, checked, read back, and undoable.",
+  name: "aperture",
+  title: "Aperture",
+  version: "0.2.0",
+  description: "A safe way for AI agents to work in web systems that have no API. Every change is previewed, checked, read back, and undoable.",
 });
 
 // ---- the system under test and the engine ----
@@ -47,7 +47,7 @@ if (process.env.WICKET_WORKER_URL) {
 const wicket = new Wicket(new CompositeAdapter([...(process.env.WICKET_FAKE_SCHOOL === "1" ? [new FakeSchool()] : []), forms, tables]), { rules, ...(process.env.WICKET_LEDGER_PATH ? { ledger: new FileLedger(process.env.WICKET_LEDGER_PATH) } : {}) });
 
 /** Small on purpose: an agent pays for every token of this. */
-const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), ...(t.keySource === "none" ? { writes: "refused: no column or link on this list identifies a row uniquely, so a change could hit the wrong record. Reading and previews are unavailable for the same reason." } : {}), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}), ...(t.recoveryHints?.length ? { recovery_options_seen: t.recoveryHints, recovery_note: "The application offers these. Wicket has not used or tested them; ask the owner whether a reversible option (archive, deactivate) is enough before deleting." } : {}) });
+const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), ...(t.keySource === "none" ? { writes: "refused: no column or link on this list identifies a row uniquely, so a change could hit the wrong record. Reading and previews are unavailable for the same reason." } : {}), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}), ...(t.recoveryHints?.length ? { recovery_options_seen: t.recoveryHints, recovery_note: "The application offers these. Aperture has not used or tested them; ask the owner whether a reversible option (archive, deactivate) is enough before deleting." } : {}) });
 
 /** Tables from the page just compiled come first and in full. Lists compiled earlier from other pages stay live; they are named so the agent knows. */
 const thisPageTables = (all: TableModel[], pageUrl: string) => {
@@ -138,7 +138,7 @@ const compileFail = (e: unknown) => {
 server.tool(
   {
     name: "compile_site",
-    description: "Point Wicket at a web page and it reads the page's forms, read-only, and turns each one into a typed record you can fill. Only works on hosts the operator has authorized. It never submits anything and never tries to get past a CAPTCHA: a person does that. Returns each form's id, fields (label, type, required, allowed values) and submit button.",
+    description: "Point Aperture at a web page and it reads the page's forms, read-only, and turns each one into a typed record you can fill. Only works on hosts the operator has authorized. It never submits anything and never tries to get past a CAPTCHA: a person does that. Returns each form's id, fields (label, type, required, allowed values) and submit button.",
     inputSchema: z.object({
       url: z.string().describe("The page address, like http://host/signup. With login set, this is the login page."),
       login: z.string().optional().describe("Name of a login the operator stored on the server. You never see the password."),
@@ -300,9 +300,9 @@ server.get("/registry/:site", (c) => {
   const p = registry.get(siteKey(c.req.param("site")));
   if (!p) return c.html("<h1>No profile</h1><p>Nobody has shared this one yet.</p>", 404);
   const base = new URL(c.req.url).origin;
-  const snippet = `Use the Wicket MCP server at ${base}/mcp to work in ${p.site}. Call compile_site on the page you need, then use_profile with site "${p.site}" before you change anything.`;
+  const snippet = `Use the Aperture MCP server at ${base}/mcp to work in ${p.site}. Call compile_site on the page you need, then use_profile with site "${p.site}" before you change anything.`;
   const rules = p.rules.map((r) => `<li><b>${esc(r.kind)} ${esc(r.op)}</b> also affects: ${r.cascades.length ? r.cascades.map((x) => `${esc(x.kind)} (by ${esc(x.by)})`).join(", ") : "nothing seen"} ${r.vouched ? "<i>(a real run matched this)</i>" : "<i>(seen once, not yet confirmed)</i>"}</li>`).join("");
-  return c.html(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(p.site)} - Wicket profile</title><body style="font:16px/1.5 system-ui;max-width:42rem;margin:2rem auto;padding:0 1rem"><h1>${esc(p.site)}</h1><p>What agents have learned about this system. Structure and rules only: no records, no logins.</p><h2>Copy this to your agent</h2><pre style="white-space:pre-wrap;background:#f4f4f5;padding:1rem;border-radius:8px">${esc(snippet)}</pre><h2>Tables</h2><ul>${p.tables.map((t) => `<li><b>${esc(t.id)}</b>: key ${esc(String(t.key))}; ${t.columns.length} columns; actions: ${esc(t.actions.join(", ") || "none")}</li>`).join("")}</ul><h2>What deleting affects</h2><ul>${rules || "<li>Nothing learned yet.</li>"}</ul><p style="color:#666">Shared ${esc(p.shared_at)}. Held in memory; a server restart empties it.</p></body>`);
+  return c.html(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(p.site)} - Aperture profile</title><body style="font:16px/1.5 system-ui;max-width:42rem;margin:2rem auto;padding:0 1rem"><h1>${esc(p.site)}</h1><p>What agents have learned about this system. Structure and rules only: no records, no logins.</p><h2>Copy this to your agent</h2><pre style="white-space:pre-wrap;background:#f4f4f5;padding:1rem;border-radius:8px">${esc(snippet)}</pre><h2>Tables</h2><ul>${p.tables.map((t) => `<li><b>${esc(t.id)}</b>: key ${esc(String(t.key))}; ${t.columns.length} columns; actions: ${esc(t.actions.join(", ") || "none")}</li>`).join("")}</ul><h2>What deleting affects</h2><ul>${rules || "<li>Nothing learned yet.</li>"}</ul><p style="color:#666">Shared ${esc(p.shared_at)}. Held in memory; a server restart empties it.</p></body>`);
 });
 
 server.get("/registry", (c) => c.json({ note: "Shared profiles: structure and learned rules only. In memory; a restart empties it.", profiles: [...registry.values()] }));
@@ -376,7 +376,7 @@ server.tool(
 server.prompt(
   { name: "safe-batch-job", description: "How to run a multi-step job safely and finish it without a human watching.", schema: z.object({ task: z.string().describe("What needs doing, in one or two sentences.") }) },
   async ({ task }) => ({
-    messages: [{ role: "user", content: { type: "text", text: `Do this job with the Wicket tools: ${task}\n\n1. Call get_instructions once.\n2. Use find to get exact keys. Names are not unique.\n3. Use apply_batch for many changes, or apply for one.\n4. If something is awaiting_approval, keep working on the rest and poll get_plan.\n5. Report only what the receipts verified. If verified.ok is false, say so.\n6. If you made a mistake, call undo with the receipt id.` } }],
+    messages: [{ role: "user", content: { type: "text", text: `Do this job with the Aperture tools: ${task}\n\n1. Call get_instructions once.\n2. Use find to get exact keys. Names are not unique.\n3. Use apply_batch for many changes, or apply for one.\n4. If something is awaiting_approval, keep working on the rest and poll get_plan.\n5. Report only what the receipts verified. If verified.ok is false, say so.\n6. If you made a mistake, call undo with the receipt id.` } }],
   }),
 );
 
@@ -402,7 +402,7 @@ server.get("/llms.txt", (c) => c.text(llmsTxt(originOf(c))));
 server.get("/quickstart.md", (c) => c.text(quickstartMd(originOf(c))));
 server.get("/errors.md", (c) => c.text(errorsMd(originOf(c))));
 server.get("/robots.txt", (c) => c.text(robotsTxt(originOf(c))));
-server.get("/", (c) => c.text(`Wicket\n\n${NAME_LINE}\n\nAn MCP server for working safely in web systems that have no API.\nMCP endpoint: ${originOf(c)}/mcp\nStart: ${originOf(c)}/llms.txt\n`));
+server.get("/", (c) => c.text(`Aperture\n\n${NAME_LINE}\n\nAn MCP server for working safely in web systems that have no API.\nMCP endpoint: ${originOf(c)}/mcp\nStart: ${originOf(c)}/llms.txt\n`));
 
 server.get("/owner", (c) => c.html(OWNER_PAGE));
 server.get("/owner/state", (c) => (allowed(c) ? c.json(wicket.ownerState()) : c.json({ error: "not allowed" }, 403)));

@@ -3,7 +3,7 @@
 
 export const OWNER_PAGE = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Wicket owner</title>
+<title>Aperture owner</title>
 <style>
   :root { color-scheme: light dark; --bg:#f4f6f9; --fg:#0e1a2b; --muted:#5b6b80; --line:#cbd5e1; --card:#fff; --accent:#d9480f; --ok:#12703a; --bad:#a8221a; }
   @media (prefers-color-scheme: dark) { :root { --bg:#0a111c; --fg:#e6edf6; --muted:#8da0b8; --line:#25344a; --card:#111b2a; --accent:#ff8a4c; --ok:#5bd08a; --bad:#ff8277; } }

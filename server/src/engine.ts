@@ -155,7 +155,7 @@ export class Wicket {
 
   instructions(): Record<string, unknown> {
     return {
-      what: "A safe interface to a school records system. Every change is a ticket: preview, check, commit, read-back, undo.",
+      what: "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
       kinds: this.adapter.kinds(),
       how: [
         "Look first: find(kind, query). Names are not unique. Always use the key.",

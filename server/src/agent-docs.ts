@@ -1,8 +1,8 @@
 // The pages a coding agent finds first. Plain text, in the words someone with the problem would search for.
 
-export const NAME_LINE = "Wicket here means this MCP server for operating legacy web systems safely. It is not Apache Wicket (the Java web framework) and not the npm package `wicket` (WKT geometry).";
+export const NAME_LINE = "Aperture here means this MCP server for operating legacy web systems safely. It is not the npm package `aperture` (macOS screen recording) and not Apple's discontinued Aperture photo software.";
 
-export const llmsTxt = (origin: string) => `# Wicket
+export const llmsTxt = (origin: string) => `# Aperture
 
 > An MCP server that lets an AI agent work safely in a web system that has no API: an old admin portal, an ERP screen, a registrar or property-management page. It reads the page, turns it into typed tools, and wraps every change in a preview, a read-back against the system's real state, a receipt and an undo.
 
@@ -27,7 +27,7 @@ Do not use it when: a real API exists for the task, or the site forbids automati
 - Changes the owner has not delegated wait for the owner. An agent cannot approve its own change.
 `;
 
-export const quickstartMd = (origin: string) => `# Wicket quickstart
+export const quickstartMd = (origin: string) => `# Aperture quickstart
 
 ${NAME_LINE}
 
@@ -35,7 +35,7 @@ ${NAME_LINE}
 Add this to your MCP client config (Claude Code: \`.mcp.json\`; Codex and Cursor take the same URL):
 
 \`\`\`json
-{ "mcpServers": { "wicket": { "type": "http", "url": "${origin}/mcp" } } }
+{ "mcpServers": { "aperture": { "type": "http", "url": "${origin}/mcp" } } }
 \`\`\`
 
 ## 2. Do a first change (remove a record from a web list)
@@ -59,7 +59,7 @@ A commit may answer \`outcome_unknown\`. Call \`reconcile\` with the plan id. It
 - Verification re-reads lists page by page, so a change on a long list takes seconds to tens of seconds.
 `;
 
-export const errorsMd = (origin: string) => `# Wicket errors and what to do next
+export const errorsMd = (origin: string) => `# Aperture errors and what to do next
 
 Every refusal returns \`error\`, \`detail\` and a \`next\` list. These are the ones you will meet.
 
