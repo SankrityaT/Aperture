@@ -362,6 +362,15 @@ server.post("/owner/approve", async (c) => {
   const b = (await c.req.json()) as { plan_id: string };
   return c.json(wicket.approve(b.plan_id));
 });
+server.post("/owner/delegate", async (c) => {
+  if (!allowed(c)) return c.json({ error: "not allowed" }, 403);
+  const b = (await c.req.json()) as { kinds?: string[]; ops?: string[]; limit?: number; hours?: number; note?: string };
+  const ops = (b.ops ?? []).filter((o): o is "create" | "update" | "delete" => o === "create" || o === "update" || o === "delete");
+  if (!ops.length || !b.limit || b.limit < 1) return c.json({ error: "give ops (create, update, delete) and a limit of at least 1" }, 400);
+  return c.json(wicket.delegate({ kinds: b.kinds?.length ? b.kinds : ["*"], ops, limit: b.limit, ttlMs: Math.min(Math.max(b.hours ?? 4, 0.05), 72) * 3_600_000, note: b.note }));
+});
+server.post("/owner/delegation/revoke", async (c) => { if (!allowed(c)) return c.json({ error: "not allowed" }, 403); return c.json(wicket.revokeDelegation(((await c.req.json()) as { id: string }).id)); });
+server.post("/owner/delegation/resume", async (c) => { if (!allowed(c)) return c.json({ error: "not allowed" }, 403); return c.json(wicket.resumeDelegation(((await c.req.json()) as { id: string }).id)); });
 server.post("/owner/reject", async (c) => {
   if (!allowed(c)) return c.json({ error: "not allowed" }, 403);
   const b = (await c.req.json()) as { plan_id: string };

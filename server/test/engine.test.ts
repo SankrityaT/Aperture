@@ -205,3 +205,58 @@ test("a second agent loads what the first learned: its dry run predicts the hidd
   assert.equal(seen.needs_owner, 1);
   assert.equal(b.rules.isConfirmed("class", "delete"), false);
 });
+
+test("delegation: inside the owner's grant a change needs no per-item approval, keeps the full copy, and names its authority", async () => {
+  const { w, adapter } = make();
+  const before = await adapter.counts();
+  const d = w.delegate({ kinds: ["class"], ops: ["delete"], limit: 2, ttlMs: 60_000 });
+  const r = (await w.apply({ op: "delete", kind: "class", key: "C101" })) as { status: string; authority?: string; receipt: string };
+  assert.notEqual(r.status, "awaiting_approval");
+  assert.equal(r.authority, d.id);
+  // a hidden dependent was found, and because the rule was unconfirmed the full copy was taken, so undo restores everything
+  const u = (await w.undo(r.receipt)) as { status: string };
+  assert.equal(u.status, "undone");
+  assert.deepEqual(await adapter.counts(), before);
+});
+
+test("delegation does not cover other kinds or operations, and publish always needs the owner", async () => {
+  const { w } = make();
+  w.delegate({ kinds: ["class"], ops: ["delete"], limit: 5, ttlMs: 60_000 });
+  const create = (await w.apply({ op: "create", kind: "class", record: { key: "C999", name: "New" } })) as { status: string };
+  assert.equal(create.status, "awaiting_approval");
+});
+
+test("delegation pauses at the first surprise: the next change goes back to the owner", async () => {
+  const { w } = make();
+  const d = w.delegate({ kinds: ["class"], ops: ["delete"], limit: 5, ttlMs: 60_000 });
+  const first = (await w.apply({ op: "delete", kind: "class", key: "C101" })) as { status: string };
+  assert.equal(first.status, "done_with_surprise");
+  const state = w.ownerState() as { delegations: { id: string; paused: string | null }[] };
+  assert.ok(state.delegations.find((x) => x.id === d.id)?.paused);
+  const second = (await w.apply({ op: "delete", kind: "class", key: "C102" })) as { status: string };
+  assert.equal(second.status, "awaiting_approval");
+  w.resumeDelegation(d.id);
+});
+
+test("a delegation revoked after the preview no longer covers the commit", async () => {
+  const { w } = make();
+  const d = w.delegate({ kinds: ["class"], ops: ["delete"], limit: 5, ttlMs: 60_000 });
+  const p = await w.preview({ op: "delete", kind: "class", key: "C103" });
+  assert.ok(!isRefusal(p) && p.delegatedBy === d.id && !p.needsApproval);
+  w.revokeDelegation(d.id);
+  const c = await w.commit((p as { id: string }).id);
+  assert.ok(isRefusal(c) && c.error === "delegation_ended");
+});
+
+test("a delegation is used up at its limit; later changes are covered only by what they would have had anyway", async () => {
+  const { w } = make();
+  const d = w.delegate({ kinds: ["class"], ops: ["delete"], limit: 1, ttlMs: 60_000 });
+  const a = (await w.apply({ op: "delete", kind: "class", key: "C101" })) as { authority?: string };
+  assert.equal(a.authority, d.id);
+  const state = w.ownerState() as { delegations: { id: string; used: number; active: boolean }[] };
+  const mine = state.delegations.find((x) => x.id === d.id)!;
+  assert.equal(mine.used, 1);
+  assert.equal(mine.active, false);
+  const b = (await w.apply({ op: "delete", kind: "class", key: "C102" })) as { authority?: string; status: string };
+  assert.notEqual(b.authority, d.id);
+});

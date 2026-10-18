@@ -64,6 +64,8 @@ export interface Plan {
   hash: string;
   confirmed: boolean;
   asOfMs: number;
+  /** Set when the owner's standing delegation, not a per-item approval, lets this plan commit. */
+  delegatedBy?: string;
 }
 
 export interface Refusal {
@@ -86,6 +88,8 @@ export interface Receipt {
   snapshot: Snapshotted[];
   undoUntil: number;
   surprise?: { kind: Kind; delta: number }[];
+  /** Who authorized it: 'owner approval' or the delegation id. */
+  authority?: string;
 }
 
 export interface Mandate {

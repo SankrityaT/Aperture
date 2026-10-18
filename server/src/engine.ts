@@ -56,6 +56,12 @@ export interface EngineOpts {
   cacheTtlMs?: number;
 }
 
+/** A standing, bounded authority the owner grants once. The agent never creates or widens one. */
+export interface Delegation {
+  id: string; kinds: string[]; ops: ("create" | "update" | "delete")[]; limit: number; used: number;
+  createdAt: number; expiresAt: number; note: string; paused: string | null; revoked: boolean;
+}
+
 export class Wicket {
   readonly plans = new Map<string, Plan>();
   readonly receipts = new Map<string, Receipt>();
@@ -177,6 +183,7 @@ export class Wicket {
       const confirmed = this.rules.isConfirmed(kind, "create");
       const reasons = confirmed ? [] : [`creating a ${kind} has not been confirmed yet`];
       const plan: Plan = { ...base, status: reasons.length ? "awaiting_approval" : "previewed", subject: rec, diff: [`+ ${label(rec)}`], expectedDelta: { [kind]: 1 }, needsApproval: reasons.length > 0, reasons, hash: sha(rec), confirmed };
+      this.applyDelegation(plan);
       this.plans.set(id, plan);
       return plan;
     }
@@ -202,6 +209,7 @@ export class Wicket {
       const confirmed = this.rules.isConfirmed(kind, "update");
       const reasons = confirmed ? [] : [`editing a ${kind} has not been confirmed yet, so the owner decides`];
       const plan: Plan = { ...base, op: { ...op, patch: canonical }, status: reasons.length ? "awaiting_approval" : "previewed", subject, dependents: [], diff: changed.map(([f, v]) => `~ ${f}: ${JSON.stringify(subject[f])} -> ${JSON.stringify(v)}`), expectedDelta: {}, needsApproval: reasons.length > 0, reasons, hash: sha(subject), confirmed, asOfMs: ageMs };
+      this.applyDelegation(plan);
       this.plans.set(id, plan);
       return plan;
     }
@@ -229,6 +237,7 @@ export class Wicket {
     for (const d of dependents) byKind.set(d.kind, (byKind.get(d.kind) ?? 0) + 1);
     for (const [k, n] of byKind) diff.push(`- ${n} ${k}${n > 1 ? "s" : ""}`);
     const plan: Plan = { ...base, status: reasons.length ? "awaiting_approval" : "previewed", subject, dependents, diff, expectedDelta, needsApproval: reasons.length > 0, reasons, hash: sha({ subject, dependents }), confirmed, asOfMs: ageMs };
+    this.applyDelegation(plan);
     this.plans.set(id, plan);
     return plan;
   }
@@ -253,6 +262,11 @@ export class Wicket {
     }
 
     const { op } = plan;
+    if (plan.delegatedBy) {
+      const d = this.delegations.get(plan.delegatedBy);
+      const live = d && !d.revoked && !d.paused && this.now() <= d.expiresAt && d.used < d.limit;
+      if (!live) { plan.status = "awaiting_approval"; plan.needsApproval = true; plan.reasons = ["the delegation that covered this change has ended or been paused, so the owner decides"]; plan.delegatedBy = undefined; return this.r(refuse("delegation_ended", "The owner's delegation no longer covers this change.", ["poll get_plan: it now waits for the owner", "do not retry commit in a loop"], { plan_id: plan.id })); }
+    }
     // Re-read, uncached, and compare to what was previewed.
     let currentHash = plan.hash;
     if (op.op === "delete" && op.kind && op.key) {
@@ -276,9 +290,12 @@ export class Wicket {
     }
 
     // A canary looks at every compiled table, so a cascade into another table is seen. Ordinary commits look only at their own.
-    const scope = this.careful ? undefined : op.kind;
-    const before = await this.adapter.counts(scope);
-    const fullBefore = (plan.confirmed && !this.careful) || op.op === "publish" ? null : await this.adapter.exportAll(scope);
+    // Ordinary commits look at their own table and every table the plan says will change, so a predicted cascade can be checked.
+    const scope: Kind[] | undefined = this.careful || !op.kind ? undefined : [...new Set([op.kind, ...Object.keys(plan.expectedDelta)])];
+    const countsOf = async (): Promise<Record<Kind, number>> => { if (!scope) return this.adapter.counts(); const out: Record<Kind, number> = {}; for (const k of scope) Object.assign(out, await this.adapter.counts(k)); return out; };
+    const exportOf = async (): Promise<Record<Kind, Rec[]>> => { if (!scope) return this.adapter.exportAll(); const out: Record<Kind, Rec[]> = {}; for (const k of scope) Object.assign(out, await this.adapter.exportAll(k)); return out; };
+    const before = await countsOf();
+    const fullBefore = (plan.confirmed && !this.careful) || op.op === "publish" ? null : await exportOf();
     const snapshot: Snapshotted[] = op.op === "delete" && plan.subject && op.kind ? [{ kind: op.kind, record: plan.subject }, ...plan.dependents] : [];
     if (op.op === "update" && op.kind && op.key && op.patch && plan.subject) {
       // Only the fields we are about to change need saving.
@@ -305,7 +322,7 @@ export class Wicket {
     this.invalidate();
 
     // Read back and compare with the prediction.
-    const after = await this.adapter.counts(scope);
+    const after = await countsOf();
     const actual: Delta = {};
     for (const k of Object.keys(after)) if ((after[k] ?? 0) !== (before[k] ?? 0)) actual[k] = (after[k] ?? 0) - (before[k] ?? 0);
     const predicted = Object.fromEntries(Object.entries(plan.expectedDelta).filter(([, n]) => n !== 0));
@@ -336,7 +353,7 @@ export class Wicket {
 
     // A surprise becomes a rule, and everything it removed is saved so undo can restore it.
     if (surprises.length && fullBefore && op.kind && op.key && op.op === "delete") {
-      const fullAfter = await this.adapter.exportAll(scope);
+      const fullAfter = await exportOf();
       for (const s of surprises) {
         if (s.delta >= 0) continue;
         const gone = (fullBefore[s.kind] ?? []).filter((r) => !(fullAfter[s.kind] ?? []).some((x) => x.key === r.key));
@@ -360,7 +377,11 @@ export class Wicket {
 
   private finish(plan: Plan, snapshot: Snapshotted[], r: { status: Receipt["status"]; verified: Record<string, unknown>; surprise?: Receipt["surprise"] }, t0: number): Receipt {
     const t = this.now();
-    const receipt: Receipt = { id: `rcpt_${(++this.seq.rcpt).toString(36)}`, planId: plan.id, op: plan.op, at: t, status: r.status, verified: r.verified, snapshot, undoUntil: t + this.mandate.undoWindowMs, ...(r.surprise ? { surprise: r.surprise } : {}) };
+    const receipt: Receipt = { id: `rcpt_${(++this.seq.rcpt).toString(36)}`, planId: plan.id, op: plan.op, at: t, status: r.status, verified: r.verified, snapshot, undoUntil: t + this.mandate.undoWindowMs, authority: plan.delegatedBy ?? (plan.confirmed ? "confirmed rule" : "owner approval"), ...(r.surprise ? { surprise: r.surprise } : {}) };
+    if (plan.delegatedBy) {
+      const d = this.delegations.get(plan.delegatedBy);
+      if (d) { d.used++; if (r.status !== "done") d.paused = `receipt ${receipt.id} was ${r.status}: the delegation is paused until the owner resumes it`; }
+    }
     this.receipts.set(receipt.id, receipt);
     plan.status = "committed";
     this.metrics.commits++;
@@ -403,6 +424,37 @@ export class Wicket {
       if (i < canary && out.status !== "done") halted = { at: i, receipt: out.receipt, status: out.status, surprise: out.surprise ?? null, why: "A canary item did not do exactly what was predicted, so the rest was not attempted. Undo it with the receipt, or approve the surprise and run the rest." };
     }
     return { status: halted ? "halted_by_canary" : "batch_done", committed: committed.length, refused: refused.length, not_attempted: notAttempted, ...(halted ? { canary_halt: halted } : {}), items: { committed, refused } };
+  }
+
+  // ---------- delegation: authority granted once by the owner, inside which no per-item approval is needed ----------
+
+  private delegations = new Map<string, Delegation>();
+
+  /** Owner only (reached from the token-protected owner routes, never from a tool). */
+  delegate(g: { kinds: string[]; ops: Delegation["ops"]; limit: number; ttlMs: number; note?: string }): Delegation {
+    const d: Delegation = { id: `dlg_${(this.delegations.size + 1).toString(36)}`, kinds: g.kinds, ops: g.ops, limit: Math.max(1, Math.floor(g.limit)), used: 0, createdAt: this.now(), expiresAt: this.now() + g.ttlMs, note: g.note ?? "", paused: null, revoked: false };
+    this.delegations.set(d.id, d);
+    return d;
+  }
+  revokeDelegation(id: string): { ok: boolean } { const d = this.delegations.get(id); if (!d) return { ok: false }; d.revoked = true; return { ok: true }; }
+  resumeDelegation(id: string): { ok: boolean } { const d = this.delegations.get(id); if (!d) return { ok: false }; d.paused = null; return { ok: true }; }
+
+  private delegationFor(kind: Kind, op: "create" | "update" | "delete"): Delegation | null {
+    for (const d of this.delegations.values()) {
+      if (d.revoked || d.paused || this.now() > d.expiresAt || d.used >= d.limit) continue;
+      if (!d.ops.includes(op) || !(d.kinds.includes("*") || d.kinds.includes(kind))) continue;
+      return d;
+    }
+    return null;
+  }
+
+  /** Inside a delegation the per-item approval is replaced by the owner's earlier grant. Everything else (full copy, canary, caps, refusals) still applies. */
+  private applyDelegation(plan: Plan): void {
+    const { op } = plan;
+    if (!plan.needsApproval || !op.kind || op.op === "publish") return;
+    const d = this.delegationFor(op.kind, op.op);
+    if (!d) return;
+    plan.needsApproval = false; plan.reasons = []; plan.status = "previewed"; plan.delegatedBy = d.id;
   }
 
   /** True while a canary item runs: take the full copy even when the rule is confirmed, so any surprise can be undone. */
@@ -448,7 +500,7 @@ export class Wicket {
   present(x: Receipt | Refusal | Plan): Record<string, unknown> {
     if (isRefusal(x)) return x;
     if ("planId" in x) {
-      return { status: x.status, receipt: x.id, verified: x.verified, undo_until: new Date(x.undoUntil).toISOString(), ...(x.surprise ? { surprise: x.surprise, note: x.verified?.restorable === false ? "The system did more than predicted and the extra items were NOT saved, so undo restores only the item you named. The rule was learned: the next one takes a full copy first. Use canary on batches." : "The system did more than predicted. The rule was learned and everything removed is saved, so undo restores it." } : {}), ...(x.op.op === "publish" ? { note: "Published. This cannot be recalled." } : {}) };
+      return { status: x.status, receipt: x.id, authority: x.authority, verified: x.verified, undo_until: new Date(x.undoUntil).toISOString(), ...(x.surprise ? { surprise: x.surprise, note: x.verified?.restorable === false ? "The system did more than predicted and the extra items were NOT saved, so undo restores only the item you named. The rule was learned: the next one takes a full copy first. Use canary on batches." : "The system did more than predicted. The rule was learned and everything removed is saved, so undo restores it." } : {}), ...(x.op.op === "publish" ? { note: "Published. This cannot be recalled." } : {}) };
     }
     return { status: x.status, plan_id: x.id, diff: x.diff };
   }
@@ -554,6 +606,7 @@ export class Wicket {
       escalations: this.escalations.filter((e) => e.status === "open"),
       mandate: this.mandate,
       deletes_today: this.deletesToday,
+      delegations: [...this.delegations.values()].map((d) => ({ ...d, active: !d.revoked && !d.paused && this.now() <= d.expiresAt && d.used < d.limit })),
       rules: this.rules.describe(),
       metrics: { calls: this.metrics.calls, previews: this.metrics.previews, commits: this.metrics.commits, refusals: this.metrics.refusals, undos: this.metrics.undos, human_decisions: this.metrics.humanDecisions, surprises: this.metrics.surprises, avg_preview_ms: avg(this.metrics.previewMs), avg_commit_ms: avg(this.metrics.commitMs) },
     };
