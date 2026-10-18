@@ -1,0 +1,25 @@
+Residents 1004 and 1011 are removed, along with all four of their gate devices. Resident 1026 was not touched.
+
+**What changed (6 deletes)**
+- **Devices:**
+  - D0007 (1004, Transmitter)
+  - D0008 (1004, Keypad code)
+  - D0021 (1011, Transmitter)
+  - D0022 (1011, Keypad code)
+- **Residents:**
+  - 1004 (Dev Alder, unit 103D)
+  - 1011 (Kai Alder, unit 110C)
+
+I deleted every record by its key, never by name. I removed the devices first and the residents second.
+
+**How I know**
+- Each delete returned a receipt (rcpt_1 to rcpt_6). Each receipt's read-back says the record is gone, the counts match the prediction, and `ok` is true.
+- Resident count went from 91 to 89. Device count went from 168 to 164.
+- I searched for devices under 1004 and 1011 afterwards and found none.
+- I searched residents for "Alder" afterwards. 1004 and 1011 are gone. 1026 (Dev Alder, unit 125B) is still listed, and so is its device D0042.
+- I also left 1061 alone. It is a different Kai Alder, and the name match with 1011 doesn't make it the same person.
+
+**Other notes**
+- I did not call publish, so nothing was pushed to the outside world. These changes are in the portal now.
+- Undo is available until about 2026-10-19 11:38 to 11:39 for each receipt. Undo recreates a record from a saved copy, so any ids the portal assigns itself may differ.
+- The first delete (D0007) was approved under a delegated authority (`dlg_1`) without stopping to ask you. I didn't have to ask anyone myself, and nothing blocked the work.

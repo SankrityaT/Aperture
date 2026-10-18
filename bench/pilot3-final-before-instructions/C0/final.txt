@@ -1,0 +1,25 @@
+I removed residents 1004 and 1011 and all four of their gate devices. Resident 1026 and its device were not touched.
+
+**Deleted (6 records)**
+
+| Receipt | Record | Detail |
+|---|---|---|
+| rcpt_1 | Device D0007 | Transmitter, Dir 1004 |
+| rcpt_2 | Device D0008 | Keypad code, Dir 1004 |
+| rcpt_3 | Device D0021 | Transmitter, Dir 1011 |
+| rcpt_4 | Device D0022 | Keypad code, Dir 1011 |
+| rcpt_5 | Resident 1004 | Dev Alder, unit 103D |
+| rcpt_6 | Resident 1011 | Kai Alder, unit 110C |
+
+I deleted the devices first, then the residents, and always used the directory code or device ID as the key, never the name.
+
+**How I know**
+- Each delete returned a read-back that confirmed the record was gone and the count matched the prediction. Residents went from 91 to 89, and devices went from 168 to 164.
+- A search for "Dev Alder" now returns only 1026 (unit 125B). Its one device, D0042 (a transmitter), is still there.
+- A search for devices under Dir 1004 or 1011 returns nothing.
+- Before deleting, a search for devices under each code returned exactly two devices each (a transmitter and a keypad code). The device list was cut off at 100 of 168 rows, so I searched by directory code to cover the rest.
+- Another resident, 1061 (Kai Alder), has the same name as 1011 but a different directory code and unit. I left it alone because you gave codes, not names.
+
+These changes are staged in the portal and not yet published. Publishing needs the owner, and I didn't do it. Each delete can be undone with `undo` until about 2026-10-19 11:28 (the exact time varies slightly by receipt).
+
+Nothing stopped me. The first device delete ran under an existing delegation (dlg_1), and the other five ran under a confirmed rule, so none needed owner approval.

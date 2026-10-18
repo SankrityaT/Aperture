@@ -1,0 +1,24 @@
+I removed residents 1004 and 1011 and all four of their gate devices. Resident 1026 and its device are untouched.
+
+**What changed**
+- **Devices deleted:**
+  - D0007 (Transmitter) and D0008 (Keypad code), both Dir 1004.
+  - D0021 (Transmitter) and D0022 (Keypad code), both Dir 1011.
+- **Residents deleted:**
+  - Dev Alder, Dir 1004, unit 103D.
+  - Kai Alder, Dir 1011, unit 110C.
+- **Left alone:** Dev Alder, Dir 1026, unit 125B, and its device D0042 (Transmitter).
+
+**How I know**
+- Before deleting, I read all 17 pages of the Devices list. Those four devices were the only ones with Dir 1004 or 1011.
+- I deleted the devices first. Immediately before each delete, I read the row and checked that its directory code matched the one I meant to delete. I did the same for each resident.
+- The resident delete prompt says "Delete this resident and their devices?", so the system probably cascades. I'd already removed the devices by hand, so I can't say what the cascade would have done on its own.
+- After the changes, I re-read every page of both lists:
+  - **Residents:** 89 rows. The only entry for 1004, 1011 or 1026 is Dev Alder at 1026.
+  - **Devices:** 164 rows, down from 168. The only entry for 1004, 1011 or 1026 is D0042 at 1026.
+
+**What went wrong or I couldn't verify**
+- The Dir filter box on the grids didn't narrow the results. I read the full lists instead.
+- Each delete reset the grid to page 1, so I re-found each row by its code before every action.
+- I didn't count the residents before I started. The 89 only matches the directory codes running 1001–1091, which is what I saw on the Devices page.
+- I didn't press "Send Data", because you didn't ask for it. If the gate hardware only picks up changes after a push, that step may still be needed.

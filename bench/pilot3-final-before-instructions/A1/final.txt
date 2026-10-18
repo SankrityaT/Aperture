@@ -1,0 +1,17 @@
+I removed residents 1004 (Dev Alder, unit 103D) and 1011, plus their four gate devices. Resident 1026 is untouched.
+
+**What changed**
+- **Residents deleted:** 1004 and 1011. I deleted each through the Residents page's Delete link and accepted its confirmation, "Delete this resident and their devices?".
+- **Devices deleted:** D0007 (1004, Transmitter), D0008 (1004, Keypad code), D0021 (1011, Transmitter) and D0022 (1011, Keypad code). I deleted these one at a time from the Devices page before deleting the residents.
+
+**How I know**
+- **Before:** I scanned all 17 pages of Devices, which held 168 devices. Dir 1004 had D0007 and D0008, dir 1011 had D0021 and D0022, and dir 1026 had only D0042.
+- **After the resident deletes:** Residents page 1 showed 1004 missing from the list. 1011 then moved onto page 1, and I deleted it.
+- **Final rescan of both lists:**
+  - Devices now holds 164 (168 minus 4), and none belong to 1004 or 1011.
+  - The only remaining dir 1026 entries are the resident "Dev Alder" (unit 125B) and device D0042.
+
+**Caveats**
+- I didn't count residents before starting, so I can't confirm the total dropped by exactly 2. The final scan found 89 residents, but I assumed 12 pages when scanning.
+- The Residents list has no device column, so the four devices were identified from the Devices list. I did not check that the resident delete had no other side effects.
+- "Send Data" is an unclicked button on both pages. I didn't press it, so I don't know whether the changes need it to reach the physical gate hardware.

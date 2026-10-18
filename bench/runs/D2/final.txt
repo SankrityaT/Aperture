@@ -1,16 +1,19 @@
-Residents 1004 and 1011 are removed, along with their four gate devices. Resident 1026 is untouched.
+I removed residents 1004 (Dev Alder, unit 103D) and 1011 (Kai Alder, unit 110C), and the four gate devices that belonged to them. The portal confirms each change.
 
 **What changed**
-- **Devices:** I deleted D0007 (1004, Transmitter), D0008 (1004, Keypad code), D0021 (1011, Transmitter) and D0022 (1011, Keypad code). Each deletion went through the portal's "Delete this device?" confirmation, one at a time.
-- **Residents:** I deleted 1004 (Dev Alder, unit 103D) and 1011. Each went through the "Delete this resident and their devices?" confirmation. I deleted the devices first so I wouldn't rely on the resident delete to cascade.
+- **Residents:** the portal's count went from 91 to 89.
+- **Devices:** the count went from 168 to 164.
+- **Devices removed:** D0007 (Transmitter) and D0008 (Keypad code) for 1004, and D0021 (Transmitter) and D0022 (Keypad code) for 1011.
+- **Cascade:** deleting a resident removes their devices automatically, so I deleted only the two residents.
+- **Receipts:** `rcpt_1` covers 1004 and `rcpt_2` covers 1011.
 
 **How I know**
-- **Before:** the Dir filter on the Devices page didn't narrow the list. So I read every Devices page and found those four devices, and no others, for 1004 and 1011.
-- **After, devices:** I re-read all the Devices pages. No device is listed under 1004 or 1011.
-- **After, residents:** I re-read all the Residents pages. 1004 and 1011 no longer appear.
-- **1026:** "Dev Alder" (1026, unit 125B) is the only Dev Alder left. Its device D0042 (Transmitter) is still listed. I never clicked anything on 1026.
+- **Preview:** before committing, a dry run of each delete listed the resident plus exactly 2 devices.
+- **Receipts:** the portal's read-back after each delete reported the resident gone, matching the prediction. The counts went 91→90 residents and 168→166 devices, then 90→89 and 166→164.
+- **Fresh check:** I searched again afterwards.
+  - Devices for 1004 and 1011 return nothing.
+  - The Alder list no longer has 1004 or 1011.
 
-**Caveats**
-- I didn't check before the deletions whether 1026 had other devices, so I can only confirm that D0042 is still there.
-- When I re-checked the Devices pages, I asked for more pages than exist. The count it returned (164) may include repeats, but that doesn't affect the checks above.
-- The pages have a "Send Data" button, which I didn't press. If the gate controllers only learn about changes when that's pressed, someone needs to press it. I didn't want to push data to the live gate hardware without you asking.
+**Left alone:** resident 1026, the other Dev Alder (unit 125B), is still there with its transmitter D0042. I only acted on directory codes, never names. I also left 1061, a different Kai Alder (unit 120A), because it shares a name with 1011 but you didn't ask for it.
+
+Nothing stopped me. The deletes can be undone with `undo` until 2026-10-19 11:42 UTC. The restore recreates the records from a saved copy, so any IDs the portal assigns itself may differ.

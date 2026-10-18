@@ -1,0 +1,16 @@
+Residents 1004 and 1011 are removed, along with their four gate devices. Resident 1026 and its device are untouched.
+
+**What changed**
+- **Devices deleted:** D0007 (1004, Transmitter), D0008 (1004, Keypad code), D0021 (1011, Transmitter) and D0022 (1011, Keypad code). I deleted these one at a time on the Devices page, confirming each prompt.
+- **Residents deleted:** 1004 (Dev Alder) and 1011, on the Residents page. The confirm prompt there read "Delete this resident and their devices?".
+- **Left alone:** the other resident named Dev Alder, directory code 1026, and its device D0042 (Transmitter).
+
+**How I know**
+- **Devices before:** I read all 17 pages of the Devices list before deleting anything. 1004 had two devices, 1011 had two, and 1026 had one.
+- **Devices after:** I read all 17 pages again after the device deletions and again after the resident deletions. The total went from 168 to 164 and stayed at 164. The only devices left under 1004, 1011 or 1026 are D0042 for 1026, so deleting the residents removed nothing further.
+- **Residents after:** I read every page of the Residents list after the deletions. 1004 and 1011 are gone, and "Dev Alder" appears only once, as 1026. The list now has 89 entries.
+
+**Caveats**
+- The Dir filter box on the Devices page did nothing when I used it, so I paged through the list instead.
+- I didn't press "Send Data". If the gate hardware only learns about changes when that is pressed, the removals may not have reached it. I left it alone because you didn't ask for it.
+- I didn't record the Residents list before deleting. The 89 count and the absence of 1004 and 1011 are from afterward, so I can't independently show that no other resident changed. I only deleted the two rows with those codes.

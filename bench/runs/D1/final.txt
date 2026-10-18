@@ -1,25 +1,19 @@
-I removed residents 1004 and 1011 and their four gate devices, and left 1026 untouched. I checked by rescanning both lists after the deletions.
+I removed residents 1004 (Dev Alder, unit 103D) and 1011 (Kai Alder, unit 110C), plus their four gate devices. Resident 1026 was not touched.
 
 **What changed**
-
-| Type | Removed | Details |
-|---|---|---|
-| Resident | 1004 | Dev Alder, unit 103D |
-| Resident | 1011 | Kai Alder, unit 110C |
-| Device | D0007 | 1004's transmitter |
-| Device | D0008 | 1004's keypad code |
-| Device | D0021 | 1011's transmitter |
-| Device | D0022 | 1011's keypad code |
-
-Neither resident had any cards. I deleted the devices first, then the residents.
+- **Residents:** the list went from 91 to 89 (1004 and 1011 gone).
+- **Devices:** the list went from 168 to 164. The portal deleted each resident's devices along with them:
+  - D0007 (Transmitter) and D0008 (Keypad code) for 1004.
+  - D0021 (Transmitter) and D0022 (Keypad code) for 1011.
+- **Receipts:** `rcpt_1` covers 1004 and `rcpt_2` covers 1011.
 
 **How I know**
-- **Before:** I read every row of the Devices list (17 pages, 168 devices). Only those four devices had directory code 1004 or 1011. I also checked the Residents list (91 residents) to confirm which rows were 1004, 1011 and 1026.
-- **After, devices:** Rescanning all pages gives 164 devices, which is 168 minus four. None have code 1004 or 1011, and the four IDs above are gone.
-- **After, residents:** Rescanning all pages gives 89 residents, which is 91 minus two. Neither 1004 nor 1011 is in the list.
-- **1026:** Dev Alder (1026, unit 125B) is still in the residents list. Its device D0042 is still in the devices list. The portal deletes by directory code, so the same name on 1004 didn't matter.
+- Before deleting, I searched the Devices page by directory code. 1004 had exactly those two devices and 1011 had exactly those two.
+- I previewed both deletes first. Each preview predicted the resident plus 2 devices.
+- After each delete, the portal read its own counts back and they matched the prediction (residents 90 then 89, devices 166 then 164).
+- I then searched again myself. Residents 1004 and 1011 no longer appear, and a device search for each code returns nothing.
+- **Resident 1026:** Dev Alder, unit 125B, is still listed, and so is their one device, D0042 (Transmitter).
 
-**Other points**
-- The portal's Filter box didn't filter anything, so I read the full lists by paging through them.
-- I triggered the deletes through the page's own delete postback, not by clicking each Delete link. No confirmation dialog appeared.
-- I did not press "Send Data". If the gate hardware only learns about changes after a push, someone will need to do that, and I left it to you because it sends data out to the gate.
+I didn't delete the devices separately. The portal removes them with the resident, and separate deletes would have counted against the 10-per-day delete limit.
+
+Nothing blocked me. Both deletes can be undone with `undo` until about 2026-10-19 11:42 UTC.

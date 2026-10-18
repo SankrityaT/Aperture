@@ -1,0 +1,163 @@
+- generic [ref=f9e2]:
+  - generic [ref=f9e3]:
+    - link "Residents" [ref=f9e4] [cursor=pointer]:
+      - /url: /Residents.aspx
+    - text: "|"
+    - link "Devices" [ref=f9e5] [cursor=pointer]:
+      - /url: /Devices.aspx
+  - generic [ref=f9e6]:
+    - button "Send Data" [ref=f9e7]
+    - link "Add" [ref=f9e8] [cursor=pointer]:
+      - /url: javascript:__doPostBack('lnkAdd','')
+  - heading "Devices" [level=2] [ref=f9e9]
+  - table [ref=f9e10]:
+    - rowgroup [ref=f9e11]:
+      - row [ref=f9e12]:
+        - columnheader [ref=f9e13]
+        - columnheader "Device" [ref=f9e14]
+        - columnheader "Dir" [ref=f9e15]
+        - columnheader "Type" [ref=f9e16]
+        - columnheader [ref=f9e17]
+      - row [ref=f9e18]:
+        - cell [ref=f9e19]
+        - cell [ref=f9e20]:
+          - textbox [ref=f9e21]
+        - cell [ref=f9e22]:
+          - textbox [ref=f9e23]
+        - cell [ref=f9e24]
+        - cell [ref=f9e25]:
+          - button "Filter" [ref=f9e26] [cursor=pointer]
+      - row [ref=f9e27]:
+        - cell "11" [ref=f9e28]
+        - cell "D0013" [ref=f9e29]
+        - cell "1007" [ref=f9e30]
+        - cell "Transmitter" [ref=f9e31]
+        - cell [ref=f9e32]:
+          - link "Delete" [ref=f9e33] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0013')
+      - row [ref=f9e34]:
+        - cell "12" [ref=f9e35]
+        - cell "D0014" [ref=f9e36]
+        - cell "1007" [ref=f9e37]
+        - cell "Keypad code" [ref=f9e38]
+        - cell [ref=f9e39]:
+          - link "Delete" [ref=f9e40] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0014')
+      - row [ref=f9e41]:
+        - cell "13" [ref=f9e42]
+        - cell "D0015" [ref=f9e43]
+        - cell "1008" [ref=f9e44]
+        - cell "Transmitter" [ref=f9e45]
+        - cell [ref=f9e46]:
+          - link "Delete" [ref=f9e47] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0015')
+      - row [ref=f9e48]:
+        - cell "14" [ref=f9e49]
+        - cell "D0016" [ref=f9e50]
+        - cell "1008" [ref=f9e51]
+        - cell "Keypad code" [ref=f9e52]
+        - cell [ref=f9e53]:
+          - link "Delete" [ref=f9e54] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0016')
+      - row [ref=f9e55]:
+        - cell "15" [ref=f9e56]
+        - cell "D0017" [ref=f9e57]
+        - cell "1009" [ref=f9e58]
+        - cell "Transmitter" [ref=f9e59]
+        - cell [ref=f9e60]:
+          - link "Delete" [ref=f9e61] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0017')
+      - row [ref=f9e62]:
+        - cell "16" [ref=f9e63]
+        - cell "D0018" [ref=f9e64]
+        - cell "1009" [ref=f9e65]
+        - cell "Keypad code" [ref=f9e66]
+        - cell [ref=f9e67]:
+          - link "Delete" [ref=f9e68] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0018')
+      - row [ref=f9e69]:
+        - cell "17" [ref=f9e70]
+        - cell "D0019" [ref=f9e71]
+        - cell "1010" [ref=f9e72]
+        - cell "Transmitter" [ref=f9e73]
+        - cell [ref=f9e74]:
+          - link "Delete" [ref=f9e75] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0019')
+      - row [ref=f9e76]:
+        - cell "18" [ref=f9e77]
+        - cell "D0020" [ref=f9e78]
+        - cell "1010" [ref=f9e79]
+        - cell "Keypad code" [ref=f9e80]
+        - cell [ref=f9e81]:
+          - link "Delete" [ref=f9e82] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0020')
+      - row [ref=f9e83]:
+        - cell "19" [ref=f9e84]
+        - cell "D0022" [ref=f9e85]
+        - cell "1011" [ref=f9e86]
+        - cell "Keypad code" [ref=f9e87]
+        - cell [ref=f9e88]:
+          - link "Delete" [ref=f9e89] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0022')
+      - row [ref=f9e90]:
+        - cell "20" [ref=f9e91]
+        - cell "D0023" [ref=f9e92]
+        - cell "1012" [ref=f9e93]
+        - cell "Transmitter" [ref=f9e94]
+        - cell [ref=f9e95]:
+          - link "Delete" [ref=f9e96] [cursor=pointer]:
+            - /url: javascript:__doPostBack('gv','Delete$D0023')
+      - row [ref=f9e97]:
+        - cell [ref=f9e98]:
+          - table [ref=f9e99]:
+            - rowgroup [ref=f9e100]:
+              - row [ref=f9e101]:
+                - cell [ref=f9e102]:
+                  - link "1" [ref=f9e103] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$1')
+                - cell "2" [ref=f9e104]
+                - cell [ref=f9e105]:
+                  - link "3" [ref=f9e106] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$3')
+                - cell [ref=f9e107]:
+                  - link "4" [ref=f9e108] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$4')
+                - cell [ref=f9e109]:
+                  - link "5" [ref=f9e110] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$5')
+                - cell [ref=f9e111]:
+                  - link "6" [ref=f9e112] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$6')
+                - cell [ref=f9e113]:
+                  - link "7" [ref=f9e114] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$7')
+                - cell [ref=f9e115]:
+                  - link "8" [ref=f9e116] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$8')
+                - cell [ref=f9e117]:
+                  - link "9" [ref=f9e118] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$9')
+                - cell [ref=f9e119]:
+                  - link "10" [ref=f9e120] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$10')
+                - cell [ref=f9e121]:
+                  - link "11" [ref=f9e122] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$11')
+                - cell [ref=f9e123]:
+                  - link "12" [ref=f9e124] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$12')
+                - cell [ref=f9e125]:
+                  - link "13" [ref=f9e126] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$13')
+                - cell [ref=f9e127]:
+                  - link "14" [ref=f9e128] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$14')
+                - cell [ref=f9e129]:
+                  - link "15" [ref=f9e130] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$15')
+                - cell [ref=f9e131]:
+                  - link "16" [ref=f9e132] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$16')
+                - cell [ref=f9e133]:
+                  - link "17" [ref=f9e134] [cursor=pointer]:
+                    - /url: javascript:__doPostBack('gv','Page$17')

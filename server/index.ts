@@ -23,6 +23,12 @@ const server = new MCPServer({
   title: "Aperture",
   version: "0.2.0",
   description: "A safe way for AI agents to work in web systems that have no API. Every change is previewed, checked, read back, and undoable.",
+  instructions: [
+    "Aperture is for changing records in a web admin portal or legacy business system that has no API: resident lists, user lists, customer or inventory screens, registrar pages.",
+    "What it does that driving the page by hand does not: it turns the page into typed tools, shows what a change will affect before it happens (including records that go with it), reads the system back afterwards and compares it with the prediction, gives a receipt, and can undo.",
+    "Start with find_systems (what you need, in plain words) or compile_site (a page address), then find to get exact keys, then delete or create with dry_run first. Compile every page whose records a change touches.",
+    "Not for: systems that have a real API, sites you are not allowed to automate, or CAPTCHA and sign-in steps (a person does those).",
+  ].join(" "),
 });
 
 // ---- the system under test and the engine ----

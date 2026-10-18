@@ -1,0 +1,28 @@
+I removed residents 1004 and 1011 and their four gate devices. Resident 1026 and its device are unchanged. I re-read both lists afterwards to check.
+
+**What I deleted**
+
+| Type | Record | Confirmed by |
+|---|---|---|
+| Resident | 1004, Dev Alder, unit 103D | directory code on the Residents list |
+| Resident | 1011, Kai Alder, unit 110C | directory code on the Residents list |
+| Device | D0007, Transmitter, dir 1004 | Dir column on the Devices list |
+| Device | D0008, Keypad code, dir 1004 | Dir column on the Devices list |
+| Device | D0021, Transmitter, dir 1011 | Dir column on the Devices list |
+| Device | D0022, Keypad code, dir 1011 | Dir column on the Devices list |
+
+I deleted the four devices one at a time first. Then I deleted the two residents. Each delete was a link keyed to the exact device ID or directory code, and I accepted the browser's confirm prompt each time.
+
+**How I know**
+
+- **Residents:** I re-read every page of the Residents list. It went from 91 to 89 residents, and 1004 and 1011 are no longer in it.
+- **Devices:** I re-read all 17 pages of the Devices list. It went from 168 to 164 devices. The only IDs missing are D0007, D0008, D0021 and D0022, and no device has Dir 1004 or 1011.
+- **Resident 1026:** Dev Alder, unit 125B, is still listed. Its device D0042 (Transmitter) is also still listed.
+
+**Things to know**
+
+- **No filter:** The grid's Filter box did nothing when I used it, so I read the data by paging through every page instead.
+- **Other Kai Alder:** Another resident named Kai Alder (code 1061, unit 120A) exists. I didn't touch it, since the match for 1011 was by code.
+- **No other changes:** I didn't use "Send Data" or "Add", and I didn't edit or delete anything else.
+- **Not checked:** I only looked at the portal's own lists. I can't tell whether the physical gate controllers have been updated, and "Send Data" may be what pushes changes to them. I left that alone because you didn't ask for it.
+- **Reversibility:** The portal gave no undo option, so these deletions may not be reversible.
