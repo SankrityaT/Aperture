@@ -66,7 +66,7 @@ If a worker call hangs during a commit, the outcome is recorded as `outcome_unkn
 
 | Test | Result | Sample |
 |---|---|---|
-| **Race on GateAdmin32** (a replica of a gate-access admin app): remove 2 residents and their devices, leave a same-name one, report whether it reached the gate. Aperture vs a Playwright browser agent | Both 5/5 correct. Aperture median 70 s, 18 calls, $0.23. Browser agent 158 s, 33 calls, $0.46. That is 2.3x faster at half the cost | 5 pairs, one model, local replica |
+| **Race on GateAdmin32** (a replica of a gate-access admin app): remove 2 residents and their devices, leave a same-name one, report whether it reached the gate. Aperture vs a Playwright browser agent | Both 7/7 correct. Aperture median 75 s, 18 calls, $0.23. Browser agent 158 s, 35 calls, $0.49. That is 2.1x faster at half the cost | 7 pairs, one model, local replica. A further pair is excluded: its grading step failed. Two runs with a hanging page (before the hang fix): both correct, the browser agent hit the 25-minute limit both times, Aperture took about 8 minutes |
 | **Agent choice**: fresh sessions with both tools connected; the prompt names neither | 8 used only Aperture, 2 used both, 0 used only the browser. 10/10 correct | 10 sessions |
 | **WordPress head-to-head**: browser only vs Aperture only, Sonnet and Haiku | Every run correct on both sides. Deleting a user: 38 s vs 47 s, 8 vs 14 calls, about 60% cheaper. Trashing two posts: even | 20 runs |
 | **Armature evals** on the live server | 36 of 39 judged runs passed (13 cases x 3 rounds). All 5 write cases passed every run after round 1. The evals found 3 bugs; all are fixed | 39 judged runs |
