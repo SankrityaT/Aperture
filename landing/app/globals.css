@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--f-sans);
+  --font-mono: var(--f-mono);
+  --font-newsreader: var(--f-newsreader);
+}
+
+body {
+  font-family: var(--f-sans), system-ui, sans-serif;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
+
+/* scroll reveal: hidden only when JS is on and motion is allowed */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 900ms cubic-bezier(0.32, 0.72, 0, 1), transform 900ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .js [data-reveal][data-in] {
+    opacity: 1;
+    transform: none;
+  }
+  .js [data-line] {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1200ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .js [data-in] [data-line] {
+    transform: scaleX(1);
+  }
+}
+
+html { scroll-behavior: smooth; }
+::selection { background: #fff; color: #1426e6; }
+
+/* keyboard focus that is visible on the blue */
+a:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 9999px; }
+
+/* vignette rows light up in turn once their card is in view */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-lit] { opacity: 0.3; transition: opacity 700ms cubic-bezier(0.32, 0.72, 0, 1); }
+  .js [data-in] [data-lit] { opacity: 1; }
+}
+
+/* the door in each section label swings open when the label scrolls into view */
+[data-door] { transform: scaleX(1); }
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-door] { transition: transform 1100ms cubic-bezier(0.32, 0.72, 0, 1) 250ms; }
+  .js [data-reveal]:not([data-in]) [data-door] { transform: scaleX(1); }
+  .js [data-in] [data-door] { transform: scaleX(var(--open)) skewY(var(--skew)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-door] { transform: scaleX(var(--open)) skewY(var(--skew)); }
+}
+
+/* an opened answer eases in; the question row gets a visible keyboard focus */
+@keyframes faq-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  details[open] > .faq-a { animation: faq-in 420ms cubic-bezier(0.32, 0.72, 0, 1); }
+}
+summary:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 6px; }
+
+/* mobile menu: opens as a circle that grows from the menu button, like an aperture; items rise in behind it */
+.menu-iris {
+  visibility: hidden;
+  clip-path: circle(0px at var(--iris-at));
+  transition: clip-path 900ms cubic-bezier(0.7, 0, 0.25, 1), visibility 0s linear 900ms;
+}
+.menu-iris[data-open] {
+  visibility: visible;
+  clip-path: circle(125vmax at var(--iris-at));
+  transition: clip-path 900ms cubic-bezier(0.7, 0, 0.25, 1), visibility 0s;
+}
+.menu-iris .menu-item { opacity: 0; transform: translateY(22px); transition: opacity 500ms cubic-bezier(0.32, 0.72, 0, 1), transform 600ms cubic-bezier(0.32, 0.72, 0, 1); }
+.menu-iris[data-open] .menu-item { opacity: 1; transform: none; }
+.menu-iris .menu-mark { opacity: 0; transition: opacity 900ms cubic-bezier(0.32, 0.72, 0, 1) 500ms; }
+.menu-iris[data-open] .menu-mark { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .menu-iris, .menu-iris[data-open] { transition: none; clip-path: none; }
+  .menu-iris:not([data-open]) { visibility: hidden; }
+  .menu-iris .menu-item, .menu-iris .menu-mark { transition: none; }
+}
+
+/* staggered delays are for wide screens, where several items are in view at once; on a phone each one plays as it arrives */
+@media (min-width: 768px) {
+  .js [data-reveal], .js [data-line], .js [data-lit] { transition-delay: var(--reveal-delay, 0ms); }
+}
