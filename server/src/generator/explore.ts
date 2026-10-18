@@ -158,7 +158,7 @@ const EXPLORE_SCRIPT = `(() => {
   var sendControls = [];
   Array.prototype.slice.call(document.querySelectorAll('input[type=submit], input[type=button], button, a[href], [role=button]')).forEach(function (e) {
     var vis = clean(e.value || e.innerText || ""), tip = clean(e.getAttribute("title") || e.getAttribute("aria-label") || "");
-    if (/\b(send|sync|upload|push|transmit)\b/i.test(vis + " " + tip)) { var n = vis && tip && vis !== tip ? vis + " (" + tip + ")" : vis || tip; if (sendControls.indexOf(n) < 0) sendControls.push(n); }
+    if (/\\b(send|sync|upload|push|transmit)\\b/i.test(vis + " " + tip)) { var n = vis && tip && vis !== tip ? vis + " (" + tip + ")" : vis || tip; if (sendControls.indexOf(n) < 0) sendControls.push(n); }
   });
   return { url: location.href, title: document.title, forms: forms, warnings: warnings, sendControls: sendControls.slice(0, 5) };
 })()`;
