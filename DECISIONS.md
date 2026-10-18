@@ -87,6 +87,17 @@ OpenEMR demo: worked first try. Moodle sandbox: missed, then worked after two ge
 ### Recovery (Wicket Recovery Planner idea)
 Built: every plan and receipt names its recovery strategy and how exact it is expected to be; what undo failed to restore is remembered per kind and warned about in the next preview; the application's own recovery controls (archive, restore, deactivate, history, export, import, duplicate) are listed when a page is compiled, seen and never used. Designed, NOT built: choosing a reversible alternative automatically, using native restore or import, testing reversibility on synthetic records in a sandbox, the 100-operation recovery benchmark. Exact, functionally-equivalent, partial and irreversible are not yet scored over many operations; the only undo evidence is a handful of runs.
 
+
+## Later the same night (05:00-05:25 PT)
+
+- Product renamed to Aperture (server name, title, docs, install snippet; internal env names unchanged).
+- Pilot benchmark (bench/, 16 runs with shell tools removed): all four arms 4/4 complete, 0 unsafe. Aperture-only: 18 calls, 77 s, $0.11 mean; browser arms 38-48 calls, 145-180 s, $0.24-0.31. Free choice chose Aperture 0/4 until the server usage note was added, then 4/4 (16 calls, 59 s, $0.11). The note is ours, written after the 0/4, and describes this kind of task: possibly fitted.
+- Fan-out test (bench/fanout, five lists, "maximize parallel searches"): both arms got all five counts right (2 runs each). Browser: 51-57 s, $0.27-0.32, parallel tabs inside one code call, and it opened Add forms on two lists while exploring (saved nothing). Aperture: 24-26 s, $0.12-0.13, serialized behind one browser.
+- Real WordPress: 9/10 after generic fixes (5/9 first). Fails: undo of a deleted user (honest refusal).
+- Kinjal's GateAdmin replica (sign-in, pending vs sent to the gate) deployed on the box; write and undo verified live; receipts now say when a separate send step has not been pressed.
+- GateAdmin32 restyle tested locally, NOT deployed: breaks kind names, reads icon toolbars as lists, undo refused (Add in toolbar), send step on another page hides the not-yet-sent note. Recommended after submission.
+- Withdrawn: the webERP "says cannot delete, deletes anyway" claim did not reproduce.
+
 ## Designs agreed but not built
 
 **Delegation (replaces default approval).** The owner, through the owner page and never an agent tool, grants a bounded authority once: kinds, operations, a per-day cap, an expiry. Inside it, operations run without per-item approval, always with a full copy and a canary. Outside it, or on any surprise, ambiguous key, unknown outcome or cap hit, the engine halts and escalates. Success measure: autonomous completion with zero unauthorized actions, not fewer approval screens.
