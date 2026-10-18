@@ -8,9 +8,10 @@ Vendor grid, status bar, and a "Send Data Now" dialog with per-account tick boxe
 logo, icons or text, holds no real data, and says REPLICA in every title bar. Reference figures were gathered by Aside
 from the vendor's public manual (Oct 18). They are not stored in this repo.
 
-It is built from `server/test/fixtures/gateportal.ts`: **the same seed and the same page structure** (the `gv` grid,
-`Delete$` postbacks, `__VIEWSTATE`, the Add panel's field names). So Aperture's compiler and the Armature eval
-cases (`EVAL_CASES.md`) work on it unchanged. The fixture stays as it is for the server's own tests.
+It is built from `server/test/fixtures/gateportal.ts`: **the same seed** (so `EVAL_CASES.md` data still holds) and the same
+key mechanics (`table#gv`, `Delete$<key>` postbacks, `__VIEWSTATE`, `lnkAdd`/`txtName`/`txtDir`/`txtUnit`/`btnSave`).
+The layout changed on Oct 18 (no paging, new columns, Send moved to Accounts behind a dialog, 5-digit device IDs), so
+Aperture's compiler must be re-checked on it. The fixture stays as it is for the server's own tests.
 
 ## What an agent runs into
 
