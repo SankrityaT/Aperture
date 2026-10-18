@@ -262,26 +262,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* in action: a slot for the recording, until there is one */}
-      <section id="action" className={`relative scroll-mt-16 border-t border-[#1426e6]/10 bg-white ${INK}`}>
+      {/* benchmarks: measured results against a browser agent */}
+      <section id="benchmarks-section" className={`relative scroll-mt-16 border-t border-[#1426e6]/10 bg-white ${INK}`}>
         <Margins light />
-        <Eyebrow light icon="filled">Watch it open</Eyebrow>
+        <Eyebrow light icon="filled">Measured</Eyebrow>
         <div className="relative mx-auto max-w-[1040px] px-6 pb-16 pt-20 md:pb-40 md:pt-28">
-          <Reveal className="text-center">
-            <h2 className={`${h2} mx-auto max-w-[16ch]`}>See it work.</h2>
-            <p className={`mx-auto mt-6 max-w-[46ch] text-pretty text-xl leading-relaxed ${GRAY}`}>
-              An agent calls a tool, the change is previewed, and the result is read back.
-            </p>
-          </Reveal>
-          <Reveal delay={160} className="mt-14 rounded-2xl border border-[#1426e6]/15 bg-[#f4f5fb] p-3 md:mt-20 md:p-4">
-            <div className="flex aspect-video items-center justify-center rounded-xl border border-dashed border-[#1426e6]/35 text-center">
-              <div>
-                <p className="font-newsreader text-2xl">Demo recording goes here</p>
-                <p className={`mt-2 font-mono text-base ${GRAY}`}>16:9 &middot; GIF or MP4</p>
-              </div>
-            </div>
-          </Reveal>
-          <div id="benchmarks" className="mt-24 scroll-mt-20 md:mt-36">
+          <div id="benchmarks">
           <Reveal className="text-center">
             <h2 className={`${h2} mx-auto max-w-[16ch]`}>{copy.evidence.title}</h2>
             <p className={`mx-auto mt-6 max-w-[46ch] text-pretty text-xl leading-relaxed ${GRAY}`}>{copy.evidence.sub}</p>
