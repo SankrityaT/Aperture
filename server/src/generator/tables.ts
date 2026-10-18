@@ -55,6 +55,8 @@ const ROWS_FN = String.raw`var wicketRows = function (t) {
   if (hi < 0) return null;
   var ncols = all[hi].children.length;
   var trs = all.slice(hi + 1).filter(function (r) {
+    if (getComputedStyle(r).display === "none") return false; // a template or inline-edit row that is never shown is not a record
+    if (r.parentNode && r.parentNode.tagName === "TFOOT") return false; // a footer (often the header repeated) is not a record
     var tds = r.querySelectorAll(":scope > td");
     if (tds.length === 0) return false;
     for (var k = 0; k < tds.length; k++) {
@@ -216,7 +218,17 @@ const TABLES_SCRIPT = String.raw`(() => {
   var links = Array.prototype.slice.call(document.querySelectorAll("a[href]"));
   return grids.map(function (g, gi) {
     var rows = g.rows.map(function (r) {
-      var cells = g.cells(r).map(function (c) { return clean(c.innerText); });
+      var cellText = function (c) {
+        // Row menus (Edit | Delete | View) and screen-reader-only text sit inside the cell but are not its value.
+        var noise = Array.prototype.slice.call(c.querySelectorAll('[class*="row-action"], [class*="screen-reader"], [class*="sr-only"], [class*="visually-hidden"], [class*="toggle-row"]'));
+        if (!noise.length) return clean(c.innerText);
+        var saved = noise.map(function (e) { return e.style.display; });
+        noise.forEach(function (e) { e.style.display = "none"; });
+        var t = clean(c.innerText);
+        noise.forEach(function (e, i) { e.style.display = saved[i]; });
+        return t;
+      };
+      var cells = g.cells(r).map(cellText);
       var actions = Array.prototype.map.call(r.querySelectorAll(sel), function (a) {
         return { label: labelOf(a), href: a.getAttribute("href") ? abs(a.getAttribute("href")) : "", onclick: clean(a.getAttribute("onclick") || "").slice(0, 160), cls: clean(a.className || ""), tag: a.tagName.toLowerCase() };
       });
@@ -937,7 +949,9 @@ export class TableAdapter implements Adapter {
 
   private async confirmIfAsked(page: Page): Promise<void> {
     const forms = (await explorePage(page)).forms;
-    const f = forms.find((x) => x.submit);
+    // A confirmation page may carry other forms (search, screen options). Choose the one whose button says confirm, yes, delete, remove, or ok.
+    const wantsConfirm = (x: { submit?: { label: string } | null }) => !!x.submit && /\b(confirm|yes|delete|remove|proceed|ok)\b/i.test(x.submit.label) && !/cancel|back|\bno\b/i.test(x.submit.label);
+    const f = forms.find(wantsConfirm) ?? forms.find((x) => x.submit);
     if (!f?.submit) return;
     if (/cancel|back|no\b/i.test(f.submit.label) && !/yes|confirm|delete|remove/i.test(f.submit.label)) return;
     await Promise.all([
@@ -951,7 +965,11 @@ export class TableAdapter implements Adapter {
     const frame = await this.frameFor(m);
     const ok = await frame.evaluate(actScript({ t: tableIndex, r: ri, a: ai }));
     if (!ok) throw new Error("could not find the row action on the page");
-    try { await frame.locator('[data-wicket-target="1"]').first().click(); }
+    try {
+      const target = frame.locator('[data-wicket-target="1"]').first();
+      // Some row menus (WordPress, many admin themes) sit off-screen until the row is hovered. Try a real click; if the page will not let one land, click the control itself.
+      try { await target.click({ timeout: 4000 }); } catch { await target.evaluate((el) => (el as HTMLElement).click()); }
+    }
     finally { await frame.evaluate(`document.querySelectorAll("[data-wicket-target]").forEach(function(e){e.removeAttribute("data-wicket-target")})`).catch(() => undefined); }
   }
 

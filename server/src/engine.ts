@@ -712,6 +712,8 @@ export class Wicket {
       const rc = this.receipts.get(receiptId);
       if (!rc) return this.r(refuse("unknown_receipt", `No receipt '${receiptId}'.`, ["check the receipt id from the commit result"]));
       if (rc.status === "undone") return this.r(refuse("already_undone", "Already undone.", []));
+      // A change that failed changed nothing, so there is nothing to put back. Saying "undone" would be a false report.
+      if (rc.status === "failed") return this.r(refuse("nothing_to_undo", "That change failed and did not happen, so there is nothing to undo.", ["check the record with find", "make a new change if it is still wanted"]));
       if (rc.op.op === "publish") return this.r(refuse("not_undoable", "Published changes went to the outside world and cannot be recalled.", ["send a correction as a new change"]));
       if (this.now() > rc.undoUntil) return this.r(refuse("undo_window_closed", "The undo window has closed.", ["make a new change that fixes it"]));
       const before = await this.adapter.counts(rc.op.kind);

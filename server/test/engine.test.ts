@@ -356,3 +356,20 @@ test("recovery: a preview names how the change would be reversed, and after an u
   assert.match(p.recovery!.expected, /partial/);
   assert.ok(p.recovery!.lessons!.some((l) => /number/.test(l)));
 });
+
+test("undo of a change that failed is refused: nothing happened, so nothing is 'undone'", async () => {
+  const rows = new Map<string, Record<string, unknown>>([["a", { key: "a", name: "Ben" }]]);
+  const stub = {
+    kinds: () => ["person"], read: async (_k: string, key: string) => (rows.has(key) ? { ...rows.get(key)! } : null),
+    list: async () => [...rows.values()].map((r) => ({ ...r })),
+    delete: async () => { /* the app silently does nothing */ },
+    create: async () => undefined, counts: async () => ({ person: rows.size }), exportAll: async () => ({ person: [...rows.values()] }),
+    pendingPublish: async () => [], publish: async () => ({ published: 0, notified: 0 }), reset: async () => undefined,
+  };
+  const w = new Wicket(stub as never, { rules: new RuleBook(), cacheTtlMs: 0 });
+  w.delegate({ kinds: ["person"], ops: ["delete"], limit: 3, ttlMs: 60_000 });
+  const r = (await w.apply({ op: "delete", kind: "person", key: "a" })) as { status: string; receipt: string };
+  assert.equal(r.status, "failed");
+  const u = await w.undo(r.receipt);
+  assert.ok(isRefusal(u) && u.error === "nothing_to_undo", JSON.stringify(u).slice(0, 200));
+});
