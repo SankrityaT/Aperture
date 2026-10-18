@@ -45,16 +45,57 @@ export function allowedHosts(): string[] {
   return (process.env.WICKET_ALLOWED_HOSTS ?? "127.0.0.1,localhost,the-internet.herokuapp.com").split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
 }
 
-/** Wicket only works on systems the operator has said it may use. */
+// Two different permissions, never confused:
+//  - OBSERVE: visit, read and compile public pages. Open by default (WICKET_PUBLIC_WEB=0 turns it off). Internal and private
+//    addresses are never reachable this way: loopback, private ranges, link-local and cloud metadata, *.local / *.internal.
+//  - ACT: sign in with a stored login, create, delete, update, publish. Only on systems the operator listed in
+//    WICKET_ALLOWED_HOSTS, and then still through preview, the owner's authority, read-back, receipt and undo.
+export const publicWeb = (): boolean => process.env.WICKET_PUBLIC_WEB !== "0";
+
+/** An address that must never be reached through public browsing. */
+export function isPrivateHost(host: string): boolean {
+  const h = host.toLowerCase().replace(/^\[|\]$/g, "");
+  if (h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h.endsWith(".internal") || h.endsWith(".lan") || h.endsWith(".home.arpa")) return true;
+  if (h.includes(":")) return true; // IPv6 literals: not needed for public sites, too many internal forms to list
+  if (/^\d+$/.test(h) || /^0x/i.test(h)) return true; // integer or hex IP spellings
+  const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(h);
+  if (!m) return false;
+  const [a, b] = [Number(m[1]), Number(m[2])];
+  return a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127) || a >= 224;
+}
+
+/** May Aperture visit and read this address? Listed systems always; any other public site when public browsing is on. */
 export function assertAuthorized(url: string): URL {
   let u: URL;
   try { u = new URL(url); } catch { throw new NotAuthorized(`'${url}' is not a valid URL.`); }
   if (u.protocol !== "http:" && u.protocol !== "https:") throw new NotAuthorized("Only http and https addresses are supported.");
   const host = u.hostname.toLowerCase();
-  if (!allowedHosts().includes(host)) {
-    throw new NotAuthorized(`'${host}' is not on this server's list of authorized systems. The operator adds hosts they own or have permission to use with WICKET_ALLOWED_HOSTS.`);
-  }
-  return u;
+  if (allowedHosts().includes(host)) return u;
+  // Government and military sites, and any host the operator denies (WICKET_DENY_HOSTS, suffixes allowed), are never browsed unless listed.
+  const denied = [".gov", ".mil", ...(process.env.WICKET_DENY_HOSTS ?? "").split(",").map((h) => h.trim().toLowerCase()).filter(Boolean)].some((d) => host === d.replace(/^\./, "") || host.endsWith(d.startsWith(".") ? d : `.${d}`));
+  if (denied) throw new NotAuthorized(`'${host}' is a site Aperture does not browse without the operator's explicit listing (government, military, or on the operator's deny list).`);
+  if (publicWeb() && !isPrivateHost(host)) return u;
+  throw new NotAuthorized(isPrivateHost(host)
+    ? `'${host}' is an internal or private address. Aperture never browses those unless the operator lists that exact system.`
+    : `'${host}' is not on this server's list of systems, and public browsing is off here. The operator can list it in WICKET_ALLOWED_HOSTS.`);
+}
+
+/** May Aperture sign in or change something here? Only on systems the operator listed. Reading a public site never grants this. */
+export function assertMayAct(url: string, what: string): void {
+  let host = "";
+  try { host = new URL(url).hostname.toLowerCase(); } catch { /* fall through */ }
+  if (host && allowedHosts().includes(host)) return;
+  throw new NotAuthorized(`Aperture can read '${host || url}' but may not ${what} there: changes and stored logins are only for systems the operator listed (WICKET_ALLOWED_HOSTS). Reading a public site never grants permission to change it.`);
+}
+
+/** Block every request (redirects and sub-resources included) to an internal address that is not a listed system. */
+export async function guardNetwork(page: Page): Promise<void> {
+  await page.context().route("**/*", (route) => {
+    let host = "";
+    try { host = new URL(route.request().url()).hostname.toLowerCase(); } catch { return route.continue(); }
+    if (isPrivateHost(host) && !allowedHosts().includes(host)) return route.abort("blockedbyclient");
+    return route.continue();
+  });
 }
 
 const esc = (s: string) => s.replace(/["\\]/g, "\\$&");
@@ -86,6 +127,7 @@ export class FormAdapter implements Adapter {
    */
   async signIn(url: string, secretName: string): Promise<{ signedIn: boolean; detail: string }> {
     assertAuthorized(url);
+    assertMayAct(url, "use a stored login");
     const creds = readSecret(secretName);
     const page = await this.ensurePage();
     await page.goto(url, { waitUntil: "load", timeout: 30_000 });
@@ -196,6 +238,7 @@ export class FormAdapter implements Adapter {
     // An explicit context (not browser.newPage) so a stuck page can be replaced inside the same signed-in session.
     const ctx = await this.browser.newContext({ viewport: process.env.WICKET_HEADED === "1" ? { width: 1280, height: 800 } : undefined });
     this.page = await ctx.newPage();
+    await guardNetwork(this.page);
     if (process.env.WICKET_ACTION_TIMEOUT_MS) this.page.setDefaultTimeout(Number(process.env.WICKET_ACTION_TIMEOUT_MS));
     return this.page;
   }
@@ -291,6 +334,7 @@ export class FormAdapter implements Adapter {
     const form = this.form(kind);
     const page = this.page;
     if (!form || !page) throw new Error(`unknown form '${kind}'`);
+    assertMayAct(page.url(), "fill in or submit a form");
     const scope = page.locator(form.selector);
     for (const [name, raw] of Object.entries(patch)) {
       const f = form.fields.find((x) => x.name === name);
@@ -333,6 +377,7 @@ export class FormAdapter implements Adapter {
   async publish(): Promise<{ published: number; notified: number }> {
     const page = this.page;
     if (!page) throw new NoBrowser("Nothing compiled yet.");
+    assertMayAct(page.url(), "publish");
     let published = 0;
     for (const id of [...this.dirty]) {
       const form = this.form(id);

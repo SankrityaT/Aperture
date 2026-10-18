@@ -26,6 +26,7 @@ const server = new MCPServer({
   instructions: [
     "Aperture is for changing records in a web admin portal or legacy business system that has no API: resident lists, user lists, customer or inventory screens, registrar pages.",
     "What it does that driving the page by hand does not: it turns the page into typed tools, shows what a change will affect before it happens (including records that go with it), reads the system back afterwards and compares it with the prediction, gives a receipt, and can undo.",
+    "Reading is open: compile_site works on any public page without setup. Signing in and changing anything only happen on systems the operator listed, through the owner's authority.",
     "Start with find_systems (what you need, in plain words) or compile_site (a page address), then find to get exact keys, then delete or create with dry_run first. Compile every page whose records a change touches.",
     "Not for: systems that have a real API, sites you are not allowed to automate, or CAPTCHA and sign-in steps (a person does those).",
   ].join(" "),
@@ -160,7 +161,7 @@ const opSchema = z.object({ op: z.enum(["delete", "create", "update", "publish"]
 // ---- compiling a web system on demand (the generator) ----
 
 const compileFail = (e: unknown) => {
-  if (e instanceof NotAuthorized) return reply({ status: "refused", error: "not_authorized", detail: e.message, next: ["ask the operator to add the host they own or have permission to use", "never try to get around this"] });
+  if (e instanceof NotAuthorized) return reply({ status: "refused", error: "not_authorized", detail: e.message, next: ["to read: use a public address (internal and private addresses are never browsed)", "to sign in or change something: only on systems the operator listed; ask the operator to list it", "never try to get around this"] });
   if (e instanceof NoSecret) return reply({ status: "refused", error: "no_stored_login", detail: e.message, next: ["ask the operator to store the login on the server", "never ask a person to paste a password into the chat"] });
   if (e instanceof HumanRequired) return reply({ status: "refused", error: "human_required", detail: e.message, next: ["a person must complete this step, then call compile_site again"] });
   if (e instanceof NoBrowser) return reply({ status: "refused", error: "no_browser", detail: e.message, next: ["run the worker on a machine with a browser (see BRIEF.md)"] });
@@ -257,8 +258,8 @@ server.tool(
       const hits = [...want].filter((w) => have.has(w));
       return { sy, host, prof, hits, score: hits.length };
     }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
-    if (!systems.length) return reply({ status: "refused", error: "no_systems_registered", detail: "The operator has not listed any systems for agents to work in.", next: ["ask the operator to set WICKET_SYSTEMS", "or call compile_site with an address they gave you"] });
-    if (!scored.length) return reply({ status: "none_found", detail: "Nothing the operator registered matches that description.", registered: systems.map((x) => x.name), next: ["describe it with different words", "ask the operator to register the system you need"] });
+    if (!systems.length) return reply({ status: "refused", error: "no_systems_registered", detail: "The operator has not listed any systems for agents to work in.", next: ["to read a public site: call compile_site with its address", "to change records: ask the operator to register the system"] });
+    if (!scored.length) return reply({ status: "none_found", detail: "Nothing the operator registered matches that description.", registered: systems.map((x) => x.name), next: ["describe it with different words", "to read a public site: call compile_site with its address", "to change records somewhere else: ask the operator to register it"] });
     return reply({ status: "found", matches: scored.map((x) => ({ name: x.sy.name, address: x.sy.url, about: x.sy.about, ...(x.sy.login ? { sign_in: `needs the operator's stored login '${x.sy.login}': compile_site with login '${x.sy.login}', url '${x.sy.sign_in_url ?? x.sy.url}', then '${x.sy.url}'. You never see or type the password.` } : {}), matched_on: x.hits, shared_profile: x.prof ? { dependents_known: x.prof.rules.filter((r) => r.cascades.length).length, shared_at: x.prof.shared_at } : null })), next: ["compile_site with the address of the best match", "if it has a shared profile, call use_profile with its host before changing anything"] });
   },
 );

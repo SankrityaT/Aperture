@@ -70,7 +70,7 @@ Every refusal returns \`error\`, \`detail\` and a \`next\` list. These are the o
 |---|---|---|
 | no_systems_registered | The operator listed no systems | Ask the operator; or use compile_site with an address they gave you |
 | none_found | Nothing registered matches your words | Rephrase; see the \`registered\` names it returns |
-| not_authorized | The host is not on the operator's allowlist | Do not look for a workaround; ask the operator |
+| not_authorized | An internal address, or a sign-in or change on a system the operator did not list (public pages can always be read) | Read public pages freely; for changes ask the operator; never look for a workaround |
 | human_required | A CAPTCHA or similar needs a person | A person completes it; then call compile_site again |
 | no_stored_login | The named login does not exist | Ask the operator to store it; never type a password into chat |
 | not_found | No record with that key | Use \`find\` and pass the key, not the name; see \`did_you_mean\` |
