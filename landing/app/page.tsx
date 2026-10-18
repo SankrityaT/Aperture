@@ -18,7 +18,7 @@ const h2 = "text-balance font-newsreader text-[clamp(2.25rem,5vw,4.25rem)] font-
 const TAGS = ["Compatibility", "Reuse", "Boundaries", "Visibility"];
 const dim = "text-[#f2f0ff]/65";
 
-// one small picture per card; copy is generic on purpose, nothing here is a claim about a customer or a number
+// one small picture per card; copy is generic on purpose, nothing here is a claim about a customer (the measured numbers live in copy.evidence)
 function Tree({ rows }: { rows: string[] }) {
   return (
     <ul className="w-full space-y-4 pl-3 text-lg">
@@ -282,6 +282,23 @@ export default function Home() {
               </div>
             </div>
           </Reveal>
+          <Reveal className="mt-24 text-center md:mt-36">
+            <h2 className={`${h2} mx-auto max-w-[16ch]`}>{copy.evidence.title}</h2>
+            <p className={`mx-auto mt-6 max-w-[46ch] text-pretty text-xl leading-relaxed ${GRAY}`}>{copy.evidence.sub}</p>
+          </Reveal>
+          <div className="mt-14 grid gap-4 md:mt-20 md:grid-cols-3 md:gap-5">
+            {copy.evidence.stats(n).map((st, i) => (
+              <Reveal key={st.head} delay={i * 140}>
+                <article className="flex h-full flex-col rounded-2xl border border-[#1426e6]/15 bg-[#f4f5fb] p-6 md:p-7">
+                  <p className="font-newsreader text-[clamp(3rem,6vw,4.5rem)] font-light leading-none tracking-[-0.02em] text-[#1426e6]">{st.big}</p>
+                  <p className={`mt-2 font-mono text-base ${GRAY}`}>{st.unit}</p>
+                  <h3 className="mt-8 font-newsreader text-[1.5rem] leading-tight">{st.head}</h3>
+                  <p className={`mt-3 text-pretty text-lg leading-relaxed ${GRAY}`}>{st.text}</p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+          <p className={`mx-auto mt-8 max-w-[60ch] text-center font-mono text-sm ${GRAY}`}>{copy.evidence.note}</p>
         </div>
       </section>
 
