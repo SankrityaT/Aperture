@@ -286,23 +286,26 @@ export default function Home() {
             <h2 className={`${h2} mx-auto max-w-[16ch]`}>{copy.evidence.title}</h2>
             <p className={`mx-auto mt-6 max-w-[46ch] text-pretty text-xl leading-relaxed ${GRAY}`}>{copy.evidence.sub}</p>
           </Reveal>
-          <div className="mt-14 grid gap-4 md:mt-20 md:grid-cols-3 md:gap-5">
+          <div className="mt-14 grid gap-4 md:mt-20 md:grid-cols-2 md:gap-5">
             {copy.evidence.stats(n).map((st, i) => (
-              <Reveal key={st.head} delay={i * 140}>
-                <article className="flex h-full flex-col rounded-2xl border border-[#1426e6]/15 bg-[#f4f5fb] p-6 md:p-7">
-                  <p className="font-newsreader text-[clamp(3rem,6vw,4.5rem)] font-light leading-none tracking-[-0.02em] text-[#1426e6]">{st.big}</p>
-                  <p className={`mt-2 font-mono text-base ${GRAY}`}>{st.unit}</p>
-                  <Viz viz={st.viz} />
-                  <h3 className="mt-8 font-newsreader text-[1.5rem] leading-tight">{st.head}</h3>
-                  <p className={`mt-3 text-pretty text-lg leading-relaxed ${GRAY}`}>{st.text}</p>
-                  <ul className="mt-auto flex flex-wrap gap-2 pt-8" aria-label="Run with">
-                    {st.ran.map((r) => (
-                      <li key={r.name} className="inline-flex items-center gap-2 rounded-lg border border-[#1426e6]/15 bg-white px-2.5 py-1.5 text-[0.9rem]">
-                        {r.logo ? <Image src={`/logos/${r.logo}.svg`} alt="" width={18} height={18} unoptimized className="h-[18px] w-[18px]" /> : <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#1426e6]" />}
-                        {r.name}
-                      </li>
-                    ))}
-                  </ul>
+              <Reveal key={st.head} delay={i * 140} className={i === 0 ? "md:col-span-2" : ""}>
+                <article className={`h-full rounded-2xl border border-[#1426e6]/15 bg-[#f4f5fb] p-6 md:p-8 ${i === 0 ? "grid gap-8 md:grid-cols-[1fr_1.15fr] md:gap-14" : "flex flex-col"}`}>
+                  <div className="flex flex-col">
+                    <p className="font-newsreader text-[clamp(3rem,6vw,4.5rem)] font-light leading-none tracking-[-0.02em] text-[#1426e6]">{st.big}</p>
+                    <p className={`mt-2 font-mono text-base ${GRAY}`}>{st.unit}</p>
+                    {i > 0 && <Viz viz={st.viz} />}
+                    <h3 className="mt-8 font-newsreader text-[1.5rem] leading-tight">{st.head}</h3>
+                    <p className={`mt-3 text-pretty text-lg leading-relaxed ${GRAY}`}>{st.text}</p>
+                    <ul className="mt-auto flex flex-wrap gap-2 pt-8" aria-label="Run with">
+                      {st.ran.map((r) => (
+                        <li key={r.name} className="inline-flex items-center gap-2 rounded-lg border border-[#1426e6]/15 bg-white px-2.5 py-1.5 text-[0.9rem]">
+                          {r.logo ? <Image src={`/logos/${r.logo}.svg`} alt="" width={18} height={18} unoptimized className="h-[18px] w-[18px]" /> : <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#1426e6]" />}
+                          {r.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  {i === 0 && <Viz viz={st.viz} />}
                 </article>
               </Reveal>
             ))}
@@ -461,21 +464,23 @@ type VizData = ReturnType<typeof copy.evidence.stats>[number]["viz"];
 // a small picture of each measured result, drawn from the same numbers as the copy
 function Viz({ viz }: { viz: VizData }) {
   if (viz.kind === "bars") {
-    const max = Math.max(...viz.rows.map((r) => r.value));
     return (
-      <div className="mt-8 min-h-[104px] space-y-3" aria-hidden>
-        {viz.rows.map((r, i) => (
-          <div key={r.label}>
-            <div className="mb-1.5 flex items-baseline justify-between font-mono text-sm">
-              <span className={i === 0 ? "text-[#0b1240]" : GRAY}>{r.label}</span>
-              <span className={`tabular-nums ${i === 0 ? "text-[#1426e6]" : GRAY}`}>{r.text}</span>
-            </div>
-            <div className="h-2.5 rounded-full bg-[#1426e6]/10">
-              <div
-                className={`h-full rounded-full ${i === 0 ? "bg-[#1426e6]" : "bg-[#1426e6]/30"}`}
-                style={{ width: `${(r.value / max) * 100}%` }}
-              />
-            </div>
+      <div className="flex flex-col justify-center gap-7 rounded-xl border border-[#1426e6]/10 bg-white p-5 md:p-7" role="img" aria-label={viz.metrics.map((m) => `${m.label}: ${viz.names[0]} ${m.aText}, ${viz.names[1]} ${m.bText}`).join(". ")}>
+        <div className="flex items-center gap-5 font-mono text-sm" aria-hidden>
+          <span className="inline-flex items-center gap-2 text-[#0b1240]"><span className="h-2.5 w-2.5 rounded-full bg-[#1426e6]" />{viz.names[0]}</span>
+          <span className={`inline-flex items-center gap-2 ${GRAY}`}><span className="h-2.5 w-2.5 rounded-full bg-[#1426e6]/30" />{viz.names[1]}</span>
+        </div>
+        {viz.metrics.map((m) => (
+          <div key={m.label} aria-hidden>
+            <p className="mb-2.5 font-newsreader text-xl">{m.label}</p>
+            {[{ v: m.a, t: m.aText, strong: true }, { v: m.b, t: m.bText, strong: false }].map((r) => (
+              <div key={r.t} className="mt-2 flex items-center gap-3 first:mt-0">
+                <div className="h-3 flex-1 rounded-full bg-[#1426e6]/[0.07]">
+                  <div className={`h-full rounded-full ${r.strong ? "bg-[#1426e6]" : "bg-[#1426e6]/30"}`} style={{ width: `${(r.v / Math.max(m.a, m.b)) * 100}%` }} />
+                </div>
+                <span className={`w-14 shrink-0 text-right font-mono text-sm tabular-nums ${r.strong ? "text-[#1426e6]" : GRAY}`}>{r.t}</span>
+              </div>
+            ))}
           </div>
         ))}
       </div>
@@ -484,7 +489,7 @@ function Viz({ viz }: { viz: VizData }) {
   if (viz.kind === "dots") {
     const dots = viz.groups.flatMap((g) => Array.from({ length: g.n }, () => g.key));
     return (
-      <div className="mt-8 min-h-[104px]" aria-hidden>
+      <div className="mt-8 min-h-[112px]" aria-hidden>
         <div className="flex flex-wrap gap-2">
           {dots.map((k, i) => (
             <span
@@ -500,7 +505,7 @@ function Viz({ viz }: { viz: VizData }) {
     );
   }
   return (
-    <div className="mt-8 min-h-[104px]" aria-hidden>
+    <div className="mt-8 min-h-[112px]" aria-hidden>
       <div className="grid grid-cols-10 gap-1.5">
         {Array.from({ length: viz.total }, (_, i) => (
           <span key={i} className={`flex aspect-square items-center justify-center rounded-md ${i < viz.correct ? "bg-[#1426e6]" : "border border-[#1426e6]/30"}`}>
