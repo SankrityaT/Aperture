@@ -1,6 +1,6 @@
 # Landing page: to do
 
-- [ ] **Docs page.** Build it once the MCP server work is done. Until then the Docs links in the
+- [x] **Docs page.** Done: `/docs` (page) and `/docs.md` (markdown), built from `lib/docs.ts` + `lib/mcp-tools.json`. Was: build it once the MCP server work is done. Until then the Docs links in the
   header, footer and phone menu, and "Explore the docs" in the closing section, all point at `#`
   (see `docs` in `lib/site.ts`). Once it exists, set `site.docs`, and add it to `lib/markdown.ts`
   so the agent-readable markdown links to it too.

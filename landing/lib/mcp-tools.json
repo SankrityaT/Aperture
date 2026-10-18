@@ -1,0 +1,389 @@
+{
+  "note": "Snapshot of the live Aperture MCP server (initialize + tools/list). Regenerate with landing/scripts/snapshot-tools.sh.",
+  "server": {
+    "name": "aperture",
+    "version": "0.2.0",
+    "title": "Aperture",
+    "description": "A safe way for AI agents to work in web systems that have no API. Every change is previewed, checked, read back, and undoable."
+  },
+  "instructions": "Aperture is for changing records in a web admin portal or legacy business system that has no API: resident lists, user lists, customer or inventory screens, registrar pages. What it does that driving the page by hand does not: it turns the page into typed tools, shows what a change will affect before it happens (including records that go with it), reads the system back afterwards and compares it with the prediction, gives a receipt, and can undo. Reading is open: compile_site works on any public page without setup. Signing in and changing anything only happen on systems the operator listed, through the owner's authority. Start with find_systems (what you need, in plain words) or compile_site (a page address), then find to get exact keys, then delete or create with dry_run first. Compile every page whose records a change touches. Not for: systems that have a real API, sites you are not allowed to automate, or CAPTCHA and sign-in steps (a person does those).",
+  "tools": [
+    {
+      "name": "get_instructions",
+      "description": "Start here. Returns a short guide to this system, the record kinds, and the rules. Read it once.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {}
+      }
+    },
+    {
+      "name": "find",
+      "description": "Look up records. Returns small typed items with their unique keys. Names are not unique: always act on the key. Free, nothing changes.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "Record kind, as compile_site or find_systems named it (for example residents or devices). Call compile_site first if you have none."
+          },
+          "query": {
+            "description": "Text to match in any field, like a name. Leave empty to list.",
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      }
+    },
+    {
+      "name": "delete",
+      "description": "Delete one record by key. With dry_run: true it only previews: what is removed, the count change, which rule applies. Nothing changes. To commit, call again with the plan_id. For most jobs use apply, which does both when the rules allow.",
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "Record kind, as compile_site or find_systems named it (for example residents or devices). Call compile_site first if you have none."
+          },
+          "key": {
+            "type": "string",
+            "description": "The unique key from find, like S014. Never a name."
+          },
+          "dry_run": {
+            "type": "boolean"
+          },
+          "plan_id": {
+            "description": "Commit a plan you already previewed.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "create",
+      "description": "Create one record. The record needs a unique key. With dry_run: true it only previews. To commit, call again with the plan_id.",
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "Record kind, as compile_site or find_systems named it (for example residents or devices). Call compile_site first if you have none."
+          },
+          "record": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {},
+            "description": "Fields of the new record. Must include a unique key."
+          },
+          "dry_run": {
+            "type": "boolean"
+          },
+          "plan_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "record"
+        ]
+      }
+    },
+    {
+      "name": "publish",
+      "description": "Send staged changes to the outside world (for example to devices, a gate, or another system). It always needs the owner. Without plan_id it previews and asks the owner. It cannot be undone.",
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "plan_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "compile_site",
+      "description": "Point Aperture at a web page and it reads the page's forms, read-only, and turns each one into a typed record you can fill. Only works on hosts the operator has authorized. It never submits anything and never tries to get past a CAPTCHA: a person does that. Returns each form's id, fields (label, type, required, allowed values) and submit button.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "url": {
+            "description": "The page address. With login set, this is the sign-in page. Leave it out to read the current page again (after a submit, or when a page changed).",
+            "type": "string"
+          },
+          "login": {
+            "description": "Name of a login the operator stored on the server. You never see the password.",
+            "type": "string"
+          },
+          "then": {
+            "description": "With login: the page to compile after signing in.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "apply",
+      "description": "The normal way to make a change. Previews inside the server. If the rules allow it, it commits at once and returns a receipt with a read-back. If a person must decide, it returns awaiting_approval with a plan_id to poll with get_plan.",
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "op": {
+            "type": "string",
+            "enum": [
+              "delete",
+              "create",
+              "update",
+              "publish"
+            ]
+          },
+          "kind": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "record": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "patch": {
+            "description": "For update: the fields to change, like { city: 'Leeds' }.",
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "op"
+        ]
+      }
+    },
+    {
+      "name": "apply_batch",
+      "description": "Apply many changes in one call. Everything inside the rules commits. Items that need the owner are listed with plan_ids. Refusals are listed with next moves. Stops at the first failed commit. Returns one summary, so you do not need many round trips.",
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "ops": {
+            "minItems": 1,
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "delete",
+                    "create",
+                    "update",
+                    "publish"
+                  ]
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                },
+                "record": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                },
+                "patch": {
+                  "description": "For update: the fields to change, like { city: 'Leeds' }.",
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                }
+              },
+              "required": [
+                "op"
+              ]
+            }
+          },
+          "plan_ids": {
+            "description": "Instead of ops: commit plans the owner already approved, in order, with the first `canary` checked first.",
+            "minItems": 1,
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "stop_on_failure": {
+            "type": "boolean"
+          },
+          "dry_run": {
+            "description": "Change nothing. Returns the total blast radius: everything that would be removed, dependents included.",
+            "type": "boolean"
+          },
+          "canary": {
+            "description": "Commit only the first N, check they did exactly what was predicted, and halt the rest if any surprised or failed.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          }
+        }
+      }
+    },
+    {
+      "name": "find_systems",
+      "description": "Start here when you are not given an address. Describe what you need to do in plain words (for example 'remove a resident from the access list' or 'update a customer record'). Returns the systems you are allowed to work in that match, with the address to compile and any profile other agents shared. It never searches the open web.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "need": {
+            "type": "string",
+            "description": "What you need to do or find, in plain words."
+          }
+        },
+        "required": [
+          "need"
+        ]
+      }
+    },
+    {
+      "name": "get_plan",
+      "description": "Check a plan: awaiting_approval, approved, expired, committed. Use it to wait for the owner's decision instead of retrying. If the outcome of a change is unknown (the server stopped while it ran), this reads the system and says what really happened; it never runs the change again.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "plan_id": {
+            "type": "string"
+          },
+          "wait_seconds": {
+            "description": "Wait up to this long for the owner to decide, so you do not burn turns polling.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 25
+          }
+        },
+        "required": [
+          "plan_id"
+        ]
+      }
+    },
+    {
+      "name": "undo",
+      "description": "Reverse a committed change using the copy saved before it. Reads the system back to verify. Works within the undo window. Published changes cannot be recalled.",
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "receipt_id": {
+            "type": "string",
+            "description": "The receipt id from the commit result."
+          }
+        },
+        "required": [
+          "receipt_id"
+        ]
+      }
+    },
+    {
+      "name": "escalate",
+      "description": "Ask the owner for help when a rule blocks you, like the daily limit. One message goes out. Keep working on other items. Do not retry the blocked one.",
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "One sentence on what you need and why."
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      }
+    }
+  ]
+}

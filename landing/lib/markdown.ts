@@ -1,3 +1,4 @@
+//created by kinjal
 import { copy, site, setupPrompt } from "@/lib/site";
 import { origin } from "@/lib/url";
 
@@ -21,6 +22,7 @@ export function pageMarkdown(): string {
     `- Website: ${origin}`,
     `- Source: ${site.github}`,
     `- MCP endpoint: ${site.mcpUrl}`,
+    `- Docs: ${origin}/docs (markdown: ${origin}/docs.md)`,
     "",
     "## The problem",
     "",
@@ -87,6 +89,7 @@ export function llmsTxt(): string {
     "",
     "## Read this site",
     "",
+    `- [Docs](${origin}/docs.md): connect, how a change works, every MCP tool with parameters and examples, every error with its next move`,
     `- [Full page as markdown](${origin}/index.md): everything on the landing page, in one file`,
     `- [Agent view](${origin}/agent): the same markdown, shown in the browser`,
     `- [Setup prompt](${origin}/setup-prompt.txt): plain text to give an agent that should connect`,
@@ -95,6 +98,7 @@ export function llmsTxt(): string {
     "## Connect",
     "",
     `- MCP endpoint: ${site.mcpUrl}`,
+    `- Docs: ${origin}/docs.md`,
     `- Source: ${site.github}`,
     "",
     "## Optional",
