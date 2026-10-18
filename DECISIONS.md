@@ -43,6 +43,17 @@ Known to NOT hold yet: durable ledger (memory only), crash recovery, authenticat
 | DoorKing work order | The flagship task: 20 residents, 31 devices, 2 adds, duplicates, hang | `test/fixtures/gateportal.ts` replica + `test/gate-scenario.ts`; real access only if authorized |
 | Stress test (10 attacks, WicketBench, go/pivot/stop) | Concrete attack list and falsification criteria | Attack list in the brief; WicketBench is future work |
 
+
+## Pomerado, read from its source (HEAD 8f204aa, nothing run)
+
+Read by a read-only agent with file and line citations. Confidence is CONFIRMED where the code was read.
+
+Stronger than us: a model agent explores unseen sites in a real browser (20 min budget), sign-in with 2FA, a write-uncertainty taxonomy (`not_sent`/`sent`/`confirmed`, fail-closed `outcome_unknown` with `retry: never`), durable keyed idempotency (atomic, cross-process), 133 unit test files, a second model (Guardian) reviewing every browser call at build time.
+
+At run time of a saved write (CONFIRMED by reading `context.ts`, `operation.ts`, `run-outcome.ts`, `run-report.ts`, `mcp-jobs.ts`): the runtime does not independently verify the outcome; it checks that the model-written script called `verified()`. No receipt on success. No undo or compensation. No cascade or side-effect detection (authoring guidance only). No standing permission, no caps, no per-run approval. Guardian does not review runs. No end-to-end evals; their "more reliable than computer use" claim has no data in the repo. Commit marks are saved only when a job settles, so a mid-write crash leaves nothing durable.
+
+What we take: the idea that the agent proposes and the host validates; the fail-closed "unknown, never retry" stance (we now persist `executing` plus the undo copy before acting and require `reconcile` after a restart). What we do NOT claim: that we are more reliable than them. They adapt to sites we cannot read, and we have no comparison.
+
 ## Designs agreed but not built
 
 **Delegation (replaces default approval).** The owner, through the owner page and never an agent tool, grants a bounded authority once: kinds, operations, a per-day cap, an expiry. Inside it, operations run without per-item approval, always with a full copy and a canary. Outside it, or on any surprise, ambiguous key, unknown outcome or cap hit, the engine halts and escalates. Success measure: autonomous completion with zero unauthorized actions, not fewer approval screens.

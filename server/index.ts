@@ -1,4 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
+import { FileLedger } from "./src/ledger.js";
 import { MCPServer } from "mcp-use";
 import { z } from "zod";
 import { Wicket } from "./src/engine.js";
@@ -41,7 +42,7 @@ if (process.env.WICKET_WORKER_URL) {
   const local = new FormAdapter();
   forms = local; tables = new TableAdapter(() => local.currentPage());
 }
-const wicket = new Wicket(new CompositeAdapter([...(process.env.WICKET_FAKE_SCHOOL === "1" ? [new FakeSchool()] : []), forms, tables]), { rules });
+const wicket = new Wicket(new CompositeAdapter([...(process.env.WICKET_FAKE_SCHOOL === "1" ? [new FakeSchool()] : []), forms, tables]), { rules, ...(process.env.WICKET_LEDGER_PATH ? { ledger: new FileLedger(process.env.WICKET_LEDGER_PATH) } : {}) });
 
 /** Small on purpose: an agent pays for every token of this. */
 const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), ...(t.keySource === "none" ? { writes: "refused: no column or link on this list identifies a row uniquely, so a change could hit the wrong record. Reading and previews are unavailable for the same reason." } : {}), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}) });
@@ -295,6 +296,16 @@ server.get("/registry/:site", (c) => {
 });
 
 server.get("/registry", (c) => c.json({ note: "Shared profiles: structure and learned rules only. In memory; a restart empties it.", profiles: [...registry.values()] }));
+
+server.tool(
+  {
+    name: "reconcile",
+    description: "Use when commit says outcome_unknown (the server stopped while a change was running). Reads the system to find out what really happened, and never re-runs the change. Returns a receipt if it happened, or retires the plan if it did not.",
+    inputSchema: z.object({ plan_id: z.string() }),
+    annotations: { destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  async ({ plan_id }) => reply(await wicket.reconcile(plan_id)),
+);
 
 server.tool(
   {

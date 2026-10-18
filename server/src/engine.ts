@@ -3,6 +3,7 @@
 
 import { createHash } from "node:crypto";
 import { RuleBook } from "./rules.js";
+import type { Ledger } from "./ledger.js";
 import type {
   Adapter, Delta, Escalation, Kind, Mandate, Op, Plan, Receipt, Rec, Refusal, Snapshotted,
 } from "./types.js";
@@ -54,6 +55,8 @@ export interface EngineOpts {
   mandate?: Partial<Mandate>;
   now?: () => number;
   cacheTtlMs?: number;
+  /** Where tickets, receipts and undo copies are kept. Without one, a restart forgets them. */
+  ledger?: Ledger;
 }
 
 /** A standing, bounded authority the owner grants once. The agent never creates or widens one. */
@@ -82,6 +85,39 @@ export class Wicket {
     this.now = opts.now ?? Date.now;
     this.cacheTtl = opts.cacheTtlMs ?? 3000;
     this.mandate = { maxDeletesPerDay: 5, planTtlMs: 5 * 60_000, undoWindowMs: 24 * 3600_000, ...opts.mandate };
+    this.ledger = opts.ledger ?? null;
+    this.restore();
+  }
+
+  // ---------- durability ----------
+
+  private ledger: Ledger | null;
+
+  /** Write everything that matters to the ledger. Called after every state change; a failure to write is loud, not silent. */
+  private persist(): void {
+    if (!this.ledger) return;
+    this.ledger.save({
+      v: 1, plans: [...this.plans.values()], receipts: [...this.receipts.values()], escalations: this.escalations,
+      delegations: [...this.delegations.values()], seq: this.seq, deletesToday: this.deletesToday, mandate: this.mandate, rules: this.rules.exportRules(),
+    });
+  }
+
+  private restore(): void {
+    const s = this.ledger?.load() as { plans?: Plan[]; receipts?: Receipt[]; escalations?: Escalation[]; delegations?: Delegation[]; seq?: { pln: number; rcpt: number; esc: number }; deletesToday?: number; mandate?: Mandate; rules?: { kind: string; op: "delete" | "create" | "update"; cascades: { kind: string; by: string }[]; vouched: boolean }[] } | null;
+    if (!s) return;
+    for (const p of s.plans ?? []) {
+      // The server stopped while this change was running. Whether it happened is not known, and it must not be retried blind.
+      if (p.status === "executing") { p.status = "unknown"; p.reasons = ["The server stopped while this was running. Whether it happened is not known."]; }
+      this.plans.set(p.id, p);
+    }
+    for (const r of s.receipts ?? []) this.receipts.set(r.id, r);
+    this.escalations.push(...(s.escalations ?? []));
+    for (const d of s.delegations ?? []) this.delegations.set(d.id, d);
+    if (s.seq) this.seq = s.seq;
+    if (typeof s.deletesToday === "number") this.deletesToday = s.deletesToday;
+    if (s.mandate) this.mandate = { ...this.mandate, ...s.mandate };
+    for (const r of s.rules ?? []) this.rules.set(r.kind, r.op, r.cascades, r.vouched);
+    this.persist();
   }
 
   // ---------- cached reads (fast path for find and preview) ----------
@@ -169,6 +205,7 @@ export class Wicket {
       if (pending.length === 0) return this.r(refuse("nothing_to_publish", "No changes are staged.", ["make a change first"]));
       const plan: Plan = { ...base, status: "awaiting_approval", subject: null, diff: [`~ ${pending.length} staged change${pending.length === 1 ? "" : "s"} go${pending.length === 1 ? "es" : ""} to the outside world`, ...pending.slice(0, 5).map((p) => `~ ${p}`), ...(pending.length > 5 ? [`~ and ${pending.length - 5} more`] : [])], needsApproval: true, reasons: ["publish always needs the owner"], hash: sha(pending), confirmed: true };
       this.plans.set(id, plan);
+      this.persist();
       return plan;
     }
 
@@ -185,6 +222,7 @@ export class Wicket {
       const plan: Plan = { ...base, status: reasons.length ? "awaiting_approval" : "previewed", subject: rec, diff: [`+ ${label(rec)}`], expectedDelta: { [kind]: 1 }, needsApproval: reasons.length > 0, reasons, hash: sha(rec), confirmed };
       this.applyDelegation(plan);
       this.plans.set(id, plan);
+      this.persist();
       return plan;
     }
 
@@ -211,6 +249,7 @@ export class Wicket {
       const plan: Plan = { ...base, op: { ...op, patch: canonical }, status: reasons.length ? "awaiting_approval" : "previewed", subject, dependents: [], diff: changed.map(([f, v]) => `~ ${f}: ${JSON.stringify(subject[f])} -> ${JSON.stringify(v)}`), expectedDelta: {}, needsApproval: reasons.length > 0, reasons, hash: sha(subject), confirmed, asOfMs: ageMs };
       this.applyDelegation(plan);
       this.plans.set(id, plan);
+      this.persist();
       return plan;
     }
 
@@ -239,6 +278,7 @@ export class Wicket {
     const plan: Plan = { ...base, status: reasons.length ? "awaiting_approval" : "previewed", subject, dependents, diff, expectedDelta, needsApproval: reasons.length > 0, reasons, hash: sha({ subject, dependents }), confirmed, asOfMs: ageMs };
     this.applyDelegation(plan);
     this.plans.set(id, plan);
+    this.persist();
     return plan;
   }
 
@@ -256,6 +296,8 @@ export class Wicket {
     if (plan.status === "committed") return this.r(refuse("already_committed", "This plan was already committed.", ["check the receipt, or make a new plan"]));
     if (plan.status === "rejected") return this.r(refuse("rejected", "The owner rejected this plan.", ["do not retry", "escalate(reason) if it is important"]));
     if (this.now() > plan.expiresAt) { plan.status = "expired"; return this.r(refuse("expired", "The plan expired.", ["run a new dry_run"])); }
+    if (plan.status === "executing") return this.r(refuse("in_progress", "This change is running right now.", ["poll get_plan", "do not commit again"], { plan_id: plan.id }));
+    if (plan.status === "unknown") return this.r(refuse("outcome_unknown", "The server stopped while this change was running, so it is not known whether it happened. It will not be retried blindly.", ["call reconcile with this plan_id: it reads the system and says what is true", "never re-commit a plan in this state"], { plan_id: plan.id }));
     if (plan.status === "stale") return this.r(refuse("changed_since_preview", "The record changed since the preview.", ["run a new dry_run"]));
     if (plan.needsApproval && plan.status !== "approved") {
       return this.r(refuse("awaiting_approval", plan.reasons.join("; ") || "needs the owner", ["poll get_plan until status is approved", "do not retry commit in a loop"], { plan_id: plan.id, diff: plan.diff }));
@@ -301,6 +343,9 @@ export class Wicket {
       // Only the fields we are about to change need saving.
       snapshot.push({ kind: op.kind, record: { key: op.key, ...Object.fromEntries(Object.keys(op.patch).map((f) => [f, plan.subject![f]])) } });
     }
+
+    // Record that this is running, with the undo copy, BEFORE touching the system. A crash from here on leaves 'unknown', never a silent success.
+    plan.status = "executing"; plan.snapshot = snapshot; this.persist();
 
     // Do the change.
     let appError: string | null = null;
@@ -383,10 +428,35 @@ export class Wicket {
       if (d) { d.used++; if (r.status !== "done") d.paused = `receipt ${receipt.id} was ${r.status}: the delegation is paused until the owner resumes it`; }
     }
     this.receipts.set(receipt.id, receipt);
-    plan.status = "committed";
+    plan.status = "committed"; plan.snapshot = undefined;
     this.metrics.commits++;
     this.metrics.commitMs.push(performance.now() - t0);
+    this.persist();
     return receipt;
+  }
+
+  /**
+   * After a crash: read the system to find out what really happened to a change that was running. It never re-runs the change.
+   * Present means it happened (a receipt is made from the undo copy that was saved before it started); absent means it did not (the plan is retired).
+   */
+  async reconcile(planId: string): Promise<Record<string, unknown> | Refusal> {
+    this.metrics.calls++;
+    return this.queue.run(async () => {
+      const plan = this.plans.get(planId);
+      if (!plan) return this.r(refuse("unknown_plan", `No plan '${planId}'.`, []));
+      if (plan.status !== "unknown") return this.r(refuse("not_unknown", `Plan is ${plan.status}; there is nothing to reconcile.`, plan.status === "committed" ? ["look at its receipt"] : []));
+      const { op } = plan;
+      let happened: boolean | null = null;
+      try {
+        if (op.op === "delete" && op.kind && op.key) happened = (await this.adapter.read(op.kind, op.key)) === null;
+        else if (op.op === "create" && op.kind && op.record) happened = (await this.adapter.read(op.kind, op.record.key)) !== null;
+        else if (op.op === "update" && op.kind && op.key && op.patch) { const now = await this.adapter.read(op.kind, op.key); happened = !!now && Object.entries(op.patch).every(([f, v]) => stable(now[f]) === stable(v)); }
+      } catch { happened = null; }
+      if (happened === null) return this.r(refuse("cannot_reconcile", "The system could not be read, so what happened is still unknown.", ["check the system by hand", "try reconcile again when it is reachable"]));
+      if (!happened) { plan.status = "stale"; plan.snapshot = undefined; this.persist(); return { status: "not_applied", plan_id: planId, note: "The system shows the change did not happen. Nothing was changed. Make a new plan if it is still wanted." }; }
+      const receipt = this.finish(plan, plan.snapshot ?? [], { status: "done", verified: { ok: true, reconciled: true, subject_present: op.op !== "delete", note: "Found done after a restart. The change was verified by reading the system now; the earlier prediction check and dependents were not re-verified." } }, performance.now());
+      return { ...this.present(receipt), reconciled: true, note: "The change had happened. A receipt was made from the undo copy saved before it started. Dependents were not re-verified." };
+    });
   }
 
   // ---------- apply: preview and commit in one call when the rules allow ----------
@@ -434,10 +504,11 @@ export class Wicket {
   delegate(g: { kinds: string[]; ops: Delegation["ops"]; limit: number; ttlMs: number; note?: string }): Delegation {
     const d: Delegation = { id: `dlg_${(this.delegations.size + 1).toString(36)}`, kinds: g.kinds, ops: g.ops, limit: Math.max(1, Math.floor(g.limit)), used: 0, createdAt: this.now(), expiresAt: this.now() + g.ttlMs, note: g.note ?? "", paused: null, revoked: false };
     this.delegations.set(d.id, d);
+    this.persist();
     return d;
   }
-  revokeDelegation(id: string): { ok: boolean } { const d = this.delegations.get(id); if (!d) return { ok: false }; d.revoked = true; return { ok: true }; }
-  resumeDelegation(id: string): { ok: boolean } { const d = this.delegations.get(id); if (!d) return { ok: false }; d.paused = null; return { ok: true }; }
+  revokeDelegation(id: string): { ok: boolean } { const d = this.delegations.get(id); if (!d) return { ok: false }; d.revoked = true; this.persist(); return { ok: true }; }
+  resumeDelegation(id: string): { ok: boolean } { const d = this.delegations.get(id); if (!d) return { ok: false }; d.paused = null; this.persist(); return { ok: true }; }
 
   private delegationFor(kind: Kind, op: "create" | "update" | "delete"): Delegation | null {
     for (const d of this.delegations.values()) {
@@ -552,6 +623,7 @@ export class Wicket {
         restored = !!now && Object.entries(old).every(([f, v]) => stable(now[f]) === stable(v));
       }
       rc.status = "undone";
+      this.persist();
       this.metrics.undos++;
       return { status: "undone", receipt: rc.id, verified: { restored, ...(notRestored.length ? { fields_not_restored: notRestored } : {}), counts_before: before, counts_after: after }, note: rc.op.op === "delete" ? "Restored from the copy saved before the change." : rc.op.op === "update" ? "Put the old values back." : "Removed what was created." };
     });
@@ -573,6 +645,7 @@ export class Wicket {
     p.status = "approved";
     p.expiresAt = this.now() + this.mandate.planTtlMs;
     this.metrics.humanDecisions++;
+    this.persist();
     return { plan_id: id, status: "approved" };
   }
 
@@ -581,6 +654,7 @@ export class Wicket {
     if (!p) return refuse("unknown_plan", `No plan '${id}'.`, []);
     p.status = "rejected";
     this.metrics.humanDecisions++;
+    this.persist();
     return { plan_id: id, status: "rejected" };
   }
 
@@ -588,12 +662,14 @@ export class Wicket {
     this.metrics.calls++;
     const e: Escalation = { id: `esc_${(++this.seq.esc).toString(36)}`, reason, at: this.now(), status: "open" };
     this.escalations.push(e);
+    this.persist();
     this.metrics.escalations++;
     return { status: "pending_human", ticket: e.id, note: "One message went to the owner. Keep working on other items; do not retry the blocked one.", agent_can_continue_with: ["find", "create", "other deletes inside the limit"] };
   }
 
   raiseCap(n: number): Record<string, unknown> {
     this.mandate.maxDeletesPerDay = n;
+    this.persist();
     for (const e of this.escalations) if (e.status === "open") e.status = "resolved";
     this.metrics.humanDecisions++;
     return { max_deletes_per_day: n };
@@ -604,6 +680,7 @@ export class Wicket {
     return {
       awaiting: [...this.plans.values()].filter((p) => p.status === "awaiting_approval").map((p) => ({ id: p.id, diff: p.diff, reasons: p.reasons })),
       escalations: this.escalations.filter((e) => e.status === "open"),
+      unknown_outcomes: [...this.plans.values()].filter((p) => p.status === "unknown").map((p) => ({ id: p.id, diff: p.diff })),
       mandate: this.mandate,
       deletes_today: this.deletesToday,
       delegations: [...this.delegations.values()].map((d) => ({ ...d, active: !d.revoked && !d.paused && this.now() <= d.expiresAt && d.used < d.limit })),

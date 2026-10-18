@@ -47,7 +47,7 @@ export interface Snapshotted {
   record: Rec;
 }
 
-export type PlanStatus = "previewed" | "awaiting_approval" | "approved" | "committed" | "stale" | "expired" | "rejected";
+export type PlanStatus = "previewed" | "awaiting_approval" | "approved" | "executing" | "unknown" | "committed" | "stale" | "expired" | "rejected";
 
 export interface Plan {
   id: string;
@@ -66,6 +66,8 @@ export interface Plan {
   asOfMs: number;
   /** Set when the owner's standing delegation, not a per-item approval, lets this plan commit. */
   delegatedBy?: string;
+  /** The undo copy, kept with the plan from the moment execution starts, so it survives a crash. */
+  snapshot?: Snapshotted[];
 }
 
 export interface Refusal {

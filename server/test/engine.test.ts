@@ -260,3 +260,74 @@ test("a delegation is used up at its limit; later changes are covered only by wh
   const b = (await w.apply({ op: "delete", kind: "class", key: "C102" })) as { authority?: string; status: string };
   assert.notEqual(b.authority, d.id);
 });
+
+import { mkdtempSync, readFileSync as readF, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { FileLedger } from "../src/ledger.js";
+
+function ledgerPath() { return join(mkdtempSync(join(tmpdir(), "wicket-ledger-")), "ledger.json"); }
+const withLedger = (adapter: FakeSchool, path: string) => { const rules = new RuleBook(); for (const r of startingRules()) rules.set(r.kind, r.op, r.cascades, r.confirmed); return new Wicket(adapter, { rules, ledger: new FileLedger(path) }); };
+
+test("ledger: receipts, delegations and learned rules survive a restart, and undo still works from the saved copy", async () => {
+  const path = ledgerPath(); const adapter = new FakeSchool();
+  const before = await adapter.counts();
+  const a = withLedger(adapter, path);
+  const d = a.delegate({ kinds: ["class"], ops: ["delete"], limit: 3, ttlMs: 60_000 });
+  const r = (await a.apply({ op: "delete", kind: "class", key: "C101" })) as { receipt: string; authority: string };
+  assert.equal(r.authority, d.id);
+  // a brand new engine on the same file, as after a restart
+  const b = withLedger(adapter, path);
+  const state = b.ownerState() as { delegations: { id: string; used: number }[]; rules: { rule: string; cascades: string[] }[] };
+  assert.equal(state.delegations.find((x) => x.id === d.id)?.used, 1);
+  assert.ok(state.rules.some((x) => x.rule === "class:delete" && x.cascades.some((c) => c.startsWith("timetable"))), "the learned dependent was kept");
+  const u = (await b.undo(r.receipt)) as { status: string };
+  assert.equal(u.status, "undone");
+  assert.deepEqual(await adapter.counts(), before);
+});
+
+test("ledger: a change that was running when the server stopped comes back as unknown, is never retried, and reconcile finds the truth", async () => {
+  const path = ledgerPath(); const adapter = new FakeSchool();
+  const a = withLedger(adapter, path);
+  const p = (await a.preview({ op: "delete", kind: "student", key: "S001" })) as { id: string };
+  // Simulate the crash: the delete reached the system, then the process died before it could write a receipt.
+  const plan = a.plans.get(p.id)!;
+  plan.status = "executing"; plan.snapshot = [{ kind: "student", record: plan.subject! }];
+  (a as unknown as { persist(): void }).persist();
+  await adapter.delete("student", "S001");
+
+  const b = withLedger(adapter, path);
+  assert.equal(b.plans.get(p.id)!.status, "unknown");
+  const c = await b.commit(p.id);
+  assert.ok(isRefusal(c) && c.error === "outcome_unknown", "no blind retry");
+  const rec = (await b.reconcile(p.id)) as { status: string; receipt?: string; reconciled?: boolean };
+  assert.equal(rec.reconciled, true);
+  const u = (await b.undo(rec.receipt!)) as { status: string };
+  assert.equal(u.status, "undone");
+  assert.ok(await adapter.read("student", "S001"), "undo restored it from the copy saved before the change");
+});
+
+test("ledger: reconcile retires a plan whose change never reached the system", async () => {
+  const path = ledgerPath(); const adapter = new FakeSchool();
+  const a = withLedger(adapter, path);
+  const p = (await a.preview({ op: "delete", kind: "student", key: "S002" })) as { id: string };
+  const plan = a.plans.get(p.id)!;
+  plan.status = "executing"; plan.snapshot = [{ kind: "student", record: plan.subject! }];
+  (a as unknown as { persist(): void }).persist();
+  const b = withLedger(adapter, path);
+  const rec = (await b.reconcile(p.id)) as { status: string };
+  assert.equal(rec.status, "not_applied");
+  assert.ok(await adapter.read("student", "S002"));
+  assert.equal(b.plans.get(p.id)!.status, "stale");
+});
+
+test("ledger: the file is only readable by its owner, and an unreadable ledger is never overwritten", () => {
+  const path = ledgerPath();
+  new FileLedger(path).save({ v: 1 });
+  assert.equal(JSON.parse(readF(path, "utf8")).v, 1);
+  const mode = statSync(path).mode & 0o777;
+  assert.equal(mode, 0o600);
+  writeFileSync(path, "{not json");
+  assert.throws(() => new FileLedger(path).load(), /could not be read/);
+  assert.equal(readF(path, "utf8"), "{not json");
+});
