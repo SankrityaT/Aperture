@@ -1,0 +1,679 @@
+{
+  "rows": [
+    {
+      "id": "d89aae51-4a0d-4598-927f-a9d29c78480d",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "5ce33257-3dc6-53ef-9008-82ebbcc0ceec",
+      "agent_run_id": "d26ff4bf-e20c-45d6-9144-8ef14eecbf96",
+      "role": "tester",
+      "trace_event_start_id": "ed0e6a88-0a31-4da8-9f24-e30cf61ad84b",
+      "trace_event_end_id": "ed0e6a88-0a31-4da8-9f24-e30cf61ad84b",
+      "tool_name": "mcp__yc_hack__get_instructions",
+      "arguments_redacted": {
+        "keys": [],
+        "safe": {},
+        "summary": "no arguments"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [
+            "form1",
+            "residents",
+            "vendors",
+            "devices"
+          ],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1288,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:26:42.197Z",
+      "completed_at": "2026-10-18T13:26:42.525Z",
+      "duration_ms": 328,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:26:48.809Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [
+            "form1",
+            "residents",
+            "vendors",
+            "devices"
+          ],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1288,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "7726ad35-1bca-4776-b82b-e6c526b2584a",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "5ce33257-3dc6-53ef-9008-82ebbcc0ceec",
+      "agent_run_id": "d26ff4bf-e20c-45d6-9144-8ef14eecbf96",
+      "role": "tester",
+      "trace_event_start_id": "3d232a12-76e8-483a-bfd5-d4eb8c6412ff",
+      "trace_event_end_id": "3d232a12-76e8-483a-bfd5-d4eb8c6412ff",
+      "tool_name": "mcp__yc_hack__find_systems",
+      "arguments_redacted": {
+        "keys": [
+          "need"
+        ],
+        "safe": {
+          "need": "look up gate devices held by a student/resident"
+        },
+        "summary": "need: look up gate devices held by a studen..."
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "compile_site with the address of the best match",
+            "if it has a shared profile, call use_profile with its host before changing anything"
+          ],
+          "status": "found",
+          "matches": [
+            {
+              "name": "GateAdmin replica, residents (sign-in required)",
+              "about": "gate access admin, residents, move out, directory code, property management, apartment community, pending changes sent to the gate",
+              "address": "http://127.0.0.1:9105/Residents.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Residents.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "resident"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, devices (sign-in required)",
+              "about": "gate devices, remotes, transmitters, keypad codes, cards, credentials, access, property management",
+              "address": "http://127.0.0.1:9105/Devices.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Devices.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "devic"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, accounts and Send Data to the gate (sign-in required)",
+              "about": "gate access accounts, send data to the gate, upload changes, property management, residents changes pending",
+              "address": "http://127.0.0.1:9105/Accounts.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Accounts.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "resident"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "School records (demo)",
+              "about": "students, student list, enrolment, school administration, year groups",
+              "address": "http://127.0.0.1:9101/people",
+              "matched_on": [
+                "student"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Residents (demo)",
+              "about": "residents, entry codes, directory numbers, apartment building",
+              "address": "http://127.0.0.1:9103/Residents.aspx",
+              "matched_on": [
+                "resident"
+              ],
+              "shared_profile": null
+            }
+          ]
+        },
+        "byte_length": 2083,
+        "fields_seen": [
+          "status",
+          "matches",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:26:42.488Z",
+      "completed_at": "2026-10-18T13:26:42.820Z",
+      "duration_ms": 332,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:26:48.809Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "compile_site with the address of the best match",
+            "if it has a shared profile, call use_profile with its host before changing anything"
+          ],
+          "status": "found",
+          "matches": [
+            {
+              "name": "GateAdmin replica, residents (sign-in required)",
+              "about": "gate access admin, residents, move out, directory code, property management, apartment community, pending changes sent to the gate",
+              "address": "http://127.0.0.1:9105/Residents.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Residents.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "resident"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, devices (sign-in required)",
+              "about": "gate devices, remotes, transmitters, keypad codes, cards, credentials, access, property management",
+              "address": "http://127.0.0.1:9105/Devices.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Devices.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "devic"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, accounts and Send Data to the gate (sign-in required)",
+              "about": "gate access accounts, send data to the gate, upload changes, property management, residents changes pending",
+              "address": "http://127.0.0.1:9105/Accounts.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Accounts.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "resident"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "School records (demo)",
+              "about": "students, student list, enrolment, school administration, year groups",
+              "address": "http://127.0.0.1:9101/people",
+              "matched_on": [
+                "student"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Residents (demo)",
+              "about": "residents, entry codes, directory numbers, apartment building",
+              "address": "http://127.0.0.1:9103/Residents.aspx",
+              "matched_on": [
+                "resident"
+              ],
+              "shared_profile": null
+            }
+          ]
+        },
+        "byte_length": 2083,
+        "fields_seen": [
+          "status",
+          "matches",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "c1272ec3-ab05-4b3c-9a12-2b974c3f1d7c",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "5ce33257-3dc6-53ef-9008-82ebbcc0ceec",
+      "agent_run_id": "d26ff4bf-e20c-45d6-9144-8ef14eecbf96",
+      "role": "tester",
+      "trace_event_start_id": "db55c8de-8dee-44e6-bb15-14e255b2fc0c",
+      "trace_event_end_id": "db55c8de-8dee-44e6-bb15-14e255b2fc0c",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "residents",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: residents, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "count": 1,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "1045",
+              "Notes": "Unit 104A",
+              "Phone": "555-0144",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 2313
+        },
+        "byte_length": 191,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:26:45.363Z",
+      "completed_at": "2026-10-18T13:26:45.663Z",
+      "duration_ms": 300,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:26:48.809Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "count": 1,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "1045",
+              "Notes": "Unit 104A",
+              "Phone": "555-0144",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 2313
+        },
+        "byte_length": 191,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "bbcbb2e2-5302-4c53-bcad-a8b65be52b50",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "5ce33257-3dc6-53ef-9008-82ebbcc0ceec",
+      "agent_run_id": "d26ff4bf-e20c-45d6-9144-8ef14eecbf96",
+      "role": "tester",
+      "trace_event_start_id": "c5f171c3-a62d-43ed-8678-6e4824536f02",
+      "trace_event_end_id": "c5f171c3-a62d-43ed-8678-6e4824536f02",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "devices",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: devices, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 4,
+          "items": [
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 534,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:26:45.710Z",
+      "completed_at": "2026-10-18T13:26:46.710Z",
+      "duration_ms": 1000,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:26:48.809Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 4,
+          "items": [
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 534,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "fc795ab3-3c04-4a9e-b1f3-36c33d048d6e",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "5ce33257-3dc6-53ef-9008-82ebbcc0ceec",
+      "agent_run_id": "d26ff4bf-e20c-45d6-9144-8ef14eecbf96",
+      "role": "tester",
+      "trace_event_start_id": "92de1a3f-0fc6-44fd-b603-bc33405c34c5",
+      "trace_event_end_id": "92de1a3f-0fc6-44fd-b603-bc33405c34c5",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "residents",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: residents, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "count": 1,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "1045",
+              "Notes": "Unit 104A",
+              "Phone": "555-0144",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 188,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:28:04.049Z",
+      "completed_at": "2026-10-18T13:28:05.363Z",
+      "duration_ms": 1314,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:28:13.165Z",
+      "raw_result_body": "{\"kind\":\"residents\",\"count\":1,\"items\":[{\"key\":\"1045\",\"Resident\":\"Eli Cole\",\"Phone\":\"555-0144\",\"Dir\":\"1045\",\"SL\":\"02\",\"T\":\"T\",\"Device #\":\"01076\",\"ER\":\"1\",\"Notes\":\"Unit 104A\"}],\"as_of_ms\":0}",
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "92406e1d-d902-4404-b9f7-69ebec026389",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "5ce33257-3dc6-53ef-9008-82ebbcc0ceec",
+      "agent_run_id": "d26ff4bf-e20c-45d6-9144-8ef14eecbf96",
+      "role": "tester",
+      "trace_event_start_id": "e2650e96-4880-48db-8b18-d07ad8761aa1",
+      "trace_event_end_id": "e2650e96-4880-48db-8b18-d07ad8761aa1",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "devices",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: devices, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 4,
+          "items": [
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 534,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:28:04.390Z",
+      "completed_at": "2026-10-18T13:28:05.836Z",
+      "duration_ms": 1446,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:28:13.165Z",
+      "raw_result_body": "{\"kind\":\"devices\",\"count\":4,\"items\":[{\"key\":\"01076\",\"T\":\"T\",\"Device #\":\"01076\",\"Dir\":\"1045\",\"Resident\":\"Eli Cole\",\"Type\":\"Transmitter\",\"SL\":\"02\"},{\"key\":\"01077\",\"T\":\"K\",\"Device #\":\"01077\",\"Dir\":\"1045\",\"Resident\":\"Eli Cole\",\"Type\":\"Keypad code\",\"SL\":\"02\"},{\"key\":\"01078\",\"T\":\"C\",\"Device #\":\"01078\",\"Dir\":\"1045\",\"Resident\":\"Eli Cole\",\"Type\":\"Card\",\"SL\":\"02\"},{\"key\":\"01151\",\"T\":\"C\",\"Device #\":\"01151\",\"Dir\":\"1045\",\"Resident\":\"Eli Cole\",\"Type\":\"Card\",\"SL\":\"02\"}],\"as_of_ms\":0,\"note\":\"Several matches. Names are not unique, use the key.\"}",
+      "agent_role": "tester",
+      "provider_run_id": null
+    }
+  ]
+}
