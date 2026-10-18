@@ -373,3 +373,13 @@ test("undo of a change that failed is refused: nothing happened, so nothing is '
   const u = await w.undo(r.receipt);
   assert.ok(isRefusal(u) && u.error === "nothing_to_undo", JSON.stringify(u).slice(0, 200));
 });
+
+test("a demo reset clears standing delegations, so authority granted for one run cannot linger into the next", async () => {
+  const { w } = make();
+  w.delegate({ kinds: ["class"], ops: ["delete"], limit: 5, ttlMs: 60_000 });
+  assert.equal((w.ownerState() as { delegations: unknown[] }).delegations.length, 1);
+  await w.resetDemo();
+  assert.equal((w.ownerState() as { delegations: unknown[] }).delegations.length, 0);
+  const a = (await w.apply({ op: "delete", kind: "class", key: "C101" })) as { status: string };
+  assert.equal(a.status, "awaiting_approval", "back to asking the owner");
+});

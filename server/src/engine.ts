@@ -825,7 +825,9 @@ export class Wicket {
   async resetDemo(): Promise<void> {
     await this.adapter.reset();
     this.plans.clear(); this.receipts.clear(); this.escalations.length = 0; this.invalidate();
-    this.deletesToday = 0;
+    // A reset is a clean slate: standing authority, compiled-capability state and what undo learned go too, so nothing granted for one run lingers into the next.
+    this.delegations.clear(); this.contracts.clear(); this.lessons.clear();
+    this.deletesToday = 0; this.persist();
     this.metrics = { calls: 0, previews: 0, commits: 0, refusals: 0, undos: 0, humanDecisions: 0, escalations: 0, surprises: 0, previewMs: [], commitMs: [] };
   }
 }
