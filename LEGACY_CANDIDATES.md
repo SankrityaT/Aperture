@@ -41,3 +41,28 @@ say exactly that in the submission. We do not claim explicit permission for auto
 2. Store the published demo login on the worker as `WICKET_CREDS_<SITE>`. No agent types a password.
 3. Compile read-only first. Then use writes only on records the run creates itself, with run-scoped names
    (`WKT-TEST-...`).
+
+## webERP checked logged in (Oct 18, about 4:30 AM PT, read-only)
+
+Kinjal logged in to the demo in a visible browser (no agent typed the password). I browsed it read-only and read
+the delete logic in webERP's open-source code (`Customers.php` on `timschofield/webERP` master). I clicked no Delete
+or Save buttons.
+
+The question was whether a plain browser agent makes mistakes here that Wicket would catch.
+
+| Failure mode | In webERP? | Evidence |
+|---|---|---|
+| Names are not unique; the code is the key | **Yes** | The customer search shows 16 repeated names in the first 100 rows (for example "Alpha Industries" as codes 50 and 51) |
+| Hidden dependents | **Yes** | One customer has several branches (code 54 has 4). Deleting a customer also runs `DELETE FROM custbranch` and `DELETE FROM custcontacts` |
+| Rules that appear only after submit | **Yes** | The delete is refused after submit if there are transactions, sales orders or sales analysis records ("This customer cannot be deleted because there are transactions that refer to it") |
+| Long, paginated lists | **Yes** | The customer search caps at 100 rows. The shared demo is full of other visitors' records |
+| The page says one thing and the system does another | **Yes, a real bug in the source** | The "users exist that refer to it" and "contracts have been created that refer to it" checks print "Cannot delete this customer ..." but never set `$CancelDelete = 1`. The delete then runs and prints "has been deleted - together with all the associated branches and contacts" |
+| Cannot be undone | **Yes** | The delete is a hard SQL `DELETE` across 3 tables, with no soft delete. Undo has to recreate it from a copy |
+
+Not yet verified live: the contract and user bug, read only in the source. Test it only on a customer we create
+ourselves (`WKT-TEST-*`) with a contract we create, on the hourly-reset demo, after Sanki's go and Kinjal's go.
+
+**Demo scenario this suggests.** Two customers named "WKT-TEST Acme" (two codes), one with branches and a linked
+contract. Task: "Acme closed their account. Remove them." A plain browser agent has three ways to get it wrong: pick
+by name, miss that branches and contacts go too, or believe "Cannot delete" when the record is actually gone.
+Wicket refuses an ambiguous name, previews the cascade, then reads the system back and reports what really happened.
