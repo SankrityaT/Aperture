@@ -20,7 +20,8 @@ async function post(path, fields, timeoutMs = 8000) {
   const res = await fetch(`${BASE}${path}`, { method: "POST", headers: { cookie, "content-type": "application/x-www-form-urlencoded" }, body, signal: AbortSignal.timeout(timeoutMs) });
   return res.text();
 }
-const rows = (html) => [...html.matchAll(/<tr class="rgRow"><td>\d+<\/td><td>([^<]*)<\/td><td>([^<]*)<\/td>/g)].map((m) => [m[1], m[2]]);
+// Resident grid rows: [name, dir]. Cells: selector, Resident, Hide, AAC, Phone, Dir, ...
+const rows = (html) => [...html.matchAll(/<tr class="rgRow[^"]*">(.*?)<\/tr>/g)].map((m) => [...m[1].matchAll(/<td[^>]*>(.*?)<\/td>/g)].map((c) => c[1].replace(/<[^>]+>/g, "").trim())).map((c) => [c[1], c[5]]);
 
 await check("owner routes refuse a missing token", async () => assert.equal((await fetch(`${BASE}/owner/state`)).status, 403));
 await reset();
@@ -35,31 +36,46 @@ await check("the right login gets a session", async () => {
   cookie = (r.headers.get("set-cookie") ?? "").split(";")[0];
   assert.match(cookie, /ASP\.NET_SessionId=/);
 });
-await check("seed matches the fixture: 91 residents, 168 devices, 10 per page", async () => {
+await check("seed matches the fixture: 91 residents, 168 devices, one scrolling grid", async () => {
   const t = await truth(); assert.equal(t.portal.residents, 91); assert.equal(t.portal.devices, 168);
-  assert.equal(rows(await page("/Residents.aspx")).length, 10);
+  assert.equal(rows(await page("/Residents.aspx")).length, 91);
 });
 await check("names repeat: the filter finds two Dev Alders (1004, 1026)", async () => {
-  const r = rows(await post("/Residents.aspx", { fRes: "Dev Alder", "fGo.x": "1", "fGo.y": "1" }));
+  const r = rows(await post("/Residents.aspx", { fRes: "Dev Alder", fGo: "Find" }));
   assert.deepEqual(r.map((x) => x[1]).sort(), ["1004", "1026"]);
 });
-await check("paging by postback reaches page 10", async () => assert.equal(rows(await post("/Residents.aspx", { __EVENTTARGET: "gv", __EVENTARGUMENT: "Page$10" })).length, 1));
+await check("the unit is shown in Notes, as 'Unit 103D'", async () => assert.match(await page("/Residents.aspx"), /Unit 103D/));
 await check("deleting a resident silently takes their devices; the gate is untouched until sent", async () => {
   const html = await post("/Residents.aspx", { __EVENTTARGET: "gv", __EVENTARGUMENT: "Delete$1004" });
   const t = await truth();
   assert.ok(!t.portal.dirs.includes("1004")); assert.equal(t.portal.devicesByDir["1004"], undefined); assert.equal(t.portal.devices, 166);
   assert.ok(t.gate.dirs.includes("1004")); assert.equal(t.gate.devices, 168);
-  assert.ok(t.pending_changes > 0); assert.match(html, /not yet sent to the gate/);
+  assert.ok(t.pending_changes > 0); assert.doesNotMatch(html, /not yet sent/i); // like the real app: nothing warns
 });
-await check("Send Data pushes the changes to the gate", async () => {
-  const html = await post("/Residents.aspx", { btnSend: "Send Data" });
+await check("Snd Data opens 'Send Data Now'; OK with no account ticked sends nothing", async () => {
+  assert.match(await post("/Accounts.aspx", { btnSend: "Snd Data" }), /Choose which accounts to send now/);
+  const html = await post("/Accounts.aspx", { btnSendOK: "OK" });
+  const t = await truth(); assert.ok(t.gate.dirs.includes("1004")); assert.equal(t.sends, 0); assert.match(html, /No accounts selected/);
+});
+await check("ticking the wrong account sends nothing to this gate", async () => {
+  await post("/Accounts.aspx", { btnSendOK: "OK", chkSend: "Maple Court" });
+  const t = await truth(); assert.ok(t.gate.dirs.includes("1004")); assert.equal(t.sends, 0);
+});
+await check("ticking Harbor View Apartments sends the changes to the gate", async () => {
+  const html = await post("/Accounts.aspx", { btnSendOK: "OK", chkSend: "Harbor View Apartments" });
   const t = await truth(); assert.ok(!t.gate.dirs.includes("1004")); assert.equal(t.pending_changes, 0); assert.equal(t.sends, 1);
-  assert.match(html, /Data sent to gate controller/);
+  assert.match(html, /Send complete/);
+});
+await check("select a row, then toolbar Delete removes that resident", async () => {
+  const sel = await post("/Residents.aspx", { __EVENTTARGET: "gv", __EVENTARGUMENT: "Select$1007" });
+  const body = new URLSearchParams({ __EVENTTARGET: "", __EVENTARGUMENT: "", __VIEWSTATE: viewstate(sel), btnDelete: "Delete" });
+  await fetch(`${BASE}/Residents.aspx`, { method: "POST", headers: { cookie, "content-type": "application/x-www-form-urlencoded" }, body });
+  assert.ok(!(await truth()).portal.dirs.includes("1007"));
 });
 await check("a repeated directory code is refused only after Save", async () => {
   await post("/Residents.aspx", { __EVENTTARGET: "lnkAdd" });
   const html = await post("/Residents.aspx", { btnSave: "Save", txtName: "Ola Marsh", txtDir: "1050", txtUnit: "141B" });
-  assert.match(html, /Dir 1050 already exists/); assert.equal((await truth()).portal.residents, 90);
+  assert.match(html, /Dir 1050 already exists/); assert.equal((await truth()).portal.residents, 89);
 });
 await check("a new directory code is added", async () => {
   await post("/Residents.aspx", { btnSave: "Save", txtName: "Nia Fenn", txtDir: "2001", txtUnit: "140A" });
