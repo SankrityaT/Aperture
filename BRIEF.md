@@ -39,13 +39,15 @@ Never put real names, resident data, or credentials in the repo, the demo, or an
 
 ## Honesty rules for the demo (no hardcoding)
 1. One general generator. No code specific to Gibbon or the DS-160. The tools come from exploring the live pages.
-2. Gibbon is the development set. The DS-160 is held out and only run at the end, so we do not tune to it.
+2. Gibbon is the development set. A second real open-source app we host ourselves (openSIS, Dolibarr or OrangeHRM)
+   is held out and only run at the end, so we do not tune to it.
 3. Pass criteria are written BEFORE the held-out run: per section, fields end with the right values, the read-back
    matches, and manual edits are counted.
 4. Count and disclose every manual edit to generated adapters ("3 of 5 pages worked unaided").
 5. Report failures plainly. Never present a scripted or hand-fixed path as generated.
-6. DS-160 limits: never submit, never enter false statements, never bypass the CAPTCHA (a human solves it), no real
-   passport or personal data on camera, check the site terms for automated use first.
+6. No automated access to systems we do not own or have permission for. The DS-160 (a US government site) showed a
+   Computer Fraud and Abuse Act warning on Oct 17, so it is OFF LIMITS: no retries, no demo, no recordings of it.
+   Never get around a block, a CAPTCHA, or bot detection. Only hit systems we host or have written permission for.
 
 ## Schedule (Sunday 10 AM PT submission)
 - about 11 PM Sat: generator working on Gibbon
