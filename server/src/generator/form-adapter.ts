@@ -23,6 +23,18 @@ export interface CompileSummary {
 
 export class NotAuthorized extends Error {}
 export class NoBrowser extends Error {}
+export class NoSecret extends Error {}
+export class HumanRequired extends Error {}
+
+/** Credentials live in the server's own environment as WICKET_CREDS_<NAME>="user:password". The agent only ever names one. */
+export function readSecret(name: string): { user: string; pass: string } {
+  const n = name.toUpperCase();
+  if (!/^[A-Z0-9_]{1,40}$/.test(n)) throw new NoSecret("A secret name is letters, digits and underscores.");
+  const v = process.env[`WICKET_CREDS_${n}`];
+  if (!v || !v.includes(":")) throw new NoSecret(`No stored login named '${name}'. The operator stores one on the server as WICKET_CREDS_${n}.`);
+  const i = v.indexOf(":");
+  return { user: v.slice(0, i), pass: v.slice(i + 1) };
+}
 
 export function allowedHosts(): string[] {
   return (process.env.WICKET_ALLOWED_HOSTS ?? "127.0.0.1,localhost,the-internet.herokuapp.com").split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
@@ -56,6 +68,42 @@ export class FormAdapter implements Adapter {
     const page = await this.ensurePage();
     await page.goto(url, { waitUntil: "load", timeout: 30_000 });
     return this.refresh();
+  }
+
+  /**
+   * Sign in with a stored login. The password is typed by this code and never returned, logged, or shown to a model.
+   * A login page with a CAPTCHA is a human step, and we stop there.
+   */
+  async signIn(url: string, secretName: string): Promise<{ signedIn: boolean; detail: string }> {
+    assertAuthorized(url);
+    const creds = readSecret(secretName);
+    const page = await this.ensurePage();
+    await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    const model = await explorePage(page);
+    if (model.warnings.length) throw new HumanRequired(model.warnings[0]!);
+    const form = model.forms.find((f) => f.fields.some((x) => x.type === "password"));
+    if (!form) return { signedIn: true, detail: "No login form on that page, so it is public or already signed in." };
+    const pw = form.fields.find((x) => x.type === "password")!;
+    const user = form.fields.find((x) => x.type === "text" || x.type === "email");
+    if (!user || !form.submit) throw new Error("The login form was not recognised.");
+    const scope = page.locator(form.selector);
+    await scope.locator(`[name="${esc(user.ref)}"]`).first().fill(creds.user);
+    await scope.locator(`[name="${esc(pw.ref)}"]`).first().fill(creds.pass);
+    await Promise.all([
+      page.waitForLoadState("load").catch(() => undefined),
+      scope.locator(form.submit.selector).first().click(),
+    ]);
+    await page.waitForTimeout(150);
+    const after = await explorePage(page);
+    const still = after.forms.some((f) => f.fields.some((x) => x.type === "password"));
+    return still ? { signedIn: false, detail: "The login form is still showing. Check the stored login." } : { signedIn: true, detail: "Signed in." };
+  }
+
+  /** Move to another page in the same session, for example after signing in. */
+  async open(url: string): Promise<void> {
+    assertAuthorized(url);
+    const page = await this.ensurePage();
+    await page.goto(url, { waitUntil: "load", timeout: 30_000 });
   }
 
   async refresh(): Promise<CompileSummary> {

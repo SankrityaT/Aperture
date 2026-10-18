@@ -18,7 +18,7 @@ export interface RawAction { label: string; href: string; onclick: string; cls: 
 export interface RawRow { cells: string[]; actions: RawAction[] }
 export interface RawTable {
   index: number; title: string; headers: string[]; rows: RawRow[];
-  next: string | null; add: { label: string; href: string; index: number } | null;
+  next: string | null; adds: { label: string; href: string; index: number }[];
 }
 
 export interface TableModel {
@@ -44,11 +44,13 @@ const TABLES_SCRIPT = `(() => {
   };
   var out = [];
   Array.prototype.forEach.call(document.querySelectorAll("table"), function (t, ti) {
-    var headRow = t.querySelector("thead tr");
-    if (!headRow) { var r0 = t.querySelector("tr"); if (r0 && r0.querySelector("th")) headRow = r0; }
-    if (!headRow) return;
+    var allRows = Array.prototype.slice.call(t.rows);
+    var headIdx = -1;
+    for (var hi = 0; hi < allRows.length; hi++) { if (allRows[hi].querySelector(":scope > th")) { headIdx = hi; break; } }
+    if (headIdx < 0) return;
+    var headRow = allRows[headIdx];
     var headers = Array.prototype.map.call(headRow.children, function (c) { return clean(c.innerText); });
-    var trs = Array.prototype.filter.call(t.querySelectorAll("tr"), function (r) { return r !== headRow && r.querySelectorAll("td").length > 0; });
+    var trs = allRows.slice(headIdx + 1).filter(function (r) { return r.querySelectorAll(":scope > td").length > 0; });
     var rows = trs.map(function (r) {
       var cells = Array.prototype.map.call(r.children, function (c) { return clean(c.innerText); });
       var actions = Array.prototype.map.call(r.querySelectorAll(sel), function (a) {
@@ -66,17 +68,81 @@ const TABLES_SCRIPT = `(() => {
       var l = links[i], txt = clean(l.innerText), aria = (l.getAttribute("aria-label") || "").toLowerCase();
       if (l.getAttribute("rel") === "next" || /^(next|older)\\b/i.test(txt) || /^[>›»]+$/.test(txt) || aria.indexOf("next") >= 0) { next = abs(l.getAttribute("href")); break; }
     }
-    var add = null;
+    if (!next) {
+      // Pagination by a page-number parameter: the nearest higher page of the same list.
+      var cur = new URL(location.href), best = null;
+      links.forEach(function (l) {
+        try {
+          var u = new URL(l.getAttribute("href"), location.href);
+          if (u.pathname !== cur.pathname) return;
+          u.searchParams.forEach(function (v, k) {
+            if (!/^(page|p|pg|paged|pagenum|pageno|start|offset)$/i.test(k) || !/^\\d+$/.test(v)) return;
+            var cv = cur.searchParams.get(k);
+            var c = cv && /^\\d+$/.test(cv) ? Number(cv) : 0;
+            if (Number(v) > c && (!best || Number(v) < best.v)) best = { v: Number(v), href: u.href };
+          });
+        } catch (e) {}
+      });
+      if (best) next = best.href;
+    }
+    var adds = [];
     var cands = Array.prototype.slice.call(document.querySelectorAll('a[href], button, input[type=submit], input[type=button], [role=button]'));
     for (var j = 0; j < cands.length; j++) {
       var c = cands[j];
       if (t.contains(c)) continue;
       var cl = labelOf(c);
-      if (/^(\\+|add|new|create|register|invite)\\b/i.test(cl) || /\\b(add|new|create) /i.test(cl)) { add = { label: cl, href: c.getAttribute("href") ? abs(c.getAttribute("href")) : "", index: j }; break; }
+      if (/^(\\+|add|new|create|register|invite)\\b/i.test(cl) || /\\b(add|new|create) /i.test(cl)) adds.push({ label: cl, href: c.getAttribute("href") ? abs(c.getAttribute("href")) : "", index: j });
     }
-    out.push({ index: ti, title: title, headers: headers, rows: rows, next: next, add: add });
+    out.push({ index: ti, title: title, headers: headers, rows: rows, next: next, adds: adds });
   });
   return out;
+})()`;
+
+const PAGE_ACTIONS_SCRIPT = `(() => {
+  var clean = function (s) { return (s == null ? "" : String(s)).replace(/\\s+/g, " ").trim(); };
+  var abs = function (h) { try { return new URL(h, location.href).href; } catch (e) { return h || ""; } };
+  var labelOf = function (a) {
+    var l = clean(a.innerText || a.value || "");
+    if (l) return l;
+    l = clean(a.getAttribute("title") || a.getAttribute("aria-label") || "");
+    if (l) return l;
+    var img = a.querySelector("img[alt]");
+    return img ? clean(img.getAttribute("alt")) : "";
+  };
+  Array.prototype.forEach.call(document.querySelectorAll("[data-wicket-i]"), function (e) { e.removeAttribute("data-wicket-i"); });
+  var std = 'a[href], button, input[type=submit], input[type=button], [role=button], [onclick]';
+  var seen = [];
+  var add = function (el) { if (seen.indexOf(el) < 0) seen.push(el); };
+  Array.prototype.forEach.call(document.querySelectorAll(std), add);
+  // Controls wired up by script have no link or button tag. The browser still shows them with a pointer cursor.
+  Array.prototype.forEach.call(document.querySelectorAll("span, div, li, i, img, td, label"), function (el) {
+    if (seen.indexOf(el) >= 0) return;
+    var txt = clean(el.innerText || el.getAttribute("title") || el.getAttribute("aria-label") || "");
+    if (!txt || txt.length > 30) return;
+    if (getComputedStyle(el).cursor !== "pointer") return;
+    if (el.parentElement && getComputedStyle(el.parentElement).cursor === "pointer" && seen.indexOf(el.parentElement) >= 0) return;
+    add(el);
+  });
+  return seen.map(function (a, i) {
+    a.setAttribute("data-wicket-i", String(i));
+    return { label: labelOf(a), href: a.getAttribute("href") ? abs(a.getAttribute("href")) : "", onclick: clean(a.getAttribute("onclick") || "").slice(0, 160), cls: clean(a.className || "") + " " + (a.id || ""), tag: a.tagName.toLowerCase() };
+  });
+})()`;
+
+const MODAL_SCRIPT = `(() => {
+  var vis = function (e) { var r = e.getBoundingClientRect(); var st = getComputedStyle(e); return r.width > 0 && r.height > 0 && st.visibility !== "hidden" && st.display !== "none"; };
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('[role=dialog], [role=alertdialog], .ui-dialog, .modal, .swal2-popup, .bootbox, .confirm'));
+  for (var i = 0; i < boxes.length; i++) {
+    var c = boxes[i];
+    if (!vis(c)) continue;
+    var btns = Array.prototype.slice.call(c.querySelectorAll('button, input[type=button], input[type=submit], a.btn, [role=button]')).filter(vis);
+    var yes = btns.filter(function (b) {
+      var l = (b.innerText || b.value || "").toLowerCase().trim();
+      return /(^|[^a-z])(yes|confirm|delete|remove|ok|continue|proceed)([^a-z]|$)/.test(l) && !/(cancel|close|back)/.test(l) && l !== "no";
+    })[0];
+    if (yes) { yes.setAttribute("data-wicket-target", "1"); return true; }
+  }
+  return false;
 })()`;
 
 // ---- what an action label means ----
@@ -87,6 +153,23 @@ export function classifyAction(a: Pick<RawAction, "label" | "href" | "onclick" |
   if (/(^|[^a-z])(edit|modify|update|change|manage|configure)([^a-z]|$)|fa-pen|fa-edit/.test(hay)) return "edit";
   if (/(^|[^a-z])(view|details?|open|show|profile|select)([^a-z]|$)/.test(hay)) return "view";
   return "other";
+}
+
+/** Pick the add button that belongs to this table. Candidates are scored, never taken first-come. */
+export function pickAdd(title: string, adds: { label: string; href: string }[]): { label: string; href: string } | null {
+  const words = title.toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 3).map((w) => w.replace(/s$/, ""));
+  let best: { label: string; href: string } | null = null;
+  let bestScore = 0;
+  for (const a of adds) {
+    const l = a.label.toLowerCase();
+    let sc = 0;
+    if (/^(new|create|add|\+)/.test(l)) sc += 2;
+    if (words.some((w) => l.includes(w))) sc += 3;
+    if (/(new|create|add)/.test(a.href.toLowerCase())) sc += 2;
+    if (/bookmark|favorite|favourite|shortcut|wishlist|compare|cart|to list|to page|subscribe|add to/.test(l)) sc -= 6;
+    if (sc > bestScore) { best = a; bestScore = sc; }
+  }
+  return bestScore >= 3 ? best : null;
 }
 
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 32);
@@ -114,7 +197,8 @@ function linkParams(rows: RawRow[]): Map<string, string[]> {
 }
 
 function dataColumns(t: RawTable): number[] {
-  const acts = new Set(t.rows.flatMap((r) => r.actions.map((a) => a.label.toLowerCase())).filter(Boolean));
+  // Only real verbs (delete, edit, view...) mark an actions column. A company name that happens to be a link is data.
+  const acts = new Set(t.rows.flatMap((r) => r.actions.filter((a) => classifyAction(a) !== "other").map((a) => a.label.toLowerCase())).filter(Boolean));
   const idx: number[] = [];
   t.headers.forEach((h, i) => {
     if (!h) return;
@@ -196,8 +280,13 @@ export class TableAdapter implements Adapter {
       while (used.has(id)) id += "_x";
       used.add(id);
       const types = new Map<string, ActionType>();
-      for (const r of t.rows) for (const a of r.actions) { const label = a.label || a.cls || a.tag; if (!types.has(label)) types.set(label, classifyAction(a)); }
-      this.models.set(id, { id, url: page.url(), tableIndex: t.index, title: t.title, columns: cols.map((i) => t.headers[i]!), keyColumn: k.column, keyParam: k.param, keySource: k.source, actions: [...types].map(([label, type]) => ({ label, type })), add: t.add?.label ?? null, paged: !!t.next, rows: t.rows.length });
+      for (const r of t.rows) for (const a of r.actions) {
+        if (a.label && r.cells.includes(a.label) && classifyAction(a) === "other") continue; // a link whose text is the record's own data
+        const label = a.label || a.cls || a.tag;
+        if (!types.has(label)) types.set(label, classifyAction(a));
+      }
+      const add = pickAdd(t.title, t.adds);
+      this.models.set(id, { id, url: page.url(), tableIndex: t.index, title: t.title, columns: cols.map((i) => t.headers[i]!), keyColumn: k.column, keyParam: k.param, keySource: k.source, actions: [...types].map(([label, type]) => ({ label, type })).filter((a) => a.type !== "other"), add: add?.label ?? null, paged: !!t.next, rows: t.rows.length });
     }
     return [...this.models.values()];
   }
@@ -230,9 +319,15 @@ export class TableAdapter implements Adapter {
       if (page.url() !== url) await page.goto(url, { waitUntil: "load" });
       const t = (await this.rawTables(page)).find((x) => x.index === m.tableIndex);
       if (!t) break;
-      const k = findKey(t);
+      // The key chosen when the page was compiled stays the key. Recomputing it each time would change it
+      // whenever the data does (one empty cell is enough), and every plan made earlier would point at nothing.
+      let k: KeyInfo;
+      const ci = m.keyColumn ? t.headers.indexOf(m.keyColumn) : -1;
+      if (m.keySource === "column" && ci >= 0) k = { column: m.keyColumn, columnIndex: ci, param: null, source: "column" };
+      else if (m.keySource === "link" && m.keyParam) k = { column: null, columnIndex: -1, param: m.keyParam, source: "link" };
+      else k = findKey(t);
       const cols = dataColumns(t);
-      t.rows.forEach((_, ri) => { const r = toRecord(t, k, ri, cols); if (r) { recs.push(r); where.push({ url: page.url(), ri, table: t, key: k }); } });
+      t.rows.forEach((_, ri) => { const r = toRecord(t, k, ri, cols); if (r) { recs.push(r); where.push({ url: page.url(), ri, table: t, key: k }); } }); // a row with no key value cannot be addressed, so it is left out
       url = t.next && t.next !== page.url() ? t.next : null;
     }
     return { recs, where };
@@ -282,19 +377,59 @@ export class TableAdapter implements Adapter {
     if (i < 0) throw new Error(`${kind} ${key} not found`);
     const w = where[i]!;
     const row = w.table.rows[w.ri]!;
-    const ai = row.actions.findIndex((a) => classifyAction(a) === "delete");
-    if (ai < 0) throw new Error(`no delete action found on the row for ${kind} ${key}`);
     if (page.url() !== w.url) await page.goto(w.url, { waitUntil: "load" });
-    const before = page.url();
     this.hookDialogs(page);
+    const ai = row.actions.findIndex((a) => classifyAction(a) === "delete");
+    if (ai >= 0) {
+      await this.pressAndConfirm(page, () => this.stampAndClick(page, w.table.index, w.ri, ai));
+      return;
+    }
+    // No delete on the list. Many apps keep it on the record's own page, so follow the row's link and look there.
+    const usable = (a: RawAction) => !!a.href && !/^(javascript:|#)/i.test(a.href);
+    const detail = row.actions.find((a) => usable(a) && a.label && row.cells.includes(a.label)) ?? row.actions.find((a) => usable(a) && classifyAction(a) === "view") ?? row.actions.find(usable);
+    if (!detail) throw new Error(`no delete action on the row, and no link to the record's own page, for ${kind} ${key}`);
+    await page.goto(detail.href, { waitUntil: "load" });
+    const di = (await this.pageActions(page)).findIndex((a) => classifyAction(a) === "delete");
+    if (di < 0) throw new Error(`no delete action found on the record's own page for ${kind} ${key}`);
+    await this.pressAndConfirm(page, () => this.stampPageAction(page, di));
+  }
+
+  /** Press a delete control and answer whatever confirmation follows: a browser dialog, a modal, or a confirm page. Never cancel. */
+  private async pressAndConfirm(page: Page, click: () => Promise<void>): Promise<void> {
+    const before = page.url();
     this.expectDialog = true;
     try {
-      await this.stampAndClick(page, w.table.index, w.ri, ai);
+      await click();
       await page.waitForLoadState("load").catch(() => undefined);
-      await page.waitForTimeout(150);
+      await page.waitForTimeout(250);
     } finally { this.expectDialog = false; }
-    // A confirmation page or panel: press the confirm button, never cancel.
+    if (await this.confirmModal(page)) {
+      await page.waitForLoadState("load").catch(() => undefined);
+      await page.waitForTimeout(250);
+      return;
+    }
     if (page.url() !== before) await this.confirmIfAsked(page);
+  }
+
+  private async pageActions(page: Page): Promise<RawAction[]> {
+    return (await page.evaluate(PAGE_ACTIONS_SCRIPT)) as RawAction[];
+  }
+
+  private async stampPageAction(page: Page, index: number): Promise<void> {
+    // pageActions() stamped every control it found with data-wicket-i, so click by that index.
+    const loc = page.locator(`[data-wicket-i="${index}"]`).first();
+    if ((await loc.count()) === 0) throw new Error("could not find that control on the page");
+    try { await loc.click(); }
+    finally { await page.evaluate(`document.querySelectorAll("[data-wicket-i]").forEach(function(e){e.removeAttribute("data-wicket-i")})`).catch(() => undefined); }
+  }
+
+  /** If a visible modal is asking "are you sure", press its confirm button (yes, confirm, delete, ok). Never its cancel. */
+  private async confirmModal(page: Page): Promise<boolean> {
+    const found = await page.evaluate(MODAL_SCRIPT);
+    if (!found) return false;
+    try { await page.locator('[data-wicket-target="1"]').first().click(); }
+    finally { await page.evaluate(`document.querySelectorAll("[data-wicket-target]").forEach(function(e){e.removeAttribute("data-wicket-target")})`).catch(() => undefined); }
+    return true;
   }
 
   private async confirmIfAsked(page: Page): Promise<void> {
@@ -311,9 +446,10 @@ export class TableAdapter implements Adapter {
   private async stampAndClick(page: Page, tableIndex: number, ri: number, ai: number): Promise<void> {
     const ok = await page.evaluate(`((a) => {
       var t = document.querySelectorAll("table")[a.t];
-      var headRow = t.querySelector("thead tr");
-      if (!headRow) { var r0 = t.querySelector("tr"); if (r0 && r0.querySelector("th")) headRow = r0; }
-      var trs = Array.prototype.filter.call(t.querySelectorAll("tr"), function (r) { return r !== headRow && r.querySelectorAll("td").length > 0; });
+      var allRows = Array.prototype.slice.call(t.rows);
+      var headIdx = -1;
+      for (var hi = 0; hi < allRows.length; hi++) { if (allRows[hi].querySelector(":scope > th")) { headIdx = hi; break; } }
+      var trs = allRows.slice(headIdx + 1).filter(function (r) { return r.querySelectorAll(":scope > td").length > 0; });
       var els = trs[a.r].querySelectorAll('a[href], button, input[type=submit], input[type=button], [role=button], [onclick]');
       var el = els[a.a]; if (!el) return false;
       el.setAttribute("data-wicket-target", "1"); return true;
@@ -329,37 +465,57 @@ export class TableAdapter implements Adapter {
     if (!m) throw new Error(`unknown kind ${kind}`);
     if (page.url() !== m.url) await page.goto(m.url, { waitUntil: "load" });
     const t = (await this.rawTables(page)).find((x) => x.index === m.tableIndex);
-    if (!t?.add) throw new Error(`no add button found for ${kind}`);
+    const add = t ? pickAdd(t.title, t.adds) : null;
+    if (!add) throw new Error(`no add button found for ${kind}`);
     const oldKeys = new Set((await this.scan(kind)).recs.map((r) => r.key));
     if (page.url() !== m.url) await page.goto(m.url, { waitUntil: "load" });
-    const addLabel = t.add.label;
-    await Promise.all([
+    const addLabel = add.label;
+    if (add.href && !/^(javascript:|#)/i.test(add.href)) await page.goto(add.href, { waitUntil: "load" });
+    else await Promise.all([
       page.waitForLoadState("load").catch(() => undefined),
       page.getByRole(/button|submit/i.test(addLabel) ? "button" : "link", { name: addLabel }).first().click().catch(async () => { await page.getByText(addLabel, { exact: false }).first().click(); }),
     ]);
     await page.waitForTimeout(100);
     const forms = (await explorePage(page)).forms;
-    const f: FormModel | undefined = forms.find((x) => x.fields.length > 0);
+    // The page also has a search box and menus. The form to fill is the one with a submit button and the most fields.
+    const f: FormModel | undefined = forms.filter((x) => x.submit && x.fields.length > 0).sort((a, b) => b.fields.length - a.fields.length)[0];
     if (!f || !f.submit) throw new Error("the add page has no form to fill");
     // Match record fields to form fields by name, label, or the column they came from. Never by position.
     const scope = page.locator(f.selector);
+    const skipped: string[] = [];
     for (const [col, raw] of Object.entries(record)) {
       if (col === "key") continue;
-      const field = f.fields.find((x) => norm(x.name) === norm(col) || norm(x.label) === norm(col));
+      const exact = f.fields.find((x) => norm(x.name) === norm(col) || norm(x.label) === norm(col));
+      // Looser, but only when it is unambiguous: one field whose label starts with, or contains, the column's name.
+      const loose = f.fields.filter((x) => norm(col).length >= 4 && (norm(x.label).startsWith(norm(col)) || norm(x.label).includes(norm(col))));
+      const field = exact ?? (loose.length === 1 ? loose[0] : undefined);
       if (!field) continue;
       const loc = scope.locator(`[name="${field.ref}"]`).first();
-      if (field.type === "select") await loc.selectOption({ label: String(raw) }).catch(async () => { await loc.selectOption(String(raw)); });
-      else if (field.type === "checkbox") await loc.setChecked(String(raw).toLowerCase() === "true" || raw === true);
-      else if (field.type === "radio") await scope.locator(`input[type=radio][name="${field.ref}"][value="${String(raw)}"]`).check().catch(() => undefined);
-      else await loc.fill(String(raw ?? ""));
+      const T = { timeout: 2000 };
+      try {
+        if (field.type === "select") await loc.selectOption({ label: String(raw) }, T).catch(async () => { await loc.selectOption(String(raw), T); });
+        else if (field.type === "checkbox") await loc.setChecked(String(raw).toLowerCase() === "true" || raw === true, T);
+        else if (field.type === "radio") await scope.locator(`input[type=radio][name="${field.ref}"][value="${String(raw)}"]`).check(T);
+        else await loc.fill(String(raw ?? ""), T);
+      } catch { skipped.push(col); } // a value the form has no matching option for is skipped, and reported
     }
+    const addUrl = page.url();
     await Promise.all([
       page.waitForLoadState("load").catch(() => undefined),
       scope.locator(f.submit.selector).first().click(),
     ]);
+    await page.waitForTimeout(200);
+    // Still on the add form? Then the app refused it. Say why, in the app's own words.
+    const stillForm = (await explorePage(page)).forms.some((x) => x.fields.length >= Math.max(2, f.fields.length - 1) && !!x.submit);
+    if (page.url() === addUrl || stillForm) {
+      const msg = await page.evaluate(`(() => { var e = document.querySelectorAll('.error, .errors, .alert-danger, .warning, [role=alert], .ui-state-error, .jnotify-container, .jnotify-message'); return Array.prototype.map.call(e, function (x) { return (x.innerText || '').replace(/\\s+/g, ' ').trim(); }).filter(Boolean).slice(0, 3).join(' | ').slice(0, 300); })()`) as string;
+      if (msg || page.url() === addUrl) throw new Error(`the app did not accept the new record${msg ? `: ${msg}` : ""}${skipped.length ? ` (could not fill: ${skipped.join(", ")})` : ""}`);
+    }
     // Remember where the new row landed, so an undo of a delete can find it by its old key.
     const after = (await this.scan(kind)).recs;
-    const fresh = after.find((r) => !oldKeys.has(r.key) && Object.entries(record).every(([c, v]) => c === "key" || c === m.keyColumn || String(r[c] ?? "") === String(v ?? "")));
+    // The new row is the one key that was not there before. If several appeared, match on the values we typed in.
+    const added = after.filter((r) => !oldKeys.has(r.key));
+    const fresh = added.length === 1 ? added[0] : added.find((r) => Object.entries(record).every(([c, v]) => c === "key" || c === m.keyColumn || skipped.includes(c) || String(r[c] ?? "") === String(v ?? "")));
     if (fresh && fresh.key !== record.key) this.aliases.set(`${kind}:${record.key}`, fresh.key);
   }
 

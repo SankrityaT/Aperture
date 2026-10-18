@@ -344,7 +344,7 @@ export class Wicket {
     if (!surprises.length && op.kind && op.op !== "publish") this.rules.confirm(op.kind, op.op);
 
     if (op.op === "delete") this.deletesToday++;
-    return this.finish(plan, snapshot, { status: surprises.length ? "done_with_surprise" : verified.ok ? "done" : "failed", verified, surprise: surprises.length ? surprises : undefined }, t0);
+    return this.finish(plan, snapshot, { status: !okSubject ? "failed" : surprises.length ? "done_with_surprise" : "done", verified, surprise: surprises.length ? surprises : undefined }, t0);
   }
 
   private finish(plan: Plan, snapshot: Snapshotted[], r: { status: Receipt["status"]; verified: Record<string, unknown>; surprise?: Receipt["surprise"] }, t0: number): Receipt {
@@ -408,21 +408,36 @@ export class Wicket {
       if (rc.op.op === "publish") return this.r(refuse("not_undoable", "Published changes went to the outside world and cannot be recalled.", ["send a correction as a new change"]));
       if (this.now() > rc.undoUntil) return this.r(refuse("undo_window_closed", "The undo window has closed.", ["make a new change that fixes it"]));
       const before = await this.adapter.counts(rc.op.kind);
-      if (rc.op.op === "delete") {
-        for (const s of rc.snapshot) {
-          if (!(await this.adapter.read(s.kind, s.record.key))) await this.adapter.create(s.kind, s.record);
+      try {
+        if (rc.op.op === "delete") {
+          for (const s of rc.snapshot) {
+            if (!(await this.adapter.read(s.kind, s.record.key))) await this.adapter.create(s.kind, s.record);
+          }
+          if (this.deletesToday > 0) this.deletesToday--;
+        } else if (rc.op.op === "create" && rc.op.kind && rc.op.record) {
+          await this.adapter.delete(rc.op.kind, rc.op.record.key);
+        } else if (rc.op.op === "update" && rc.op.kind && rc.op.key && this.adapter.update && rc.snapshot[0]) {
+          const { key: _k, ...old } = rc.snapshot[0].record;
+          await this.adapter.update(rc.op.kind, rc.op.key, old);
         }
-        if (this.deletesToday > 0) this.deletesToday--;
-      } else if (rc.op.op === "create" && rc.op.kind && rc.op.record) {
-        await this.adapter.delete(rc.op.kind, rc.op.record.key);
-      } else if (rc.op.op === "update" && rc.op.kind && rc.op.key && this.adapter.update && rc.snapshot[0]) {
-        const { key: _k, ...old } = rc.snapshot[0].record;
-        await this.adapter.update(rc.op.kind, rc.op.key, old);
+      } catch (e) {
+        this.invalidate();
+        // Say plainly that undo did not work, and hand back what was saved so a person can finish the job.
+        return this.r(refuse("undo_failed", `Could not restore automatically: ${String((e as Error).message).split("\n")[0]}`, ["re-create the record by hand in the app using the saved values below", "tell the owner"], { saved: rc.snapshot.map((s) => ({ kind: s.kind, record: s.record })) }));
       }
       this.invalidate();
       const after = await this.adapter.counts(rc.op.kind);
       const subject = rc.op.op === "delete" ? rc.snapshot[0] : undefined;
-      let restored = subject ? (await this.adapter.read(subject.kind, subject.record.key)) !== null : rc.op.op === "create" && rc.op.kind && rc.op.record ? (await this.adapter.read(rc.op.kind, rc.op.record.key)) === null : false;
+      const back = subject ? await this.adapter.read(subject.kind, subject.record.key) : null;
+      let restored = subject ? back !== null : rc.op.op === "create" && rc.op.kind && rc.op.record ? (await this.adapter.read(rc.op.kind, rc.op.record.key)) === null : false;
+      // Present is not the same as identical. Say which fields did not come back (dates the app stamps itself are ignored).
+      const notRestored: string[] = [];
+      if (subject && back) {
+        for (const [f, v] of Object.entries(subject.record)) {
+          if (f === "key" || /date|modif|created|updated|last|login/i.test(f)) continue;
+          if (stable(back[f]) !== stable(v) && !(v === "" || v === null)) notRestored.push(f);
+        }
+      }
       if (rc.op.op === "update" && rc.op.kind && rc.op.key && rc.snapshot[0]) {
         const now = await this.adapter.read(rc.op.kind, rc.op.key);
         const { key: _k2, ...old } = rc.snapshot[0].record;
@@ -430,7 +445,7 @@ export class Wicket {
       }
       rc.status = "undone";
       this.metrics.undos++;
-      return { status: "undone", receipt: rc.id, verified: { restored, counts_before: before, counts_after: after }, note: rc.op.op === "delete" ? "Restored from the copy saved before the change." : rc.op.op === "update" ? "Put the old values back." : "Removed what was created." };
+      return { status: "undone", receipt: rc.id, verified: { restored, ...(notRestored.length ? { fields_not_restored: notRestored } : {}), counts_before: before, counts_after: after }, note: rc.op.op === "delete" ? "Restored from the copy saved before the change." : rc.op.op === "update" ? "Put the old values back." : "Removed what was created." };
     });
   }
 

@@ -1,13 +1,14 @@
 // Two small record-keeping apps built in different styles. The generator has no code for either.
 //  A  /people  classic table, text "Delete" link opens a confirmation PAGE, system-assigned ids
 //  B  /staff   paginated, icon-only delete button with a JS confirm() dialog, no id column (email is the key)
+//  C  /secure  behind a login (cookie). A direct delete link with no confirmation, and an add form
 
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 
 export interface TestApps {
   url: string;
-  state: { people: { id: string; name: string; year: string }[]; staff: { first: string; last: string; email: string }[] };
+  state: { people: { id: string; name: string; year: string }[]; staff: { first: string; last: string; email: string }[]; items: { code: string; name: string }[] };
   close(): Promise<void>;
 }
 
@@ -24,6 +25,7 @@ export async function startApps(): Promise<TestApps> {
       { first: "Ann", last: "Lee", email: "ann@school.test" }, { first: "Bo", last: "Kim", email: "bo@school.test" }, { first: "Cal", last: "Roe", email: "cal@school.test" },
       { first: "Dot", last: "Fay", email: "dot@school.test" }, { first: "Eve", last: "Gu", email: "eve@school.test" },
     ],
+    items: [{ code: "W1", name: "Widget" }, { code: "W2", name: "Gadget" }, { code: "W3", name: "Gizmo" }],
   };
   let nextId = 6;
 
@@ -65,6 +67,29 @@ export async function startApps(): Promise<TestApps> {
       return html(page("New staff", `<h2>New staff</h2><form method="post" action="/staff/add"><label>First <input name="first"></label><label>Last <input name="last"></label><label>Email <input name="email" type="email"></label><input type="submit" value="Add"></form>`));
     }
     if (path === "/staff/add" && req.method === "POST") return withBody((b) => { state.staff.push({ first: b.get("first") ?? "", last: b.get("last") ?? "", email: b.get("email") ?? "" }); redirect("/staff"); });
+
+    // ---- C: behind a login ----
+    const authed = (req.headers.cookie ?? "").includes("sid=ok");
+    if (path === "/secure/login" && req.method === "GET") {
+      return html(page("Sign in", `<h2>Sign in</h2><form method="post" action="/secure/login"><label for="u">Username</label><input id="u" name="user"><label for="p">Password</label><input id="p" name="pass" type="password"><button type="submit">Sign in</button></form>`));
+    }
+    if (path === "/secure/login" && req.method === "POST") {
+      return withBody((b) => {
+        if (b.get("user") === "admin" && b.get("pass") === "s3cret") { res.setHeader("set-cookie", "sid=ok; Path=/"); return redirect("/secure/items"); }
+        res.statusCode = 401; html(page("Sign in", `<h2>Sign in</h2><p>Invalid login</p><form method="post" action="/secure/login"><label for="u">Username</label><input id="u" name="user"><label for="p">Password</label><input id="p" name="pass" type="password"><button type="submit">Sign in</button></form>`));
+      });
+    }
+    if (path.startsWith("/secure") && !authed) return redirect("/secure/login");
+    if (path === "/secure/items" && req.method === "GET") {
+      const del = u.searchParams.get("del");
+      if (del) { state.items = state.items.filter((i) => i.code !== del); return redirect("/secure/items"); }
+      const rows = state.items.map((i) => `<tr><td>${i.code}</td><td>${esc(i.name)}</td><td><a href="/secure/items?del=${i.code}">Delete</a></td></tr>`).join("");
+      return html(page("Inventory", `<h2>Inventory</h2><a href="/secure/items/new">New item</a><table><tr><th>Code</th><th>Name</th><th>Action</th></tr>${rows}</table>`));
+    }
+    if (path === "/secure/items/new" && req.method === "GET") {
+      return html(page("New item", `<h2>New item</h2><form method="post" action="/secure/items/new"><label for="code">Code</label><input id="code" name="code"><label for="name">Name</label><input id="name" name="name"><button type="submit">Save</button></form>`));
+    }
+    if (path === "/secure/items/new" && req.method === "POST") return withBody((b) => { state.items.push({ code: b.get("code") ?? "", name: b.get("name") ?? "" }); redirect("/secure/items"); });
 
     res.statusCode = 404; html(page("Not found", "<h1>Not found</h1>"));
   });

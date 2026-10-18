@@ -4,7 +4,7 @@ import { Wicket } from "./src/engine.js";
 import { RuleBook } from "./src/rules.js";
 import { FakeSchool, startingRules } from "./src/adapters/fake-school.js";
 import { CompositeAdapter } from "./src/adapters/composite.js";
-import { FormAdapter, NoBrowser, NotAuthorized } from "./src/generator/form-adapter.js";
+import { FormAdapter, HumanRequired, NoBrowser, NoSecret, NotAuthorized } from "./src/generator/form-adapter.js";
 import { TableAdapter, type TableModel } from "./src/generator/tables.js";
 import { OWNER_PAGE } from "./src/owner-page.js";
 import type { Op } from "./src/types.js";
@@ -104,6 +104,8 @@ const opSchema = z.object({ op: z.enum(["delete", "create", "update", "publish"]
 
 const compileFail = (e: unknown) => {
   if (e instanceof NotAuthorized) return reply({ status: "refused", error: "not_authorized", detail: e.message, next: ["ask the operator to add the host they own or have permission to use", "never try to get around this"] });
+  if (e instanceof NoSecret) return reply({ status: "refused", error: "no_stored_login", detail: e.message, next: ["ask the operator to store the login on the server", "never ask a person to paste a password into the chat"] });
+  if (e instanceof HumanRequired) return reply({ status: "refused", error: "human_required", detail: e.message, next: ["a person must complete this step, then call compile_site again"] });
   if (e instanceof NoBrowser) return reply({ status: "refused", error: "no_browser", detail: e.message, next: ["run the worker on a machine with a browser (see BRIEF.md)"] });
   return reply({ status: "refused", error: "compile_failed", detail: String((e as Error).message).split("\n")[0], next: ["check the address loads in a normal browser", "try compile_site again"] });
 };
@@ -112,12 +114,21 @@ server.tool(
   {
     name: "compile_site",
     description: "Point Wicket at a web page and it reads the page's forms, read-only, and turns each one into a typed record you can fill. Only works on hosts the operator has authorized. It never submits anything and never tries to get past a CAPTCHA: a person does that. Returns each form's id, fields (label, type, required, allowed values) and submit button.",
-    inputSchema: z.object({ url: z.string().describe("The page address, like http://host/signup") }),
+    inputSchema: z.object({
+      url: z.string().describe("The page address, like http://host/signup. With login set, this is the login page."),
+      login: z.string().optional().describe("Name of a login the operator stored on the server. You never see the password."),
+      then: z.string().optional().describe("With login: the page to compile after signing in."),
+    }),
     annotations: { readOnlyHint: true, openWorldHint: true },
   },
-  async ({ url }) => {
+  async ({ url, login, then }) => {
     try {
-      const s = await forms.compile(url);
+      if (login) {
+        const r = await forms.signIn(url, login);
+        if (!r.signedIn) return reply({ status: "refused", error: "login_failed", detail: r.detail, next: ["ask the operator to check the stored login"] });
+        if (then) await forms.open(then);
+      }
+      const s = login ? await forms.refresh() : await forms.compile(url);
       for (const f of s.forms) rules.set(f.id, "update", [], true); // filling fields is a reversible draft
       const t = await tables.attach();
       wicket.flush();
