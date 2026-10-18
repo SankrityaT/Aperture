@@ -7,6 +7,7 @@ import type { TableModel } from "../generator/tables.js";
 import type { RemoteForms, RemoteTables, RemoteWorker } from "./remote.js";
 
 const primaryHosts = (): string[] => (process.env.WICKET_PRIMARY_HOSTS ?? "127.0.0.1,localhost").split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
+const unreachable = (e: unknown): boolean => /could not be reached|did not answer this call|refused the token/.test(String((e as Error)?.message ?? e));
 export const isPrimaryUrl = (url: string): boolean => { try { return primaryHosts().includes(new URL(url).hostname.toLowerCase()); } catch { return true; } };
 
 abstract class SplitBase<T extends RemoteForms | RemoteTables> {
@@ -38,7 +39,12 @@ export class SplitForms extends SplitBase<RemoteForms> {
   update(kind: Kind, key: string, patch: Record<string, unknown>): Promise<void> { return this.by(kind).update(kind, key, patch); }
   validate(kind: Kind, key: string, patch: Record<string, unknown>): Promise<string[]> { return this.by(kind).validate(kind, key, patch); }
   normalize(kind: Kind, patch: Record<string, unknown>): Promise<Record<string, unknown>> { return this.by(kind).normalize(kind, patch); }
-  compile(url: string): Promise<CompileSummary> { this.active = isPrimaryUrl(url) ? this.a : this.b; return this.active.compile(url); }
+  /** Public pages go to the public worker; if it cannot be reached (a laptop asleep), the primary reads them instead of failing. */
+  async compile(url: string): Promise<CompileSummary> {
+    if (isPrimaryUrl(url)) { this.active = this.a; return this.a.compile(url); }
+    try { this.active = this.b; return await this.b.compile(url); }
+    catch (e) { if (!unreachable(e)) throw e; this.active = this.a; return this.a.compile(url); }
+  }
   signIn(url: string, secret: string) { this.active = this.a; return this.a.signIn(url, secret); }
   open(url: string): Promise<void> { this.active = isPrimaryUrl(url) ? this.a : this.b; return this.active.open(url); }
   refresh(): Promise<CompileSummary> { return this.active.refresh(); }
