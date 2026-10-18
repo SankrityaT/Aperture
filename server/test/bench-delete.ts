@@ -26,7 +26,7 @@ try {
   for (const key of dirs) {
     const t = Date.now();
     const a = (await w.apply({ op: "delete", kind: rm!.id, key })) as any;
-    out.push(`${key}: ${a.status} in ${((Date.now() - t) / 1000).toFixed(1)}s verified.ok=${a.verified?.ok} matches=${a.verified?.matches_prediction}`);
+    out.push(`${key}: ${a.status} in ${((Date.now() - t) / 1000).toFixed(1)}s verified.ok=${a.verified?.ok} matches=${a.verified?.matches_prediction} surprise=${JSON.stringify(a.surprise ?? null)} counts_after=${JSON.stringify(a.verified?.counts_after ?? null)}`);
   }
   console.log(out.join("\n"));
   console.log(`TOTAL ${((Date.now() - t0) / 1000).toFixed(1)}s, page loads ${loads}, navigation requests ${clicks}`);

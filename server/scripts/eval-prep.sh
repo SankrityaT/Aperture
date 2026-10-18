@@ -7,4 +7,4 @@ URL="${1:?server url}"; HOURS="${2:-3}"
 post() { curl -s -m 60 -X POST "$URL$1?token=$OWNER_TOKEN" -H 'content-type: application/json' -d "$2"; echo; }
 post /owner/demo '{"action":"reset"}'
 post /owner/dependency '{"kind":"residents","cascade_kind":"devices","by":"Dir"}'
-post /owner/delegate "{\"kinds\":[\"residents\",\"devices\"],\"ops\":[\"create\",\"delete\"],\"limit\":60,\"hours\":$HOURS,\"note\":\"evaluation window\"}"
+post /owner/delegate "{\"kinds\":[\"residents\",\"devices\"],\"ops\":[\"create\",\"delete\"],\"limit\":10,\"hours\":$HOURS,\"note\":\"evaluation window\"}"

@@ -9,7 +9,7 @@ import { RuleBook } from "../src/rules.js";
 import { startGatePortal } from "./fixtures/gateportal.js";
 
 const g = await startGatePortal(0); const fa = new FormAdapter();
-const modes = ["rename_col", "rename_key", "no_delete", "decoy", "signedout", "archive", "paging"];
+const modes = (process.env.MODES ?? "rename_col,rename_key,no_delete,decoy,signedout,archive,paging").split(",");
 const target = "1005"; // an ordinary resident
 try {
   await fa.compile(`${g.url}/Residents.aspx`);
@@ -29,6 +29,7 @@ try {
       r = await w.apply({ op: "delete", kind, key: target });
       if (r.status === "awaiting_approval") { w.approve(r.plan_id); r = await w.present(await w.commit(r.plan_id)); }
       said = r.error ?? r.status ?? JSON.stringify(r).slice(0, 80);
+      if (process.env.VERBOSE) console.error(mode, JSON.stringify(r).slice(0, 700));
     } catch (e) { said = "THREW: " + String((e as Error).message).split("\n")[0]!.slice(0, 80); }
     const after = g.state.residents.length;
     const gone = !g.state.residents.some((x) => x.dir === target);

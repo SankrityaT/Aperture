@@ -618,9 +618,10 @@ export class TableAdapter implements Adapter {
   private golden = new Map<string, Rec[]>();
   private readonly scanTtl = Number(process.env.WICKET_SCAN_TTL_MS ?? 3000);
 
-  private async scan(kind: Kind, stopAt?: string): Promise<{ recs: Rec[]; where: Where[] }> {
+  private async scan(kind: Kind, stopAt?: string, maxAgeMs?: number): Promise<{ recs: Rec[]; where: Where[] }> {
     const hit = this.memo.get(kind);
-    if (this.scanTtl > 0 && hit && Date.now() - hit.at < this.scanTtl) return hit.v;
+    // Reads that guard against stale plans use the short window. Counts, which only feed the before/after comparison, may use an older scan.
+    if (this.scanTtl > 0 && hit && Date.now() - hit.at < Math.max(this.scanTtl, maxAgeMs ?? 0)) return hit.v;
     const { recs, where, partial } = await this.scanFresh(kind, 120, stopAt);
     const v = { recs, where };
     if (this.scanTtl > 0 && !partial) this.memo.set(kind, { at: Date.now(), v });
@@ -629,6 +630,8 @@ export class TableAdapter implements Adapter {
     return v;
   }
 
+
+  invalidate(): void { this.memo.clear(); }
 
   // ---------- contract: is this compiled capability still true of the page? ----------
 
@@ -814,7 +817,7 @@ export class TableAdapter implements Adapter {
     const out: Record<Kind, number> = {};
     for (const k of forKind ? [forKind] : this.kinds()) {
       if (!this.models.has(k)) continue;
-      try { out[k] = (await this.scan(k)).recs.length; } catch (e) { if (e instanceof CapabilityDrift) throw e; /* a page that no longer loads is skipped, not fatal */ }
+      try { out[k] = (await this.scan(k, undefined, 30_000)).recs.length; } catch (e) { if (e instanceof CapabilityDrift) throw e; /* a page that no longer loads is skipped, not fatal */ }
     }
     return out;
   }

@@ -27,6 +27,8 @@ export interface Adapter {
   pendingPublish(): Promise<string[]>;
   publish(): Promise<{ published: number; notified: number }>;
   reset(): Promise<void>;
+  /** Optional: a write just happened (maybe through another adapter). Drop anything remembered about the system's state. */
+  invalidate?(): void;
   /** Optional: a read-only look at whether the compiled capability still matches the page. */
   driftCheck?(kind: Kind): Promise<{ ok: boolean; klass?: "ui_changed" | "auth" | "transient"; drifts: { what: string; expected?: unknown; observed?: unknown; blocking: boolean }[]; note?: string }>;
   /** Optional: re-learn the capability after the page changed, publishing it only if every test passes. Never changes a record. */

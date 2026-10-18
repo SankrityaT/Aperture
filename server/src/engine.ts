@@ -142,6 +142,7 @@ export class Wicket {
 
   private invalidate(): void {
     this.cache.clear();
+    this.adapter.invalidate?.(); // a write through one adapter can change what another one would read
   }
 
   /** Forget cached reads, for example after a new system was compiled. */
