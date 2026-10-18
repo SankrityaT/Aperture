@@ -159,3 +159,16 @@ test("once both pages are compiled, the same delete predicts the devices, commit
   assert.equal(g.state.devices.filter((d) => d.dir === "1004").length, 0);
   assert.ok(before >= 1);
 });
+
+test("a cascade into a table Aperture never compiled: the receipt does not overclaim, it says what was compared and that other effects are unknown", async () => {
+  await fresh(); // only the residents page is compiled; no dependency declared
+  const devicesBefore = g.state.devices.length;
+  w.delegate({ kinds: [kind], ops: ["delete"], limit: 3, ttlMs: 60_000 });
+  const r = (await w.apply({ op: "delete", kind, key: "1004" })) as { status: string; verified: { scope: { action: string; known_dependencies: string; tables_compared: string[]; other_effects: string } } };
+  // the truth: the app also removed that resident's devices, in a table Aperture never saw
+  assert.ok(g.state.devices.length < devicesBefore, "the hidden cascade really happened");
+  assert.equal(r.verified.scope.action, "verified");
+  assert.deepEqual(r.verified.scope.tables_compared, [kind], "only the residents table was compared");
+  assert.equal(r.verified.scope.known_dependencies, "none known");
+  assert.match(r.verified.scope.other_effects, /unknown/);
+});

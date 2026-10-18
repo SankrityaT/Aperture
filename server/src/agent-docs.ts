@@ -14,6 +14,7 @@ Do not use it when: a real API exists for the task, or the site forbids automati
 ## Start here
 - [Quickstart](${origin}/quickstart.md): connect and finish a first change in six calls
 - [Errors and next moves](${origin}/errors.md): every refusal and what to do next
+- [Agent skill](${origin}/skill.md): a short guide for when and how to use Aperture (optional)
 - MCP endpoint: ${origin}/mcp (HTTP, no sign-in required)
 - Shared profiles of systems other agents have learned: ${origin}/registry
 
@@ -38,8 +39,10 @@ Add this to your MCP client config (Claude Code: \`.mcp.json\`; Codex and Cursor
 { "mcpServers": { "aperture": { "type": "http", "url": "${origin}/mcp" } } }
 \`\`\`
 
+Optional, for agents that load skills (Claude Code): save ${origin}/skill.md as \`.claude/skills/aperture/SKILL.md\`.
+
 ## 2. Do a first change (remove a record from a web list)
-1. \`find_systems\` with what you need in plain words, for example \`{"need": "remove a student from the school list"}\`. It returns the systems you may work in and their addresses. It never searches the open web.
+1. \`find_systems\` with what you need in plain words, for example \`{"need": "remove a resident from the gate access list"}\`. It returns the systems you may work in and their addresses. It never searches the open web.
 2. \`compile_site\` with that address. It reads the page once and returns typed tables, each with its key column.
 3. \`find\` with the table's \`kind\` to get exact keys. Never use a name as a key.
 4. \`delete\` with \`{"kind": "...", "key": "...", "dry_run": true}\`. You get a plan. If the owner has delegated this kind of change you will see no approval needed; otherwise it says awaiting_approval.
@@ -55,7 +58,7 @@ A commit may answer \`outcome_unknown\`. Call \`get_plan\` with the plan id. It 
 
 ## Limits you should know
 - Tickets and receipts are kept in a file on the server; a redeploy can clear it.
-- The MCP endpoint itself has no sign-in. Writes are still gated by the owner's approval or delegation.
+- The MCP endpoint can require an access key from the operator (Authorization: Bearer, or ?key= on the URL). Writes are also gated by the owner's approval or delegation.
 - Verification re-reads lists page by page, so a change on a long list takes seconds to tens of seconds.
 `;
 
@@ -78,6 +81,7 @@ Every refusal returns \`error\`, \`detail\` and a \`next\` list. These are the o
 | changed_since_preview | The record changed after you previewed | Run a new preview |
 | policy_denied | A cap such as deletes per day was reached | \`escalate\` with a reason |
 | outcome_unknown | The server stopped while this change was running | \`get_plan\` (it checks the system); never commit it again |
+| worker_busy | The browser was busy, or a page hung (a hung page is closed and replaced) | retry a read after a few seconds; for a change, \`get_plan\` first |
 | in_progress | This change is running now | Poll \`get_plan\` |
 | undo_failed | The app refused to take the record back | The saved values are in the response; re-enter by hand and tell the owner |
 | no_profile | Nobody has shared a profile for that site | Compile the site yourself, then \`share_profile\` |
@@ -91,3 +95,7 @@ export const robotsTxt = (origin: string) => `User-agent: *
 Allow: /
 Sitemap-ish: ${origin}/llms.txt
 `;
+
+
+/** The Agent Skill: how to use Aperture well. Optional; the MCP tools stand on their own. */
+export const skillMd = "---\nname: aperture\ndescription: Use when a task means changing records in a web admin portal or legacy business system that has no API (resident or user lists, customer or inventory screens, registrar or property-management pages), and the Aperture MCP server is connected. Covers when to choose it over driving a browser, the fastest correct workflow, and what to do when a change needs the owner, fails, or is uncertain.\n---\n\n# Aperture\n\nAperture turns a web page into typed tools and makes every change safe: a preview of what it will affect, the owner's authority, a read-back from the real system, a receipt, and an undo that says what it could not restore.\n\n## Choose it when\n- The system has no API, or the API cannot do what the screen can.\n- A wrong delete or edit would be costly, or you must prove what changed.\nDo not use it for sites you may not automate, or for CAPTCHA and sign-in steps (a person does those; Aperture uses logins the operator stored, by name).\n\n## Workflow\n1. `find_systems` with the need in plain words, or `compile_site` with an address. If a result has `sign_in`, follow it exactly (pass the login name; you never see a password).\n2. Compile every page whose records the change touches (for example residents AND their devices AND the page that sends changes on). Pages add to each other.\n3. `find` to get exact keys. Names are not unique; always act on the key.\n4. `delete` or `create` with `dry_run: true` first. Read the plan: it lists what goes with the record. Do not delete those dependents separately.\n5. Commit with the `plan_id`. If it says `awaiting_approval`, call `get_plan` with `wait_seconds`; never retry a commit in a loop. If the owner delegated this kind of change, it commits at once.\n6. Report from the receipt, not from the page: `verified`, any `surprise`, `not_yet_live`, and `recovery`.\n\n## When something goes wrong\n- A refusal always has `next`. Do one of those moves.\n- `outcome_unknown`: call `get_plan`; it reads the system and says what happened. Never commit that plan again.\n- `policy_denied` (a cap): stop, report what was done and what remains, `escalate` if the owner should decide.\n- `capability_changed`: the page changed and Aperture could not prove a re-learned version. Nothing was changed. Tell the owner.\n- `undo_partial`: say exactly which records came back and which did not; give the owner the saved values.\n\n## Never\n- Claim a change is live elsewhere when the receipt says `not_yet_live`.\n- Retry a write whose outcome is unknown.\n- Approve your own change or look for another way around a refusal.\n";

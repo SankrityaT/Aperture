@@ -441,6 +441,14 @@ export class Wicket {
     }
     if (appError) verified.app_error = `The app reported an error (${appError}) but the change did happen. It was confirmed by reading the system back.`;
     verified.counts_after = after;
+    // Say how far the check went. Only tables Aperture has compiled can be compared; anything else the app changed is not seen.
+    const depKinds = [...new Set(plan.dependents.map((d) => d.kind))];
+    verified.scope = {
+      action: op.op === "publish" ? "not checkable (it leaves this system)" : verified.subject_present === (op.op !== "delete") ? "verified" : "not as intended",
+      known_dependencies: depKinds.length ? `checked: ${depKinds.join(", ")}` : (this.rules.cascadesFor(op.kind ?? "", "delete").length ? "declared, none found for this record" : "none known"),
+      tables_compared: Object.keys(after),
+      other_effects: "unknown: tables Aperture has not compiled are not checked",
+    };
     verified.matches_prediction = surprises.length === 0;
     const okSubject = op.op === "delete" ? verified.subject_present === false : op.op === "create" ? verified.subject_present === true : op.op === "update" ? verified.fields_match === true : verified.still_pending === 0;
     verified.ok = okSubject && surprises.length === 0;
@@ -549,6 +557,7 @@ export class Wicket {
   private unexpected(e: unknown): Refusal {
     const msg = String((e as Error)?.message ?? e).split("\n")[0] ?? "error";
     const m = /unknown kind (\S+)/.exec(msg);
+    if ((e as Error)?.name === "WorkerBusy") return this.r(refuse("worker_busy", msg, ["wait a few seconds, then try this read again", "if this was a change: call get_plan with its plan_id (it reads the system); never commit it again"]));
     if (m) return this.r(refuse("unknown_kind", `No kind '${m[1]}' is compiled.`, [`compile_site the page that holds '${m[1]}' (find_systems lists the systems)`, `compiled now: ${this.adapter.kinds().join(", ") || "nothing"}`]));
     return this.r(refuse("internal_error", `Something failed inside Wicket: ${msg}`, ["nothing is known to have changed by this call unless a receipt says so", "try again once; if it repeats, escalate with this message"], { detail_for_owner: msg }));
   }
