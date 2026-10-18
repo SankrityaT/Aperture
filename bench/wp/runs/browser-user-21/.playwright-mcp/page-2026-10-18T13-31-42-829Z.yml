@@ -1,0 +1,207 @@
+- generic [ref=f5e2]:
+  - navigation "Main menu":
+    - link "Skip to main content" [ref=f5e3] [cursor=pointer]:
+      - /url: "#wpbody-content"
+    - link "Skip to toolbar" [ref=f5e4] [cursor=pointer]:
+      - /url: "#wp-toolbar"
+    - list [ref=f5e7]:
+      - listitem [ref=f5e8]:
+        - link "Dashboard" [ref=f5e9] [cursor=pointer]:
+          - /url: index.php
+          - generic [aria-hidden] [ref=f5e10]: 
+        - list [ref=f5e12]:
+          - listitem [ref=f5e13]:
+            - link "Home" [ref=f5e14] [cursor=pointer]:
+              - /url: index.php
+          - listitem [ref=f5e15]:
+            - link "Updates" [ref=f5e16] [cursor=pointer]:
+              - /url: update-core.php
+      - listitem [aria-hidden] [ref=f5e17]
+      - listitem [ref=f5e19]:
+        - link "Posts" [ref=f5e20] [cursor=pointer]:
+          - /url: edit.php
+          - generic [aria-hidden] [ref=f5e21]: 
+        - list [ref=f5e23]:
+          - listitem [ref=f5e24]:
+            - link "All Posts" [ref=f5e25] [cursor=pointer]:
+              - /url: edit.php
+          - listitem [ref=f5e26]:
+            - link "Add Post" [ref=f5e27] [cursor=pointer]:
+              - /url: post-new.php
+          - listitem [ref=f5e28]:
+            - link "Categories" [ref=f5e29] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=category
+          - listitem [ref=f5e30]:
+            - link "Tags" [ref=f5e31] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=post_tag
+      - listitem [ref=f5e32]:
+        - link "Media" [ref=f5e33] [cursor=pointer]:
+          - /url: upload.php
+          - generic [aria-hidden] [ref=f5e34]: 
+        - list [ref=f5e36]:
+          - listitem [ref=f5e37]:
+            - link "Library" [ref=f5e38] [cursor=pointer]:
+              - /url: upload.php
+          - listitem [ref=f5e39]:
+            - link "Add Media File" [ref=f5e40] [cursor=pointer]:
+              - /url: media-new.php
+      - listitem [ref=f5e41]:
+        - link "Pages" [ref=f5e42] [cursor=pointer]:
+          - /url: edit.php?post_type=page
+          - generic [aria-hidden] [ref=f5e43]: 
+        - list [ref=f5e45]:
+          - listitem [ref=f5e46]:
+            - link "All Pages" [ref=f5e47] [cursor=pointer]:
+              - /url: edit.php?post_type=page
+          - listitem [ref=f5e48]:
+            - link "Add Page" [ref=f5e49] [cursor=pointer]:
+              - /url: post-new.php?post_type=page
+      - listitem [ref=f5e50]:
+        - link "Comments" [ref=f5e51] [cursor=pointer]:
+          - /url: edit-comments.php
+          - generic [aria-hidden] [ref=f5e52]: 
+      - listitem [aria-hidden] [ref=f5e54]
+      - listitem [ref=f5e56]:
+        - link "Appearance" [ref=f5e57] [cursor=pointer]:
+          - /url: themes.php
+          - generic [aria-hidden] [ref=f5e58]: 
+        - list [ref=f5e60]:
+          - listitem [ref=f5e61]:
+            - link "Themes" [ref=f5e62] [cursor=pointer]:
+              - /url: themes.php
+          - listitem [ref=f5e63]:
+            - link "Editor" [ref=f5e64] [cursor=pointer]:
+              - /url: site-editor.php
+          - listitem [ref=f5e65]:
+            - link "Fonts" [ref=f5e66] [cursor=pointer]:
+              - /url: font-library.php
+      - listitem [ref=f5e67]:
+        - link "Plugins" [ref=f5e68] [cursor=pointer]:
+          - /url: plugins.php
+          - generic [aria-hidden] [ref=f5e69]: 
+        - list [ref=f5e71]:
+          - listitem [ref=f5e72]:
+            - link "Installed Plugins" [ref=f5e73] [cursor=pointer]:
+              - /url: plugins.php
+          - listitem [ref=f5e74]:
+            - link "Add Plugin" [ref=f5e75] [cursor=pointer]:
+              - /url: plugin-install.php
+      - listitem [ref=f5e76]:
+        - link "Users" [ref=f5e77] [cursor=pointer]:
+          - /url: users.php
+          - generic [aria-hidden] [ref=f5e78]: 
+        - list [ref=f5e80]:
+          - listitem [ref=f5e81]:
+            - link "All Users" [ref=f5e82] [cursor=pointer]:
+              - /url: users.php
+          - listitem [ref=f5e83]:
+            - link "Add User" [ref=f5e84] [cursor=pointer]:
+              - /url: user-new.php
+          - listitem [ref=f5e85]:
+            - link "Profile" [ref=f5e86] [cursor=pointer]:
+              - /url: profile.php
+      - listitem [ref=f5e87]:
+        - link "Tools" [ref=f5e88] [cursor=pointer]:
+          - /url: tools.php
+          - generic [aria-hidden] [ref=f5e89]: 
+        - list [ref=f5e91]:
+          - listitem [ref=f5e92]:
+            - link "Available Tools" [ref=f5e93] [cursor=pointer]:
+              - /url: tools.php
+          - listitem [ref=f5e94]:
+            - link "Import" [ref=f5e95] [cursor=pointer]:
+              - /url: import.php
+          - listitem [ref=f5e96]:
+            - link "Export" [ref=f5e97] [cursor=pointer]:
+              - /url: export.php
+          - listitem [ref=f5e98]:
+            - link "Site Health" [ref=f5e99] [cursor=pointer]:
+              - /url: site-health.php
+          - listitem [ref=f5e100]:
+            - link "Export Personal Data" [ref=f5e101] [cursor=pointer]:
+              - /url: export-personal-data.php
+          - listitem [ref=f5e102]:
+            - link "Erase Personal Data" [ref=f5e103] [cursor=pointer]:
+              - /url: erase-personal-data.php
+          - listitem [ref=f5e104]:
+            - link "Theme File Editor" [ref=f5e105] [cursor=pointer]:
+              - /url: theme-editor.php
+          - listitem [ref=f5e106]:
+            - link "Plugin File Editor" [ref=f5e107] [cursor=pointer]:
+              - /url: plugin-editor.php
+      - listitem [ref=f5e108]:
+        - link "Settings" [ref=f5e109] [cursor=pointer]:
+          - /url: options-general.php
+          - generic [aria-hidden] [ref=f5e110]: 
+        - list [ref=f5e112]:
+          - listitem [ref=f5e113]:
+            - link "General" [ref=f5e114] [cursor=pointer]:
+              - /url: options-general.php
+          - listitem [ref=f5e115]:
+            - link "Connectors" [ref=f5e116] [cursor=pointer]:
+              - /url: options-connectors.php
+          - listitem [ref=f5e117]:
+            - link "Writing" [ref=f5e118] [cursor=pointer]:
+              - /url: options-writing.php
+          - listitem [ref=f5e119]:
+            - link "Reading" [ref=f5e120] [cursor=pointer]:
+              - /url: options-reading.php
+          - listitem [ref=f5e121]:
+            - link "Discussion" [ref=f5e122] [cursor=pointer]:
+              - /url: options-discussion.php
+          - listitem [ref=f5e123]:
+            - link "Media" [ref=f5e124] [cursor=pointer]:
+              - /url: options-media.php
+          - listitem [ref=f5e125]:
+            - link "Permalinks" [ref=f5e126] [cursor=pointer]:
+              - /url: options-permalink.php
+          - listitem [ref=f5e127]:
+            - link "Privacy" [ref=f5e128] [cursor=pointer]:
+              - /url: options-privacy.php
+      - listitem [ref=f5e129]:
+        - button "Collapse Main menu" [expanded] [ref=f5e130] [cursor=pointer]:
+          - generic [ref=f5e132]: Collapse Menu
+  - generic [ref=f5e133]:
+    - generic [ref=f5e134]:
+      - navigation "Toolbar":
+        - menu:
+          - group [ref=f5e135]:
+            - menuitem "About WordPress" [ref=f5e136] [cursor=pointer]
+          - group [ref=f5e139]:
+            - menuitem "Test Site" [ref=f5e140] [cursor=pointer]
+          - group [ref=f5e141]:
+            - menuitem "⌘K Open command palette" [ref=f5e142] [cursor=pointer]:
+              - generic [ref=f5e144]:
+                - text: ⌘K
+                - generic [ref=f5e145]: Open command palette
+          - group [ref=f5e146]:
+            - menuitem "0 Comments in moderation" [ref=f5e147] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f5e149]: "0"
+          - group [ref=f5e151]:
+            - menuitem "New" [ref=f5e152] [cursor=pointer]
+        - menu [ref=f5e155]:
+          - group [ref=f5e156]:
+            - menuitem "Howdy, admin" [ref=f5e157] [cursor=pointer]
+    - main [ref=f5e158]:
+      - generic [ref=f5e159]:
+        - generic [ref=f5e160]:
+          - button "Screen Options" [ref=f5e162] [cursor=pointer]
+          - button "Help" [ref=f5e164] [cursor=pointer]
+        - generic [ref=f5e166]:
+          - heading "Delete Users" [level=1] [ref=f5e167]
+          - paragraph [ref=f5e168]: "You have specified this user for deletion:"
+          - list [ref=f5e169]:
+            - listitem [ref=f5e170]:
+              - paragraph [ref=f5e171]:
+                - strong [ref=f5e172]: tester7
+                - text: "(ID #28): This user does not have any content."
+          - paragraph [ref=f5e173]:
+            - button "Confirm Deletion" [ref=f5e174] [cursor=pointer]
+  - contentinfo [ref=f5e175]:
+    - paragraph [ref=f5e176]:
+      - generic [ref=f5e177]:
+        - text: Thank you for creating with
+        - link "WordPress" [ref=f5e178] [cursor=pointer]:
+          - /url: https://wordpress.org/
+        - text: .
+    - paragraph [ref=f5e179]: Version 7.1.3

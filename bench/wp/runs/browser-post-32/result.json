@@ -1,0 +1,1 @@
+{"run": "browser-post-32", "arm": "browser", "task": "post", "model": "sonnet", "used": "browser", "aperture_calls": 0, "browser_calls": 11, "correct": true, "seconds": 37, "cost": 0.07}

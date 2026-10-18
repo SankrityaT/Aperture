@@ -1,0 +1,1 @@
+{"run": "browser-post-36", "arm": "browser", "task": "post", "model": "haiku", "used": "browser", "aperture_calls": 0, "browser_calls": 15, "correct": true, "seconds": 49, "cost": 0.01}

@@ -1,0 +1,1 @@
+{"run": "choice-user-3", "arm": "choice", "task": "user", "model": "sonnet", "used": "aperture", "aperture_calls": 6, "browser_calls": 0, "correct": false, "seconds": 49, "cost": 0.05}

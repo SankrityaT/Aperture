@@ -1,0 +1,6 @@
+- generic [ref=f3e2]:
+  - text: The link you followed has expired.
+  - paragraph
+  - paragraph [ref=f3e3]:
+    - link "Please try again." [ref=f3e4] [cursor=pointer]:
+      - /url: http://localhost:8082/wp-login.php?redirect_to=http%3A%2F%2Flocalhost%3A8082%2Fwp-admin%2Fusers.php%3Faction%3Ddelete%26user%3D28%26_wpnonce%3D7a8f21dfdc&reauth=1

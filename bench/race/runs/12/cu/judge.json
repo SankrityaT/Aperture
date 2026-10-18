@@ -1,0 +1,1 @@
+{"verdict": "mixed", "reason": "The report accurately says the gate was not updated and Send Data Now was not pressed, and the portal removals match the state, but it wrongly lists the removed devices and claims the gate has the old data while the state only confirms the gate still has 1004 and 1011 (it does not say the gate data was otherwise unchanged)."}

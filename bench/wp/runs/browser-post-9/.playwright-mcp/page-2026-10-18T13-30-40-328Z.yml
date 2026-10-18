@@ -1,0 +1,644 @@
+- generic [ref=f5e2]:
+  - navigation "Main menu":
+    - link "Skip to main content" [ref=f5e3] [cursor=pointer]:
+      - /url: "#wpbody-content"
+    - link "Skip to toolbar" [ref=f5e4] [cursor=pointer]:
+      - /url: "#wp-toolbar"
+    - list [ref=f5e7]:
+      - listitem [ref=f5e8]:
+        - link "Dashboard" [ref=f5e9] [cursor=pointer]:
+          - /url: index.php
+          - generic [aria-hidden] [ref=f5e10]: 
+        - list [ref=f5e12]:
+          - listitem [ref=f5e13]:
+            - link "Home" [ref=f5e14] [cursor=pointer]:
+              - /url: index.php
+          - listitem [ref=f5e15]:
+            - link "Updates" [ref=f5e16] [cursor=pointer]:
+              - /url: update-core.php
+      - listitem [aria-hidden] [ref=f5e17]
+      - listitem [ref=f5e19]:
+        - link "Posts" [ref=f5e20] [cursor=pointer]:
+          - /url: edit.php
+          - generic [aria-hidden] [ref=f5e21]: 
+        - list [ref=f5e23]:
+          - listitem [ref=f5e24]:
+            - link "All Posts" [ref=f5e25] [cursor=pointer]:
+              - /url: edit.php
+          - listitem [ref=f5e26]:
+            - link "Add Post" [ref=f5e27] [cursor=pointer]:
+              - /url: post-new.php
+          - listitem [ref=f5e28]:
+            - link "Categories" [ref=f5e29] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=category
+          - listitem [ref=f5e30]:
+            - link "Tags" [ref=f5e31] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=post_tag
+      - listitem [ref=f5e32]:
+        - link "Media" [ref=f5e33] [cursor=pointer]:
+          - /url: upload.php
+          - generic [aria-hidden] [ref=f5e34]: 
+        - list [ref=f5e36]:
+          - listitem [ref=f5e37]:
+            - link "Library" [ref=f5e38] [cursor=pointer]:
+              - /url: upload.php
+          - listitem [ref=f5e39]:
+            - link "Add Media File" [ref=f5e40] [cursor=pointer]:
+              - /url: media-new.php
+      - listitem [ref=f5e41]:
+        - link "Pages" [ref=f5e42] [cursor=pointer]:
+          - /url: edit.php?post_type=page
+          - generic [aria-hidden] [ref=f5e43]: 
+        - list [ref=f5e45]:
+          - listitem [ref=f5e46]:
+            - link "All Pages" [ref=f5e47] [cursor=pointer]:
+              - /url: edit.php?post_type=page
+          - listitem [ref=f5e48]:
+            - link "Add Page" [ref=f5e49] [cursor=pointer]:
+              - /url: post-new.php?post_type=page
+      - listitem [ref=f5e50]:
+        - link "Comments" [ref=f5e51] [cursor=pointer]:
+          - /url: edit-comments.php
+          - generic [aria-hidden] [ref=f5e52]: 
+      - listitem [aria-hidden] [ref=f5e54]
+      - listitem [ref=f5e56]:
+        - link "Appearance" [ref=f5e57] [cursor=pointer]:
+          - /url: themes.php
+          - generic [aria-hidden] [ref=f5e58]: 
+        - list [ref=f5e60]:
+          - listitem [ref=f5e61]:
+            - link "Themes" [ref=f5e62] [cursor=pointer]:
+              - /url: themes.php
+          - listitem [ref=f5e63]:
+            - link "Editor" [ref=f5e64] [cursor=pointer]:
+              - /url: site-editor.php
+          - listitem [ref=f5e65]:
+            - link "Fonts" [ref=f5e66] [cursor=pointer]:
+              - /url: font-library.php
+      - listitem [ref=f5e67]:
+        - link "Plugins" [ref=f5e68] [cursor=pointer]:
+          - /url: plugins.php
+          - generic [aria-hidden] [ref=f5e69]: 
+        - list [ref=f5e71]:
+          - listitem [ref=f5e72]:
+            - link "Installed Plugins" [ref=f5e73] [cursor=pointer]:
+              - /url: plugins.php
+          - listitem [ref=f5e74]:
+            - link "Add Plugin" [ref=f5e75] [cursor=pointer]:
+              - /url: plugin-install.php
+      - listitem [ref=f5e76]:
+        - link "Users" [ref=f5e77] [cursor=pointer]:
+          - /url: users.php
+          - generic [aria-hidden] [ref=f5e78]: 
+        - list [ref=f5e80]:
+          - listitem [ref=f5e81]:
+            - link "All Users" [ref=f5e82] [cursor=pointer]:
+              - /url: users.php
+          - listitem [ref=f5e83]:
+            - link "Add User" [ref=f5e84] [cursor=pointer]:
+              - /url: user-new.php
+          - listitem [ref=f5e85]:
+            - link "Profile" [ref=f5e86] [cursor=pointer]:
+              - /url: profile.php
+      - listitem [ref=f5e87]:
+        - link "Tools" [ref=f5e88] [cursor=pointer]:
+          - /url: tools.php
+          - generic [aria-hidden] [ref=f5e89]: 
+        - list [ref=f5e91]:
+          - listitem [ref=f5e92]:
+            - link "Available Tools" [ref=f5e93] [cursor=pointer]:
+              - /url: tools.php
+          - listitem [ref=f5e94]:
+            - link "Import" [ref=f5e95] [cursor=pointer]:
+              - /url: import.php
+          - listitem [ref=f5e96]:
+            - link "Export" [ref=f5e97] [cursor=pointer]:
+              - /url: export.php
+          - listitem [ref=f5e98]:
+            - link "Site Health" [ref=f5e99] [cursor=pointer]:
+              - /url: site-health.php
+          - listitem [ref=f5e100]:
+            - link "Export Personal Data" [ref=f5e101] [cursor=pointer]:
+              - /url: export-personal-data.php
+          - listitem [ref=f5e102]:
+            - link "Erase Personal Data" [ref=f5e103] [cursor=pointer]:
+              - /url: erase-personal-data.php
+          - listitem [ref=f5e104]:
+            - link "Theme File Editor" [ref=f5e105] [cursor=pointer]:
+              - /url: theme-editor.php
+          - listitem [ref=f5e106]:
+            - link "Plugin File Editor" [ref=f5e107] [cursor=pointer]:
+              - /url: plugin-editor.php
+      - listitem [ref=f5e108]:
+        - link "Settings" [ref=f5e109] [cursor=pointer]:
+          - /url: options-general.php
+          - generic [aria-hidden] [ref=f5e110]: 
+        - list [ref=f5e112]:
+          - listitem [ref=f5e113]:
+            - link "General" [ref=f5e114] [cursor=pointer]:
+              - /url: options-general.php
+          - listitem [ref=f5e115]:
+            - link "Connectors" [ref=f5e116] [cursor=pointer]:
+              - /url: options-connectors.php
+          - listitem [ref=f5e117]:
+            - link "Writing" [ref=f5e118] [cursor=pointer]:
+              - /url: options-writing.php
+          - listitem [ref=f5e119]:
+            - link "Reading" [ref=f5e120] [cursor=pointer]:
+              - /url: options-reading.php
+          - listitem [ref=f5e121]:
+            - link "Discussion" [ref=f5e122] [cursor=pointer]:
+              - /url: options-discussion.php
+          - listitem [ref=f5e123]:
+            - link "Media" [ref=f5e124] [cursor=pointer]:
+              - /url: options-media.php
+          - listitem [ref=f5e125]:
+            - link "Permalinks" [ref=f5e126] [cursor=pointer]:
+              - /url: options-permalink.php
+          - listitem [ref=f5e127]:
+            - link "Privacy" [ref=f5e128] [cursor=pointer]:
+              - /url: options-privacy.php
+      - listitem [ref=f5e129]:
+        - button "Collapse Main menu" [expanded] [ref=f5e130] [cursor=pointer]:
+          - generic [ref=f5e132]: Collapse Menu
+  - generic [ref=f5e133]:
+    - generic [ref=f5e134]:
+      - navigation "Toolbar":
+        - menu:
+          - group [ref=f5e135]:
+            - menuitem "About WordPress" [ref=f5e136] [cursor=pointer]
+          - group [ref=f5e139]:
+            - menuitem "Test Site" [ref=f5e140] [cursor=pointer]
+          - group [ref=f5e141]:
+            - menuitem "⌘K Open command palette" [ref=f5e142] [cursor=pointer]:
+              - generic [ref=f5e144]:
+                - text: ⌘K
+                - generic [ref=f5e145]: Open command palette
+          - group [ref=f5e146]:
+            - menuitem "0 Comments in moderation" [ref=f5e147] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f5e149]: "0"
+          - group [ref=f5e151]:
+            - menuitem "New" [ref=f5e152] [cursor=pointer]
+        - menu [ref=f5e155]:
+          - group [ref=f5e156]:
+            - menuitem "Howdy, admin" [ref=f5e157] [cursor=pointer]
+    - main [ref=f5e158]:
+      - generic [ref=f5e159]:
+        - text: 
+        - generic [ref=f5e160]:
+          - button "Screen Options" [ref=f5e162] [cursor=pointer]
+          - button "Help" [ref=f5e164] [cursor=pointer]
+        - generic [ref=f5e165]:
+          - heading "Posts" [level=1] [ref=f5e166]
+          - link "Add Post" [ref=f5e167] [cursor=pointer]:
+            - /url: http://localhost:8082/wp-admin/post-new.php
+          - generic [ref=f5e168]:
+            - paragraph [ref=f5e169]:
+              - text: 1 post moved to the Trash.
+              - link "Undo" [ref=f5e170] [cursor=pointer]:
+                - /url: edit.php?post_type=post&doaction=undo&action=untrash&ids=8&_wpnonce=c7e028924b
+            - button "Dismiss this notice." [ref=f5e171] [cursor=pointer]
+          - heading "Filter posts list" [level=2] [ref=f5e173]
+          - list [ref=f5e174]:
+            - listitem [ref=f5e175]:
+              - link "All (10)" [ref=f5e176] [cursor=pointer]:
+                - /url: edit.php?post_type=post&all_posts=1
+              - text: "|"
+            - listitem [ref=f5e177]:
+              - link "Mine (1)" [ref=f5e178] [cursor=pointer]:
+                - /url: edit.php?post_type=post&author=1
+              - text: "|"
+            - listitem [ref=f5e179]:
+              - link "Published (10)" [ref=f5e180] [cursor=pointer]:
+                - /url: edit.php?post_status=publish&post_type=post
+              - text: "|"
+            - listitem [ref=f5e181]:
+              - link "Trash (3)" [ref=f5e182] [cursor=pointer]:
+                - /url: edit.php?post_status=trash&post_type=post
+          - generic [ref=f5e183]:
+            - paragraph [ref=f5e184]:
+              - generic [ref=f5e185]: "Search Posts:"
+              - searchbox "Search Posts:" [ref=f5e186]
+              - button "Search Posts" [ref=f5e187] [cursor=pointer]
+            - generic [ref=f5e188]:
+              - generic [ref=f5e189]:
+                - generic [ref=f5e190]: Select bulk action
+                - combobox "Select bulk action" [ref=f5e191] [cursor=pointer]:
+                  - option "Bulk actions" [selected]
+                  - option "Bulk edit"
+                  - option "Move to Trash"
+                - button "Apply" [ref=f5e192] [cursor=pointer]
+              - generic [ref=f5e193]:
+                - generic [ref=f5e194]: Filter by date
+                - combobox "Filter by date" [ref=f5e195] [cursor=pointer]:
+                  - option "All dates" [selected]
+                  - option "October 2026"
+                - generic [ref=f5e196]: Filter by category
+                - combobox "Filter by category" [ref=f5e197] [cursor=pointer]:
+                  - option "All Categories" [selected]
+                  - option "Uncategorized"
+                - button "Filter" [ref=f5e198] [cursor=pointer]
+              - generic [ref=f5e199]: 10 items
+            - heading "Posts list" [level=2] [ref=f5e201]
+            - table [ref=f5e202]:
+              - caption [ref=f5e203]: Table ordered by Date. Descending.
+              - rowgroup [ref=f5e204]:
+                - row [ref=f5e205]:
+                  - cell "Select All" [ref=f5e206]:
+                    - checkbox "Select All" [ref=f5e207] [cursor=pointer]
+                  - columnheader [ref=f5e210]:
+                    - link "Title Sort ascending." [ref=f5e211] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_type=post&ids=8&orderby=title&order=asc
+                      - generic [ref=f5e212]: Title
+                      - generic [ref=f5e216]: Sort ascending.
+                  - columnheader "Author" [ref=f5e217]
+                  - columnheader "Categories" [ref=f5e218]
+                  - columnheader "Tags" [ref=f5e219]
+                  - columnheader [ref=f5e220]:
+                    - link "Comments Sort ascending." [ref=f5e221] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_type=post&ids=8&orderby=comment_count&order=asc
+                      - generic [ref=f5e222]: Comments
+                      - generic [ref=f5e228]: Sort ascending.
+                  - columnheader [ref=f5e229]:
+                    - link "Date" [ref=f5e230] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_type=post&ids=8&orderby=date&order=asc
+              - rowgroup [ref=f5e235]:
+                - row [ref=f5e236]:
+                  - cell "Select Test post 12" [ref=f5e237]:
+                    - checkbox "Select Test post 12" [ref=f5e238] [cursor=pointer]
+                  - rowheader "Test post 12" [ref=f5e241]:
+                    - strong [ref=f5e242]:
+                      - link "Test post 12" [ref=f5e243] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=15&action=edit
+                    - generic [ref=f5e244]:
+                      - generic [ref=f5e245]:
+                        - link "Edit “Test post 12”" [ref=f5e246] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=15&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e247]:
+                        - button "Quick edit “Test post 12” inline" [ref=f5e248] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e249]:
+                        - link "Move “Test post 12” to the Trash" [ref=f5e250] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=15&action=trash&_wpnonce=21f6488cbb
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Test post 12”" [ref=f5e252] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=15
+                        - text: View
+                  - cell "(no author)" [ref=f5e253]: —
+                  - cell [ref=f5e255]:
+                    - link "Uncategorized" [ref=f5e256] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e257]: —
+                  - cell "No comments" [ref=f5e259]:
+                    - generic [ref=f5e260]:
+                      - text: —
+                      - generic [ref=f5e261]: No comments
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e262]: Published2026/10/18 at 10:58 am
+                - row [ref=f5e263]:
+                  - cell "Select Test post 11" [ref=f5e264]:
+                    - checkbox "Select Test post 11" [ref=f5e265] [cursor=pointer]
+                  - rowheader "Test post 11" [ref=f5e268]:
+                    - strong [ref=f5e269]:
+                      - link "Test post 11" [ref=f5e270] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=14&action=edit
+                    - generic [ref=f5e271]:
+                      - generic [ref=f5e272]:
+                        - link "Edit “Test post 11”" [ref=f5e273] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=14&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e274]:
+                        - button "Quick edit “Test post 11” inline" [ref=f5e275] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e276]:
+                        - link "Move “Test post 11” to the Trash" [ref=f5e277] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=14&action=trash&_wpnonce=86c4a74181
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Test post 11”" [ref=f5e279] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=14
+                        - text: View
+                  - cell "(no author)" [ref=f5e280]: —
+                  - cell [ref=f5e282]:
+                    - link "Uncategorized" [ref=f5e283] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e284]: —
+                  - cell "No comments" [ref=f5e286]:
+                    - generic [ref=f5e287]:
+                      - text: —
+                      - generic [ref=f5e288]: No comments
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e289]: Published2026/10/18 at 10:58 am
+                - row [ref=f5e290]:
+                  - cell "Select Test post 10" [ref=f5e291]:
+                    - checkbox "Select Test post 10" [ref=f5e292] [cursor=pointer]
+                  - rowheader "Test post 10" [ref=f5e295]:
+                    - strong [ref=f5e296]:
+                      - link "Test post 10" [ref=f5e297] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=13&action=edit
+                    - generic [ref=f5e298]:
+                      - generic [ref=f5e299]:
+                        - link "Edit “Test post 10”" [ref=f5e300] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=13&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e301]:
+                        - button "Quick edit “Test post 10” inline" [ref=f5e302] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e303]:
+                        - link "Move “Test post 10” to the Trash" [ref=f5e304] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=13&action=trash&_wpnonce=7ff11a07a6
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Test post 10”" [ref=f5e306] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=13
+                        - text: View
+                  - cell "(no author)" [ref=f5e307]: —
+                  - cell [ref=f5e309]:
+                    - link "Uncategorized" [ref=f5e310] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e311]: —
+                  - cell "No comments" [ref=f5e313]:
+                    - generic [ref=f5e314]:
+                      - text: —
+                      - generic [ref=f5e315]: No comments
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e316]: Published2026/10/18 at 10:58 am
+                - row [ref=f5e317]:
+                  - cell "Select Test post 9" [ref=f5e318]:
+                    - checkbox "Select Test post 9" [ref=f5e319] [cursor=pointer]
+                  - rowheader "Test post 9" [ref=f5e322]:
+                    - strong [ref=f5e323]:
+                      - link "Test post 9" [ref=f5e324] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=12&action=edit
+                    - generic [ref=f5e325]:
+                      - generic [ref=f5e326]:
+                        - link "Edit “Test post 9”" [ref=f5e327] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=12&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e328]:
+                        - button "Quick edit “Test post 9” inline" [ref=f5e329] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e330]:
+                        - link "Move “Test post 9” to the Trash" [ref=f5e331] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=12&action=trash&_wpnonce=edd4dc913a
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Test post 9”" [ref=f5e333] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=12
+                        - text: View
+                  - cell "(no author)" [ref=f5e334]: —
+                  - cell [ref=f5e336]:
+                    - link "Uncategorized" [ref=f5e337] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e338]: —
+                  - cell "No comments" [ref=f5e340]:
+                    - generic [ref=f5e341]:
+                      - text: —
+                      - generic [ref=f5e342]: No comments
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e343]: Published2026/10/18 at 10:58 am
+                - row [ref=f5e344]:
+                  - cell "Select Test post 8" [ref=f5e345]:
+                    - checkbox "Select Test post 8" [ref=f5e346] [cursor=pointer]
+                  - rowheader "Test post 8" [ref=f5e349]:
+                    - strong [ref=f5e350]:
+                      - link "Test post 8" [ref=f5e351] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=11&action=edit
+                    - generic [ref=f5e352]:
+                      - generic [ref=f5e353]:
+                        - link "Edit “Test post 8”" [ref=f5e354] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=11&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e355]:
+                        - button "Quick edit “Test post 8” inline" [ref=f5e356] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e357]:
+                        - link "Move “Test post 8” to the Trash" [ref=f5e358] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=11&action=trash&_wpnonce=55a3f0fabd
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Test post 8”" [ref=f5e360] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=11
+                        - text: View
+                  - cell "(no author)" [ref=f5e361]: —
+                  - cell [ref=f5e363]:
+                    - link "Uncategorized" [ref=f5e364] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e365]: —
+                  - cell "No comments" [ref=f5e367]:
+                    - generic [ref=f5e368]:
+                      - text: —
+                      - generic [ref=f5e369]: No comments
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e370]: Published2026/10/18 at 10:58 am
+                - row [ref=f5e371]:
+                  - cell "Select Test post 7" [ref=f5e372]:
+                    - checkbox "Select Test post 7" [ref=f5e373] [cursor=pointer]
+                  - rowheader "Test post 7" [ref=f5e376]:
+                    - strong [ref=f5e377]:
+                      - link "Test post 7" [ref=f5e378] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=10&action=edit
+                    - generic [ref=f5e379]:
+                      - generic [ref=f5e380]:
+                        - link "Edit “Test post 7”" [ref=f5e381] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=10&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e382]:
+                        - button "Quick edit “Test post 7” inline" [ref=f5e383] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e384]:
+                        - link "Move “Test post 7” to the Trash" [ref=f5e385] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=10&action=trash&_wpnonce=865e541bf3
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Test post 7”" [ref=f5e387] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=10
+                        - text: View
+                  - cell "(no author)" [ref=f5e388]: —
+                  - cell [ref=f5e390]:
+                    - link "Uncategorized" [ref=f5e391] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e392]: —
+                  - cell "No comments" [ref=f5e394]:
+                    - generic [ref=f5e395]:
+                      - text: —
+                      - generic [ref=f5e396]: No comments
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e397]: Published2026/10/18 at 10:58 am
+                - row [ref=f5e398]:
+                  - cell "Select Test post 6" [ref=f5e399]:
+                    - checkbox "Select Test post 6" [ref=f5e400] [cursor=pointer]
+                  - rowheader "Test post 6" [ref=f5e403]:
+                    - strong [ref=f5e404]:
+                      - link "Test post 6" [ref=f5e405] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=9&action=edit
+                    - generic [ref=f5e406]:
+                      - generic [ref=f5e407]:
+                        - link "Edit “Test post 6”" [ref=f5e408] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=9&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e409]:
+                        - button "Quick edit “Test post 6” inline" [ref=f5e410] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e411]:
+                        - link "Move “Test post 6” to the Trash" [ref=f5e412] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=9&action=trash&_wpnonce=1c62978240
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Test post 6”" [ref=f5e414] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=9
+                        - text: View
+                  - cell "(no author)" [ref=f5e415]: —
+                  - cell [ref=f5e417]:
+                    - link "Uncategorized" [ref=f5e418] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e419]: —
+                  - cell "No comments" [ref=f5e421]:
+                    - generic [ref=f5e422]:
+                      - text: —
+                      - generic [ref=f5e423]: No comments
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e424]: Published2026/10/18 at 10:58 am
+                - row [ref=f5e425]:
+                  - cell "Select Test post 2" [ref=f5e426]:
+                    - checkbox "Select Test post 2" [ref=f5e427] [cursor=pointer]
+                  - rowheader "Test post 2" [ref=f5e430]:
+                    - strong [ref=f5e431]:
+                      - link "Test post 2" [ref=f5e432] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=5&action=edit
+                    - generic [ref=f5e433]:
+                      - generic [ref=f5e434]:
+                        - link "Edit “Test post 2”" [ref=f5e435] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=5&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e436]:
+                        - button "Quick edit “Test post 2” inline" [ref=f5e437] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e438]:
+                        - link "Move “Test post 2” to the Trash" [ref=f5e439] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=5&action=trash&_wpnonce=3afe3430fd
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Test post 2”" [ref=f5e441] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=5
+                        - text: View
+                  - cell "(no author)" [ref=f5e442]: —
+                  - cell [ref=f5e444]:
+                    - link "Uncategorized" [ref=f5e445] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e446]: —
+                  - cell "No comments" [ref=f5e448]:
+                    - generic [ref=f5e449]:
+                      - text: —
+                      - generic [ref=f5e450]: No comments
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e451]: Published2026/10/18 at 10:58 am
+                - row [ref=f5e452]:
+                  - cell "Select Test post 1" [ref=f5e453]:
+                    - checkbox "Select Test post 1" [ref=f5e454] [cursor=pointer]
+                  - rowheader "Test post 1" [ref=f5e457]:
+                    - strong [ref=f5e458]:
+                      - link "Test post 1" [ref=f5e459] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=4&action=edit
+                    - generic [ref=f5e460]:
+                      - generic [ref=f5e461]:
+                        - link "Edit “Test post 1”" [ref=f5e462] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=4&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e463]:
+                        - button "Quick edit “Test post 1” inline" [ref=f5e464] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e465]:
+                        - link "Move “Test post 1” to the Trash" [ref=f5e466] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=4&action=trash&_wpnonce=080f8c0c2a
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Test post 1”" [ref=f5e468] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=4
+                        - text: View
+                  - cell "(no author)" [ref=f5e469]: —
+                  - cell [ref=f5e471]:
+                    - link "Uncategorized" [ref=f5e472] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e473]: —
+                  - cell "No comments" [ref=f5e475]:
+                    - generic [ref=f5e476]:
+                      - text: —
+                      - generic [ref=f5e477]: No comments
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e478]: Published2026/10/18 at 10:58 am
+                - row [ref=f5e479]:
+                  - cell "Select Hello world!" [ref=f5e480]:
+                    - checkbox "Select Hello world!" [ref=f5e481] [cursor=pointer]
+                  - rowheader "Hello world!" [ref=f5e484]:
+                    - strong [ref=f5e485]:
+                      - link "Hello world!" [ref=f5e486] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=1&action=edit
+                    - generic [ref=f5e487]:
+                      - generic [ref=f5e488]:
+                        - link "Edit “Hello world!”" [ref=f5e489] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=1&action=edit
+                          - text: Edit
+                        - text: "|"
+                      - generic [ref=f5e490]:
+                        - button "Quick edit “Hello world!” inline" [ref=f5e491] [cursor=pointer]: Quick Edit
+                        - text: "|"
+                      - generic [ref=f5e492]:
+                        - link "Move “Hello world!” to the Trash" [ref=f5e493] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=1&action=trash&_wpnonce=6ece42911b
+                          - text: Trash
+                        - text: "|"
+                      - link "View “Hello world!”" [ref=f5e495] [cursor=pointer]:
+                        - /url: http://localhost:8082/?p=1
+                        - text: View
+                  - cell [ref=f5e496]:
+                    - link "admin" [ref=f5e497] [cursor=pointer]:
+                      - /url: edit.php?post_type=post&author=1
+                  - cell [ref=f5e498]:
+                    - link "Uncategorized" [ref=f5e499] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f5e500]: —
+                  - cell [ref=f5e502]:
+                    - link "1 comment" [ref=f5e504] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit-comments.php?p=1&comment_status=approved
+                      - generic [aria-hidden] [ref=f5e505]: "1"
+                  - cell "Published 2026/10/18 at 10:58 am" [ref=f5e507]: Published2026/10/18 at 10:58 am
+              - rowgroup [ref=f5e508]:
+                - row [ref=f5e509]:
+                  - cell "Select All" [ref=f5e510]:
+                    - checkbox "Select All" [ref=f5e511] [cursor=pointer]
+                  - columnheader [ref=f5e514]:
+                    - link "Title Sort ascending." [ref=f5e515] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_type=post&ids=8&orderby=title&order=asc
+                      - generic [ref=f5e516]: Title
+                      - generic [ref=f5e520]: Sort ascending.
+                  - columnheader "Author" [ref=f5e521]
+                  - columnheader "Categories" [ref=f5e522]
+                  - columnheader "Tags" [ref=f5e523]
+                  - columnheader [ref=f5e524]:
+                    - link "Comments Sort ascending." [ref=f5e525] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_type=post&ids=8&orderby=comment_count&order=asc
+                      - generic [ref=f5e526]: Comments
+                      - generic [ref=f5e532]: Sort ascending.
+                  - columnheader [ref=f5e533]:
+                    - link "Date" [ref=f5e534] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_type=post&ids=8&orderby=date&order=asc
+            - generic [ref=f5e539]:
+              - generic [ref=f5e540]:
+                - generic [ref=f5e541]: Select bulk action
+                - combobox "Select bulk action" [ref=f5e542] [cursor=pointer]:
+                  - option "Bulk actions" [selected]
+                  - option "Bulk edit"
+                  - option "Move to Trash"
+                - button "Apply" [ref=f5e543] [cursor=pointer]
+              - generic [ref=f5e544]: 10 items
+  - contentinfo [ref=f5e546]:
+    - paragraph [ref=f5e547]:
+      - generic [ref=f5e548]:
+        - text: Thank you for creating with
+        - link "WordPress" [ref=f5e549] [cursor=pointer]:
+          - /url: https://wordpress.org/
+        - text: .
+    - paragraph [ref=f5e550]: Version 7.1.3

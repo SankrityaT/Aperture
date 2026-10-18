@@ -1,0 +1,1 @@
+{"run": "aperture-post-34", "arm": "aperture", "task": "post", "model": "haiku", "used": "aperture", "aperture_calls": 12, "browser_calls": 0, "correct": true, "seconds": 45, "cost": 0.0}
