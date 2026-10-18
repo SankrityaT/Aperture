@@ -23,6 +23,8 @@ const before = await ownerState();
 console.log("owner state keys:", Object.keys(before).join(","));
 const d = await tool("compile_site", { url: "http://127.0.0.1:9105/Login.aspx", login: "REPLICA", then: "http://127.0.0.1:9105/Devices.aspx" });
 console.log(d.data.status === "compiled" ? "PASS" : "FAIL", "devices page compiled behind the login:", d.data.status, JSON.stringify((d.data.tables ?? []).map((t: any) => t.id)), "also live:", JSON.stringify(d.data.also_compiled_and_still_live ?? []));
+const acc = await tool("compile_site", { url: "http://127.0.0.1:9105/Accounts.aspx" });
+console.log(acc.data.status === "compiled" ? "PASS" : "FAIL", "the Accounts page (where Send lives) compiles, send steps seen:", JSON.stringify(acc.data.send_steps ?? []));
 const del = await tool("apply", { op: "delete", kind: "residents", key: "1004" });
 console.log(["done", "done_with_surprise"].includes(del.data.status) ? "PASS" : "FAIL", "delete 1004 behind the login:", del.data.status ?? del.data.error, del.data.detail ?? "", JSON.stringify(del.data.verified ?? {}).slice(0, 160));
 console.log(del.data.not_yet_live ? "PASS" : "FAIL", "the receipt says the change is not yet sent to the gate:", String(del.data.not_yet_live ?? "(nothing said)").slice(0, 110));
