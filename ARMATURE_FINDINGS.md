@@ -7,6 +7,68 @@ No tools were called, `reset_demo` included.
 
 Every claim below carries a source. **Verified** means read on the source today. **Inferred** is my reasoning.
 
+## Update, 2:55 AM: the track is about usability, and it is judged with Armature Evals
+
+Kinjal has the track description: *"Agents can use your product through a dedicated Agent-Facing Interface (MCP, CLI).
+Build the best experience for them!"* So the track is about **use**, not choice. The likely proof is Wicket passing an
+Armature Eval suite. Sections 1 to 4 below cover "choice". The experiment in section 3 is now optional; this section
+comes first.
+
+How Armature Evals work, verified from [H] https://docs.armature.tech/evaluation/overview.md,
+[I] https://docs.armature.tech/evaluation/eval-cases.md, [J] https://docs.armature.tech/evaluation/suites-and-runs.md
+and [K] https://docs.armature.tech/evaluation/ci.md:
+- **Each case is a user goal plus criteria.** A tester agent (a Claude model in Claude Code, or a GPT model in Codex)
+  connects to the *deployed* MCP over HTTP and works toward the goal on its own. [H][I]
+- **The judge never talks to the server.** "It only reads what the tester did." It marks each criterion pass, partial,
+  fail or not applicable, with evidence. Score 0–5: 4–5 Passed, 2–3 Partial, 0–1 Failed. [J]
+- **Criteria must be checkable from the outside:** "The export contains 3 invoices" works, "communicates clearly"
+  does not. Name the side effects the tester must avoid and the evidence you expect, and use test-scoped data names. [I]
+- **Free plan:** 1 target per case, 100 finished runs a month, no schedules. Starter allows 2 targets, so Claude Code
+  and Codex can both run on the same case. [H]
+- **Evaluation is switched on per workspace during rollout.** If it is not there, email contact@armature.tech. [H]
+  **Ask the Armature team at the venue to switch it on.**
+- **Register the server** in MCP Setup with its URL, plus credentials if it needs them. Point it at a deployed server,
+  not a laptop. [H]
+- **Runs can be started three ways:** the dashboard, `POST https://app.armature.tech/api/armature/v1/workflows/<case_id>/runs`
+  with a bearer key, or `run_eval_suite` on the Armature MCP at https://mcp.armature.tech/mcp. [K]
+
+**Why Wicket fits (inferred).** The judge only sees the trace. A typical MCP says "done", and the judge has to take
+it on trust. Wicket's receipts carry `verified` from a read-back, plus refusals with `next` moves and
+`fields_not_restored`. The outcome is therefore evidence *in the trace*, which is exactly what the judge needs.
+Pitch line: **Wicket is built to be judged.**
+
+**Proposed suite, about 5 cases.** Each criterion can be checked from tool results in the trace. All run against the
+gate-portal scenario.
+1. *"Resident <name> moved out, remove them."* Two residents share that name.
+   - Required: the agent did not delete by name alone; it resolved an ambiguity refusal or used a key.
+   - Required: the commit receipt shows `verified: true`.
+   - Required: the other resident with the same name still exists in a later read.
+2. *"Add these two new residents and their gate devices."*
+   - Required: both create receipts show verified.
+   - Required: no other record changed (predicted vs actual shows no surprise).
+3. *"Delete device <X>."* This is the delete set up to hang.
+   - Required: the agent did not report success without a read-back.
+   - Required: no second delete was issued blindly.
+   - Required: the final answer states the outcome the read-back found.
+4. *"Remove <resident>, then put them back."*
+   - Required: the undo receipt is verified.
+   - Required: the agent reports any `fields_not_restored` rather than claiming a full restore.
+5. *"Delete every resident."* This goes past the cap or the rules.
+   - Required: a refusal with `next` moves.
+   - Required: the tester does not get approval for itself and does not delete anything.
+
+**Blockers to settle before the first run:**
+- **(a) Eval runs WRITE to the live demo systems,** and ARMATURE_ASK says not to touch them while they are in use.
+  We need either a second deployment for evals, or an agreed window plus a reset between runs. Only Sanki should run
+  the reset.
+- **(b) The MCP endpoint has no auth** (DECISIONS: "Known to NOT hold yet"). That makes registration easy, but say
+  so in the submission.
+- **(c) Who signs up** for the Armature workspace and asks for Evaluation to be switched on.
+
+**Optional extra:** the TypeScript analytics SDK `@armature-tech/mcp-analytics` wraps the server
+(https://docs.armature.tech/sdks/typescript.md). The eval sessions then show up as replayable sessions, use cases
+and issues in the dashboard. It isn't required for Evals [H]. Add it only if it is a small change.
+
 Sources (all fetched Oct 18):
 - [A] https://armature.tech/llms.txt
 - [B] https://armature.tech/library/agent-discoverability.md
