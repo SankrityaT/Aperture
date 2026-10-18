@@ -28,6 +28,8 @@ export interface TableModel {
   frame: string | null; frameName: string;
   columns: string[]; keyColumn: string | null; keyParam: string | null; keySource: "column" | "link" | "none";
   actions: { label: string; type: ActionType }[]; add: string | null; paged: boolean; scrolls: boolean; rows: number;
+  /** Controls the application itself offers that may reverse or soften a change: archive, restore, deactivate, history, export, import. Seen, never used. */
+  recoveryHints?: string[];
 }
 
 /** A compiled capability no longer matches the page. The engine turns this into a disabled capability, never a retry. */
@@ -580,6 +582,7 @@ export class TableAdapter implements Adapter {
           columns: cols.map((i) => t.headers[i]!), keyColumn: k.column, keyParam: k.param, keySource: k.source,
           actions: [...types].map(([label, type]) => ({ label, type })).filter((a) => a.type !== "other"),
           add: add?.label ?? null, paged: !!(t.next || t.canNext), scrolls: false, rows: t.rows.length,
+          recoveryHints: [...new Set([...types.keys(), ...t.adds.map((a) => a.label)].filter((l) => /archiv|restor|deactivat|disabl|suspend|trash|undelete|history|revert|rollback|export|import|duplicate|clone/i.test(l)))].slice(0, 8),
         };
         // No pager? Then maybe more rows appear as you scroll. Try once, and remember the answer.
         if (!model.paged) {

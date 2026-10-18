@@ -161,3 +161,18 @@ test("a real row with a blank key still fails closed: no key is chosen", async (
     assert.notEqual(m!.keyColumn, "Id");
   } finally { await fa.close(); srv.close(); }
 });
+
+test("recovery controls the application itself offers (archive, restore, export) are seen and reported, not used", async () => {
+  const { createServer } = await import("node:http");
+  const rows = [["Ana", "1"], ["Ben", "2"], ["Cho", "3"]];
+  const html = `<!doctype html><title>People</title><a href="/export">Export CSV</a><table><thead><tr><th>Id</th><th>Name</th><th>Actions</th></tr></thead><tbody>${rows.map(([n, id]) => `<tr><td>${id}</td><td>${n}</td><td><a href="/del?id=${id}">Delete</a> <a href="/archive?id=${id}">Archive</a></td></tr>`).join("")}</tbody></table>`;
+  const srv = createServer((_, res) => { res.setHeader("content-type", "text/html"); res.end(html); });
+  await new Promise<void>((r) => srv.listen(0, "127.0.0.1", r));
+  const fa = new FormAdapter();
+  try {
+    await fa.compile(`http://127.0.0.1:${(srv.address() as { port: number }).port}/`);
+    const ta = new TableAdapter(() => fa.currentPage());
+    const [m] = await ta.attach();
+    assert.ok(m!.recoveryHints?.some((h) => /archive/i.test(h)), `hints: ${JSON.stringify(m!.recoveryHints)}`);
+  } finally { await fa.close(); srv.close(); }
+});

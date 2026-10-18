@@ -46,8 +46,15 @@ if (process.env.WICKET_WORKER_URL) {
 const wicket = new Wicket(new CompositeAdapter([...(process.env.WICKET_FAKE_SCHOOL === "1" ? [new FakeSchool()] : []), forms, tables]), { rules, ...(process.env.WICKET_LEDGER_PATH ? { ledger: new FileLedger(process.env.WICKET_LEDGER_PATH) } : {}) });
 
 /** Small on purpose: an agent pays for every token of this. */
-const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), ...(t.keySource === "none" ? { writes: "refused: no column or link on this list identifies a row uniquely, so a change could hit the wrong record. Reading and previews are unavailable for the same reason." } : {}), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}) });
+const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), ...(t.keySource === "none" ? { writes: "refused: no column or link on this list identifies a row uniquely, so a change could hit the wrong record. Reading and previews are unavailable for the same reason." } : {}), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}), ...(t.recoveryHints?.length ? { recovery_options_seen: t.recoveryHints, recovery_note: "The application offers these. Wicket has not used or tested them; ask the owner whether a reversible option (archive, deactivate) is enough before deleting." } : {}) });
 
+/** Tables from the page just compiled come first and in full. Lists compiled earlier from other pages stay live; they are named so the agent knows. */
+const thisPageTables = (all: TableModel[], pageUrl: string) => {
+  const mine = all.filter((x) => x.url === pageUrl);
+  const here = mine.length ? mine : all;
+  const others = all.filter((x) => !here.includes(x)).map((x) => x.id);
+  return { tables: here.map(tableView), ...(others.length ? { also_compiled_and_still_live: others } : {}) };
+};
 const reply = (obj: Record<string, unknown>) => ({
   content: [{ type: "text" as const, text: JSON.stringify(obj) }],
   structuredContent: obj,
@@ -149,7 +156,7 @@ server.tool(
       for (const f of s.forms) rules.set(f.id, "update", [], true); // filling fields is a reversible draft
       const t = await tables.attach();
       wicket.flush();
-      return reply({ status: "compiled", ...s, ...(t.length ? { tables: t.map(tableView) } : {}), next: ["records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
+      return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
     } catch (e) { return compileFail(e); }
   },
 );
@@ -167,7 +174,7 @@ server.tool(
       for (const f of s.forms) rules.set(f.id, "update", [], true);
       const t = await tables.attach();
       wicket.flush();
-      return reply({ status: "refreshed", ...s, ...(t.length ? { tables: t.map(tableView) } : {}) });
+      return reply({ status: "refreshed", ...s, ...(t.length ? thisPageTables(t, s.url) : {}) });
     } catch (e) { return compileFail(e); }
   },
 );

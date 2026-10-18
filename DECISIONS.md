@@ -54,6 +54,39 @@ At run time of a saved write (CONFIRMED by reading `context.ts`, `operation.ts`,
 
 What we take: the idea that the agent proposes and the host validates; the fail-closed "unknown, never retry" stance (we now persist `executing` plus the undo copy before acting and require `reconcile` after a restart). What we do NOT claim: that we are more reliable than them. They adapt to sites we cannot read, and we have no comparison.
 
+
+## Measured results (night of Oct 17-18; each is reproducible from the repo)
+
+### Speed of one verified cascading delete (replica gate portal, 91 residents / 168 devices; `test/bench-delete.ts`, one run each, same machine)
+| Version | Time | Page loads |
+|---|---|---|
+| `baseline-v1` (tag) | 27.8 s | 128 |
+| now (scan reuse inside one operation, early-exit read, counts reuse a recent scan, adapters invalidated after every write) | about 15 s | 66 |
+A faster version (40 loads, 9 s) was caught giving a FALSE surprise: one adapter's cache was not cleared by a write through another adapter. That bug is fixed (engine tells every adapter to invalidate after a write); the honest cost is about 15 s. Single runs, not a statistic. Armature's per-call timeout is 30 s.
+
+### When the site changes under a compiled capability (`test/drift-compare.ts`, graded from the replica's own state, one engine at a time, fresh browser per scenario)
+| Scenario | Old compiler | New engine |
+|---|---|---|
+| a non-key column renamed | worked, deleted correctly | worked, deleted correctly (noted) |
+| the KEY column renamed | kept working (re-detected the key) | stopped in 0.4 s: capability_changed; repair is tested against earlier records and re-enables |
+| Delete becomes Archive (meaning changed) | find said 91, delete failed after 13 s | stopped in 0.5 s with the reason; repair REFUSED (delete no longer means delete), owner told |
+| a decoy table inserted before the real one | worked | worked |
+| signed out | find returned "0 records" as if true | signed_out, not disabled |
+| Delete button no longer deletes | failed (read-back) | failed (read-back) |
+| smaller pages | worked | worked |
+| keys reused: same key now names someone else | (not run on the old compiler with the identity check; see below) | stopped: capability_changed, nobody deleted |
+No false success and no wrong-record delete in any scenario for either version, EXCEPT the reused-keys case, which only the identity check catches (before it was added, both engines acted on the wrong person; that run is the reason the check exists). Trade-off to state plainly: on the renamed-key case the old compiler kept going correctly and the new one halts until a repair; the new one is safer where the old one could silently change which column identifies a person, and less available.
+Not measured: a normal AI browser agent as a third arm; cost in money; shared repairs across agents; scheduled health checks; a model-based repairer (the repair is deterministic re-learning plus tests, not a model).
+
+### Held-out public apps (read-only, `test/heldout.ts`; fixed after seeing failures, so re-checks are NOT independent)
+OpenEMR demo: worked first try. Moodle sandbox: missed, then worked after two generic fixes (a name linking to a profile page was thrown away as an "actions" column; blank placeholder rows defeated key detection). OrangeHRM demo: signs in after a fix, and correctly refuses writes (no unique key).
+
+### Bugs found by Armature's first live run, fixed
+(A) compiling a second page wiped the first; now pages add to each other. (B) a declared dependency on an uncompiled page threw a raw string; now a typed refusal, and no tool answers with bare text. Both are in the live suite (18/18). Found by running the real flow, not by unit tests.
+
+### Recovery (Wicket Recovery Planner idea)
+Built: every plan and receipt names its recovery strategy and how exact it is expected to be; what undo failed to restore is remembered per kind and warned about in the next preview; the application's own recovery controls (archive, restore, deactivate, history, export, import, duplicate) are listed when a page is compiled, seen and never used. Designed, NOT built: choosing a reversible alternative automatically, using native restore or import, testing reversibility on synthetic records in a sandbox, the 100-operation recovery benchmark. Exact, functionally-equivalent, partial and irreversible are not yet scored over many operations; the only undo evidence is a handful of runs.
+
 ## Designs agreed but not built
 
 **Delegation (replaces default approval).** The owner, through the owner page and never an agent tool, grants a bounded authority once: kinds, operations, a per-day cap, an expiry. Inside it, operations run without per-item approval, always with a full copy and a canary. Outside it, or on any surprise, ambiguous key, unknown outcome or cap hit, the engine halts and escalates. Success measure: autonomous completion with zero unauthorized actions, not fewer approval screens.

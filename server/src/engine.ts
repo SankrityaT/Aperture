@@ -106,12 +106,12 @@ export class Wicket {
     if (!this.ledger) return;
     this.ledger.save({
       v: 1, plans: [...this.plans.values()], receipts: [...this.receipts.values()], escalations: this.escalations,
-      delegations: [...this.delegations.values()], contracts: [...this.contracts.values()], seq: this.seq, deletesToday: this.deletesToday, mandate: this.mandate, rules: this.rules.exportRules(),
+      delegations: [...this.delegations.values()], lessons: [...this.lessons.entries()], contracts: [...this.contracts.values()], seq: this.seq, deletesToday: this.deletesToday, mandate: this.mandate, rules: this.rules.exportRules(),
     });
   }
 
   private restore(): void {
-    const s = this.ledger?.load() as { plans?: Plan[]; receipts?: Receipt[]; escalations?: Escalation[]; delegations?: Delegation[]; contracts?: ContractRecord[]; seq?: { pln: number; rcpt: number; esc: number }; deletesToday?: number; mandate?: Mandate; rules?: { kind: string; op: "delete" | "create" | "update"; cascades: { kind: string; by: string }[]; vouched: boolean }[] } | null;
+    const s = this.ledger?.load() as { plans?: Plan[]; receipts?: Receipt[]; escalations?: Escalation[]; delegations?: Delegation[]; contracts?: ContractRecord[]; lessons?: [string, string[]][]; seq?: { pln: number; rcpt: number; esc: number }; deletesToday?: number; mandate?: Mandate; rules?: { kind: string; op: "delete" | "create" | "update"; cascades: { kind: string; by: string }[]; vouched: boolean }[] } | null;
     if (!s) return;
     for (const p of s.plans ?? []) {
       // The server stopped while this change was running. Whether it happened is not known, and it must not be retried blind.
@@ -122,6 +122,7 @@ export class Wicket {
     this.escalations.push(...(s.escalations ?? []));
     for (const d of s.delegations ?? []) this.delegations.set(d.id, d);
     for (const c of s.contracts ?? []) this.contracts.set(c.kind, c);
+    for (const [k, v] of s.lessons ?? []) this.lessons.set(k, v);
     if (s.seq) this.seq = s.seq;
     if (typeof s.deletesToday === "number") this.deletesToday = s.deletesToday;
     if (s.mandate) this.mandate = { ...this.mandate, ...s.mandate };
@@ -453,7 +454,7 @@ export class Wicket {
 
   private finish(plan: Plan, snapshot: Snapshotted[], r: { status: Receipt["status"]; verified: Record<string, unknown>; surprise?: Receipt["surprise"] }, t0: number): Receipt {
     const t = this.now();
-    const receipt: Receipt = { id: `rcpt_${(++this.seq.rcpt).toString(36)}`, planId: plan.id, op: plan.op, at: t, status: r.status, verified: r.verified, snapshot, undoUntil: t + this.mandate.undoWindowMs, authority: plan.delegatedBy ?? (plan.confirmed ? "confirmed rule" : "owner approval"), ...(r.surprise ? { surprise: r.surprise } : {}) };
+    const receipt: Receipt = { id: `rcpt_${(++this.seq.rcpt).toString(36)}`, planId: plan.id, op: plan.op, at: t, status: r.status, verified: r.verified, snapshot, undoUntil: t + this.mandate.undoWindowMs, authority: plan.delegatedBy ?? (plan.confirmed ? "confirmed rule" : "owner approval"), ...(plan.recovery ? { recovery: plan.recovery } : {}), ...(r.surprise ? { surprise: r.surprise } : {}) };
     if (plan.delegatedBy) {
       const d = this.delegations.get(plan.delegatedBy);
       if (d) { d.used++; if (r.status !== "done") d.paused = `receipt ${receipt.id} was ${r.status}: the delegation is paused until the owner resumes it`; }
@@ -533,6 +534,20 @@ export class Wicket {
     const m = /unknown kind (\S+)/.exec(msg);
     if (m) return this.r(refuse("unknown_kind", `No kind '${m[1]}' is compiled.`, [`compile_site the page that holds '${m[1]}' (find_systems lists the systems)`, `compiled now: ${this.adapter.kinds().join(", ") || "nothing"}`]));
     return this.r(refuse("internal_error", `Something failed inside Wicket: ${msg}`, ["nothing is known to have changed by this call unless a receipt says so", "try again once; if it repeats, escalate with this message"], { detail_for_owner: msg }));
+  }
+
+  // ---------- recovery: say how a change can be reversed BEFORE doing it, and remember what undo could not restore ----------
+
+  /** What undo of each kind of change has failed to restore before (for example an id the app reissued). Persisted. */
+  private lessons = new Map<string, string[]>();
+
+  private recoveryFor(op: Op): NonNullable<Plan["recovery"]> {
+    const lessons = op.kind ? this.lessons.get(`${op.kind}:${op.op}`) : undefined;
+    const l = lessons?.length ? { lessons } : {};
+    if (op.op === "delete") return { strategy: "recreate_from_saved_copy", expected: lessons?.length ? "partial: this system has not given back everything last time (see lessons)" : "functionally equivalent: the record comes back with its saved values; ids and links the app assigns itself may differ", ...l };
+    if (op.op === "create") return { strategy: "delete_what_was_created", expected: "exact: the new record is removed again", ...l };
+    if (op.op === "update") return { strategy: "write_back_old_values", expected: "exact for the fields changed, if the app stores what it is given", ...l };
+    return { strategy: "none", expected: "cannot be reversed: it has gone outside this system" };
   }
 
   // ---------- contracts: a compiled capability is only trusted while the page still matches it ----------
@@ -633,6 +648,7 @@ export class Wicket {
   /** Inside a delegation the per-item approval is replaced by the owner's earlier grant. Everything else (full copy, canary, caps, refusals) still applies. */
   private applyDelegation(plan: Plan): void {
     const { op } = plan;
+    plan.recovery = this.recoveryFor(op);
     if (!plan.needsApproval || !op.kind || op.op === "publish") return;
     const d = this.delegationFor(op.kind, op.op);
     if (!d) return;
@@ -682,9 +698,9 @@ export class Wicket {
   present(x: Receipt | Refusal | Plan): Record<string, unknown> {
     if (isRefusal(x)) return x;
     if ("planId" in x) {
-      return { status: x.status, receipt: x.id, authority: x.authority, verified: x.verified, undo_until: new Date(x.undoUntil).toISOString(), ...(x.surprise ? { surprise: x.surprise, note: x.verified?.restorable === false ? "The system did more than predicted and the extra items were NOT saved, so undo restores only the item you named. The rule was learned: the next one takes a full copy first. Use canary on batches." : "The system did more than predicted. The rule was learned and everything removed is saved, so undo restores it." } : {}), ...(x.op.op === "publish" ? { note: "Published. This cannot be recalled." } : {}) };
+      return { status: x.status, receipt: x.id, authority: x.authority, ...(x.recovery ? { recovery: x.recovery } : {}), verified: x.verified, undo_until: new Date(x.undoUntil).toISOString(), ...(x.surprise ? { surprise: x.surprise, note: x.verified?.restorable === false ? "The system did more than predicted and the extra items were NOT saved, so undo restores only the item you named. The rule was learned: the next one takes a full copy first. Use canary on batches." : "The system did more than predicted. The rule was learned and everything removed is saved, so undo restores it." } : {}), ...(x.op.op === "publish" ? { note: "Published. This cannot be recalled." } : {}) };
     }
-    return { status: x.status, plan_id: x.id, diff: x.diff };
+    return { status: x.status, plan_id: x.id, diff: x.diff, ...(x.recovery ? { recovery: x.recovery } : {}) };
   }
 
   // ---------- undo ----------
@@ -736,6 +752,8 @@ export class Wicket {
       rc.status = "undone";
       this.persist();
       this.metrics.undos++;
+      if (notRestored.length && rc.op.kind) { const key = `${rc.op.kind}:${rc.op.op}`; const had = this.lessons.get(key) ?? []; this.lessons.set(key, [...new Set([...had, ...notRestored.map((f) => `undo did not give back '${f}' as it was`)])].slice(0, 6)); }
+      this.persist();
       return { status: "undone", receipt: rc.id, verified: { restored, ...(notRestored.length ? { fields_not_restored: notRestored } : {}), counts_before: before, counts_after: after }, note: rc.op.op === "delete" ? "Restored from the copy saved before the change." : rc.op.op === "update" ? "Put the old values back." : "Removed what was created." };
     });
   }

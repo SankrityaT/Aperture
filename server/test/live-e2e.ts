@@ -85,9 +85,9 @@ check("the delete went through the owner's delegation and the check matched", de
 check("ground truth: that resident and their devices are gone, nobody else", after.residents === gate.residents - 1 && after.devices < gate.devices && !truth(9104, "/__state").dirs.includes("1004"));
 const und = await tool("undo", { receipt_id: del.data.receipt });
 check("undo restores them", und.data.status === "undone" && truth(9104, "/__state").dirs.includes("1004"));
-const dep = await own("/owner/dependency", { kind: "residents", cascade_kind: "nonexistent_kind", by: "Dir" });
-const bad = await tool("apply", { op: "delete", kind: "residents", key: "1010" });
-check("a dependency on a page that is not compiled is a typed refusal with next moves", bad.isError && !!bad.data.error && !!bad.data.detail && Array.isArray(bad.data.next), JSON.stringify(bad.data).slice(0, 120));
+await own("/owner/dependency", { kind: "residents", cascade_kind: "nonexistent_kind", by: "Dir" });
+const badDep = await tool("apply", { op: "delete", kind: "residents", key: "1010" });
+check("a dependency on a page that is not compiled is a typed refusal with next moves", badDep.isError && !!badDep.data.error && !!badDep.data.detail && Array.isArray(badDep.data.next), JSON.stringify(badDep.data).slice(0, 120));
 
 console.log("\n--- 5. reset for the next judge");
 await fetch(`${base}/owner/demo?token=${process.env.OWNER_TOKEN ?? ""}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "reset" }) });

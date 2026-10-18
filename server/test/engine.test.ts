@@ -331,3 +331,28 @@ test("ledger: the file is only readable by its owner, and an unreadable ledger i
   assert.throws(() => new FileLedger(path).load(), /could not be read/);
   assert.equal(readF(path, "utf8"), "{not json");
 });
+
+test("recovery: a preview names how the change would be reversed, and after an undo that could not restore a field, the next preview warns about it", async () => {
+  // A system that gives a re-created record a new student number, like the school page did (S2 came back as S6).
+  const rows = new Map<string, Record<string, unknown>>([["a", { key: "a", name: "Ben", number: "S2" }], ["b", { key: "b", name: "Cy", number: "S3" }]]);
+  let n = 100;
+  const stub = {
+    kinds: () => ["person"], read: async (_k: string, key: string) => (rows.has(key) ? { ...rows.get(key)! } : null),
+    list: async () => [...rows.values()].map((r) => ({ ...r })), delete: async (_k: string, key: string) => { rows.delete(key); },
+    create: async (_k: string, rec: Record<string, unknown>) => { rows.set(String(rec.key), { ...rec, number: `S${n++}` }); },
+    counts: async () => ({ person: rows.size }), exportAll: async () => ({ person: [...rows.values()].map((r) => ({ ...r })) }),
+    pendingPublish: async () => [], publish: async () => ({ published: 0, notified: 0 }), reset: async () => undefined,
+  };
+  const w = new Wicket(stub as never, { rules: new RuleBook(), cacheTtlMs: 0 });
+  w.delegate({ kinds: ["person"], ops: ["delete"], limit: 5, ttlMs: 60_000 });
+  const first = (await w.apply({ op: "delete", kind: "person", key: "a" })) as { receipt: string; recovery?: { strategy: string; expected: string; lessons?: string[] } };
+  assert.equal(first.recovery?.strategy, "recreate_from_saved_copy");
+  assert.match(first.recovery!.expected, /functionally equivalent/);
+  assert.equal(first.recovery?.lessons, undefined, "nothing learned yet");
+  const u = (await w.undo(first.receipt)) as { verified: { fields_not_restored?: string[] } };
+  assert.deepEqual(u.verified.fields_not_restored, ["number"]);
+  // the next agent is told before it acts
+  const p = (await w.preview({ op: "delete", kind: "person", key: "b" })) as { recovery?: { expected: string; lessons?: string[] } };
+  assert.match(p.recovery!.expected, /partial/);
+  assert.ok(p.recovery!.lessons!.some((l) => /number/.test(l)));
+});

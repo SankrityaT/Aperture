@@ -72,6 +72,8 @@ export interface Plan {
   asOfMs: number;
   /** Set when the owner's standing delegation, not a per-item approval, lets this plan commit. */
   delegatedBy?: string;
+  /** How this change could be reversed, and how exact that reversal is expected to be. Said before the change, not after. */
+  recovery?: { strategy: string; expected: string; lessons?: string[] };
   /** The undo copy, kept with the plan from the moment execution starts, so it survives a crash. */
   snapshot?: Snapshotted[];
 }
@@ -98,6 +100,7 @@ export interface Receipt {
   surprise?: { kind: Kind; delta: number }[];
   /** Who authorized it: 'owner approval' or the delegation id. */
   authority?: string;
+  recovery?: { strategy: string; expected: string; lessons?: string[] };
 }
 
 export interface Mandate {
