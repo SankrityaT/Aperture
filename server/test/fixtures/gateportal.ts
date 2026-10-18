@@ -24,7 +24,7 @@ export interface GatePortal {
 }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
-const PAGE = 10;
+const BASE_PAGE = 10;
 const FIRST = ["Ana", "Ben", "Cho", "Dev", "Eli", "Fay", "Gus", "Hal", "Ivy", "Jon", "Kai", "Lea", "Mo", "Nia", "Oz", "Pia", "Quin", "Rue", "Sol", "Tia"];
 const LAST = ["Alder", "Brook", "Cole", "Dunn", "Ellis", "Frost", "Gray", "Hale", "Ito"];
 
@@ -49,7 +49,14 @@ function seed(): { residents: Resident[]; devices: Device[] } {
 
 interface View { page: number; addOpen: boolean; error: string; flt: string }
 
-export async function startGatePortal(port = 0): Promise<GatePortal & { reset(): void }> {
+export async function startGatePortal(port = 0): Promise<GatePortal & { reset(): void; setDrift(mode: string): void }> {
+  // 'The site changed' modes, for testing what a compiled integration does when its page is edited under it:
+  //   rename_col  a non-key column is renamed          rename_key  the key column is renamed
+  //   no_delete   the Delete control becomes 'Archive' decoy      a different table is inserted before the real one
+  //   signedout   the page asks for a sign-in          archive     'Delete' stays on the page but no longer deletes
+  //   paging      smaller pages
+  let drift = "";
+  const PAGE_FOR = () => (drift === "paging" ? 5 : BASE_PAGE);
   const state: GatePortal["state"] = { ...seed(), sends: 0 };
   const initial = structuredClone(state);
   const hangs: { noop: Set<string>; after: Set<string> } = { noop: new Set<string>(), after: new Set<string>() };
@@ -68,15 +75,19 @@ ${nav}<div id="toolbar"><input type="submit" name="btnSend" value="Send Data" id
 
   const residentsPage = (v: View) => {
     const list = state.residents.filter((r) => !v.flt || r.name.toLowerCase().includes(v.flt.toLowerCase()) || r.dir.includes(v.flt));
+    const PAGE = PAGE_FOR();
     const pages = Math.max(1, Math.ceil(list.length / PAGE));
     const slice = list.slice((v.page - 1) * PAGE, v.page * PAGE);
-    const rows = slice.map((r, i) => `<tr class="rgRow"><td>${(v.page - 1) * PAGE + i + 1}</td><td>${esc(r.name)}</td><td>${r.dir}</td><td>${esc(r.unit)}</td><td><a href="javascript:__doPostBack('gv','Delete$${r.dir}')" onclick="return confirm('Delete this resident and their devices?');">Delete</a></td></tr>`).join("");
+    const rows = slice.map((r, i) => `<tr class="rgRow"><td>${(v.page - 1) * PAGE + i + 1}</td><td>${esc(r.name)}</td><td>${r.dir}</td><td>${esc(r.unit)}</td><td>${drift === "no_delete" ? `<a href="javascript:__doPostBack('gv','Archive$${r.dir}')" onclick="return confirm('Archive this resident?');">Archive</a>` : `<a href="javascript:__doPostBack('gv','Delete$${r.dir}')" onclick="return confirm('Delete this resident and their devices?');">Delete</a>`}</td></tr>`).join("");
     const panel = v.addOpen ? `<div id="pnlAdd"><h3>Add resident</h3>${v.error ? `<span class="err">${esc(v.error)}</span>` : ""}<label for="txtName">Name</label><input type="text" id="txtName" name="txtName"><label for="txtDir">Dir</label><input type="text" id="txtDir" name="txtDir"><label for="txtUnit">Unit</label><input type="text" id="txtUnit" name="txtUnit"><input type="submit" name="btnSave" value="Save" id="btnSave"><input type="submit" name="btnCancel" value="Cancel" id="btnCancel"></div>` : "";
-    return shell("Residents", `<table id="gv" class="rgMasterTable"><tr><th>&nbsp;</th><th>Resident</th><th>Dir</th><th>Unit</th><th>&nbsp;</th></tr><tr class="rgFilterRow"><td></td><td><input type="text" name="fRes" value="${esc(v.flt)}"></td><td><input type="text" name="fDir"></td><td></td><td><input type="image" name="fGo" alt="Filter" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="></td></tr>${rows}<tr class="rgPager"><td colspan="5"><table><tr>${pager(pages, v.page)}</tr></table></td></tr></table>${panel}`, v);
+    if (drift === "signedout") return `<!doctype html><html><body><form method="post"><h2>Sign in</h2><input type="text" name="user"><input type="password" name="pw"><input type="submit" value="Sign in"></form></body></html>`;
+    const decoy = drift === "decoy" ? `<table id="notices"><tr><th>Notice</th><th>Date</th></tr><tr><td>Gate closed Friday</td><td>10/20</td></tr><tr><td>Pool open</td><td>10/21</td></tr></table>` : "";
+    return shell("Residents", `${decoy}<table id="gv" class="rgMasterTable"><tr><th>&nbsp;</th><th>${drift === "rename_col" ? "Full name" : "Resident"}</th><th>${drift === "rename_key" ? "Directory code" : "Dir"}</th><th>Unit</th><th>&nbsp;</th></tr><tr class="rgFilterRow"><td></td><td><input type="text" name="fRes" value="${esc(v.flt)}"></td><td><input type="text" name="fDir"></td><td></td><td><input type="image" name="fGo" alt="Filter" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="></td></tr>${rows}<tr class="rgPager"><td colspan="5"><table><tr>${pager(pages, v.page)}</tr></table></td></tr></table>${panel}`, v);
   };
 
   const devicesPage = (v: View) => {
     const list = state.devices;
+    const PAGE = PAGE_FOR();
     const pages = Math.max(1, Math.ceil(list.length / PAGE));
     const slice = list.slice((v.page - 1) * PAGE, v.page * PAGE);
     const rows = slice.map((d, i) => `<tr class="rgRow"><td>${(v.page - 1) * PAGE + i + 1}</td><td>${d.id}</td><td>${d.dir}</td><td>${esc(d.kind)}</td><td><a href="javascript:__doPostBack('gv','Delete$${d.id}')" onclick="return confirm('Delete this device?');">Delete</a></td></tr>`).join("");
@@ -89,8 +100,9 @@ ${nav}<div id="toolbar"><input type="submit" name="btnSend" value="Send Data" id
     const path = new URL(req.url ?? "/", "http://x").pathname;
     const url = new URL(req.url ?? "/", "http://x");
     const html = (b: string) => { res.setHeader("content-type", "text/html"); res.end(b); };
-    if (path === "/__reset") { Object.assign(state, structuredClone(initial)); hangs.noop.clear(); hangs.after.clear(); res.end("reset"); return; }
+    if (path === "/__reset") { Object.assign(state, structuredClone(initial)); hangs.noop.clear(); hangs.after.clear(); drift = ""; res.end("reset"); return; }
     if (path === "/__state") { res.setHeader("content-type", "application/json"); return void res.end(JSON.stringify({ residents: state.residents.length, devices: state.devices.length, sends: state.sends, dirs: state.residents.map((r) => r.dir) })); }
+    if (path === "/__drift") { drift = url.searchParams.get("mode") ?? ""; return void res.end("ok"); }
     if (path === "/__hang") { hangs.noop = new Set((url.searchParams.get("noop") ?? "").split(",").filter(Boolean)); hangs.after = new Set((url.searchParams.get("after") ?? "").split(",").filter(Boolean)); return void res.end("ok"); }
     if (path !== "/Residents.aspx" && path !== "/Devices.aspx") { res.statusCode = 404; return void html("<h1>Not found</h1>"); }
     const isRes = path === "/Residents.aspx";
@@ -104,7 +116,8 @@ ${nav}<div id="toolbar"><input type="submit" name="btnSend" value="Send Data" id
       let hold = false;
       if (target === "gv" && arg.startsWith("Delete$")) {
         const id = arg.split("$")[1]!;
-        if (isRes) {
+        if (isRes && drift === "archive") { /* the button is still there; it no longer deletes */ }
+        else if (isRes) {
           if (hangs.noop.has(id) || hangs.after.has(id)) {
             if (hangs.after.has(id)) { state.devices = state.devices.filter((d) => d.dir !== id); state.residents = state.residents.filter((r) => r.dir !== id); }
             hold = true; // never answers
@@ -131,7 +144,8 @@ ${nav}<div id="toolbar"><input type="submit" name="btnSend" value="Send Data" id
   return {
     url: `http://127.0.0.1:${bound}`, state,
     hang: (dirs, mode) => { (mode === "after" ? hangs.after : hangs.noop).clear(); dirs.forEach((d) => (mode === "after" ? hangs.after : hangs.noop).add(d)); },
-    reset: () => { Object.assign(state, structuredClone(initial)); hangs.noop.clear(); hangs.after.clear(); },
+    reset: () => { Object.assign(state, structuredClone(initial)); hangs.noop.clear(); hangs.after.clear(); drift = ""; },
+    setDrift: (m: string) => { drift = m; },
     close: () => new Promise((r) => { server.closeAllConnections?.(); server.close(() => r()); }),
   };
 }

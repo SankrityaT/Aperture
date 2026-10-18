@@ -30,6 +30,16 @@ export interface TableModel {
   actions: { label: string; type: ActionType }[]; add: string | null; paged: boolean; scrolls: boolean; rows: number;
 }
 
+/** A compiled capability no longer matches the page. The engine turns this into a disabled capability, never a retry. */
+export type DriftClass = "ui_changed" | "auth" | "transient";
+export interface DriftItem { what: string; expected?: unknown; observed?: unknown; blocking: boolean }
+export class CapabilityDrift extends Error {
+  constructor(readonly kind: string, readonly klass: DriftClass, readonly drifts: DriftItem[], message: string) { super(message); this.name = "CapabilityDrift"; }
+}
+
+const normHead = (h: string) => h.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+const overlap = (a: string[], b: string[]) => { const A = new Set(a.map(normHead).filter(Boolean)); const B = new Set(b.map(normHead).filter(Boolean)); if (!A.size || !B.size) return 0; let n = 0; for (const x of A) if (B.has(x)) n++; return n / Math.max(A.size, B.size); };
+
 // ---- the in-page reader. Plain JavaScript in strings on purpose (see explore.ts). String.raw keeps the regexes readable. ----
 
 // Which rows of an HTML table are data. The header is the first row with header cells. Filter rows (form inputs, almost
@@ -520,8 +530,13 @@ export class TableAdapter implements Adapter {
     return (await frame.evaluate(TABLES_SCRIPT)) as RawTable[];
   }
 
-  private pickGrid(raw: RawTable[], m: Pick<TableModel, "sig" | "tableIndex">): RawTable | undefined {
-    return raw.find((x) => x.sig === m.sig) ?? raw.find((x) => x.index === m.tableIndex);
+  private pickGrid(raw: RawTable[], m: Pick<TableModel, "sig" | "tableIndex"> & { columns?: string[] }): RawTable | undefined {
+    const bySig = raw.find((x) => x.sig === m.sig);
+    if (bySig) return bySig;
+    const byPos = raw.find((x) => x.index === m.tableIndex);
+    // Same position is not the same table. Accept it only if its headers still look like what was compiled.
+    if (byPos && (!m.columns || overlap(byPos.headers, m.columns) >= 0.5)) return byPos;
+    return undefined;
   }
 
   // ---------- compile ----------
@@ -597,6 +612,10 @@ export class TableAdapter implements Adapter {
   // A scan reads every page of a list, which is the slow part of verifying a change. Within one operation the same
   // list is read several times, so a scan is kept for a few seconds and dropped on any write. WICKET_SCAN_TTL_MS=0 turns it off.
   private memo = new Map<string, { at: number; v: { recs: Rec[]; where: Where[] } }>();
+  /** What the last look at each list found that differs from the contract. Blocking items stop the capability. */
+  private driftNotes = new Map<string, DriftItem[]>();
+  /** A few real records seen by a scan that matched the contract: the regression set for any later repair. */
+  private golden = new Map<string, Rec[]>();
   private readonly scanTtl = Number(process.env.WICKET_SCAN_TTL_MS ?? 3000);
 
   private async scan(kind: Kind, stopAt?: string): Promise<{ recs: Rec[]; where: Where[] }> {
@@ -605,7 +624,94 @@ export class TableAdapter implements Adapter {
     const { recs, where, partial } = await this.scanFresh(kind, 120, stopAt);
     const v = { recs, where };
     if (this.scanTtl > 0 && !partial) this.memo.set(kind, { at: Date.now(), v });
+    // Remember a few real records from a scan that matched the contract. A repair is later tested against them.
+    if (!partial && recs.length > 0 && !(this.driftNotes.get(kind) ?? []).some((d) => d.blocking)) this.golden.set(kind, recs.slice(0, 6).map((r) => ({ ...r })));
     return v;
+  }
+
+
+  // ---------- contract: is this compiled capability still true of the page? ----------
+
+  private async driftFor(page: Page, m: TableModel, items: DriftItem[]): Promise<CapabilityDrift> {
+    const signedOut = await page.evaluate(`!!document.querySelector('input[type="password"]')`).catch(() => false);
+    const klass: DriftClass = signedOut ? "auth" : "ui_changed";
+    const drifts = signedOut ? [{ what: "the page is asking for a sign-in", blocking: true }, ...items] : items;
+    this.driftNotes.set(m.id, drifts);
+    return new CapabilityDrift(m.id, klass, drifts, signedOut ? "The session looks signed out." : `The page no longer matches what was compiled for '${m.id}'.`);
+  }
+
+  /** Compare the table we found with the contract. Blocking differences throw; harmless ones are kept as notes. */
+  private checkContract(m: TableModel, t: RawTable): void {
+    const drifts: DriftItem[] = [];
+    const has = (h: string) => t.headers.some((x) => normHead(x) === normHead(h));
+    if (m.keySource === "column" && m.keyColumn && !has(m.keyColumn)) drifts.push({ what: "the key column is gone", expected: m.keyColumn, observed: t.headers, blocking: true });
+    if (m.actions.some((a) => a.type === "delete") && !t.rows.some((r) => r.actions.some((a) => classifyAction(a) === "delete"))) drifts.push({ what: "the delete control is no longer found", expected: m.actions.filter((a) => a.type === "delete").map((a) => a.label), blocking: true });
+    const missing = m.columns.filter((c) => !has(c));
+    if (missing.length && !drifts.some((d) => d.what === "the key column is gone")) drifts.push({ what: "columns changed", expected: missing, observed: t.headers.filter((h) => !m.columns.some((c) => normHead(c) === normHead(h))), blocking: false });
+    this.driftNotes.set(m.id, drifts);
+    const blocking = drifts.filter((d) => d.blocking);
+    if (blocking.length) throw new CapabilityDrift(m.id, "ui_changed", drifts, `The page no longer matches what was compiled for '${m.id}': ${blocking.map((d) => d.what).join("; ")}.`);
+  }
+
+  /** A read-only look: load the list's page, compare with the contract, change nothing. */
+  async driftCheck(kind: Kind): Promise<{ ok: boolean; klass?: DriftClass; drifts: DriftItem[]; note?: string }> {
+    const m = this.models.get(kind);
+    if (!m) throw new Error(`unknown kind ${kind}`);
+    const page = this.need();
+    try {
+      await this.follow(page, { goto: m.url }, m);
+      const t = this.pickGrid(await this.rawTables(await this.frameFor(m)), m);
+      if (!t) throw await this.driftFor(page, m, [{ what: "the list is no longer on the page", expected: m.columns, blocking: true }]);
+      this.checkContract(m, t);
+      return { ok: true, drifts: this.driftNotes.get(kind) ?? [] };
+    } catch (e) {
+      if (e instanceof CapabilityDrift) return { ok: false, klass: e.klass, drifts: e.drifts };
+      return { ok: false, klass: "transient", drifts: [{ what: String((e as Error).message).split("\n")[0] ?? "the page did not load", blocking: false }], note: "Could not look at the page. This is not a change to the page; try again." };
+    }
+  }
+
+  /**
+   * Re-learn one list after its page changed, and publish the result only if it still means the same thing.
+   * Read-only: it never changes a record. The old compiled model stays in place unless every test passes.
+   */
+  async repair(kind: Kind): Promise<{ status: "repaired" | "not_repaired"; tests: { name: string; pass: boolean; detail: string }[]; before: TableModel; after?: TableModel }> {
+    const old = this.models.get(kind);
+    if (!old) throw new Error(`unknown kind ${kind}`);
+    const page = this.need();
+    const tests: { name: string; pass: boolean; detail: string }[] = [];
+    const test = (name: string, pass: boolean, detail: string) => { tests.push({ name, pass, detail }); return pass; };
+    const keep = new Map(this.models);
+    const goldenRows = this.golden.get(kind) ?? [];
+    let candidate: TableModel | undefined;
+    try {
+      await this.follow(page, { goto: old.url }, old);
+      const found = await this.attach(); // re-learns every list on that page
+      // the candidate is the new list whose columns and sample values best match the old one
+      const score = (c: TableModel) => overlap(c.columns, old.columns) * 2 + (c.title && old.title && normHead(c.title) === normHead(old.title) ? 0.5 : 0);
+      candidate = [...found].sort((a, b) => score(b) - score(a))[0];
+      if (!test("a matching list exists", !!candidate && score(candidate) >= 0.5, candidate ? `best match '${candidate.id}' with columns ${candidate.columns.join(", ")}` : "no list found")) return { status: "not_repaired", tests, before: old };
+    } finally { this.models = keep; }
+    const cand: TableModel = { ...candidate!, id: kind };
+    // try the candidate in place, then put the old one back unless everything passes
+    this.models.set(kind, cand); this.memo.clear();
+    let recs: Rec[] = [];
+    try {
+      test("the key is usable", cand.keySource !== "none", cand.keySource === "none" ? "no unique key on the new list" : `key ${cand.keyColumn ?? "link " + cand.keyParam}`);
+      recs = (await this.scanFresh(kind)).recs;
+      test("every key is unique across all pages", recs.length > 0 && new Set(recs.map((r) => r.key)).size === recs.length, `${recs.length} records, ${new Set(recs.map((r) => r.key)).size} distinct keys`);
+      if (old.actions.some((a) => a.type === "delete")) test("the delete control still means delete", cand.actions.some((a) => a.type === "delete"), `delete found as: ${cand.actions.filter((a) => a.type === "delete").map((a) => a.label).join(", ") || "none"}`);
+      if (goldenRows.length) {
+        // Same records, same values. Column names may have changed, so compare the VALUES, not the names.
+        const matched = goldenRows.filter((g) => { const now = recs.find((r) => r.key === g.key); if (!now) return false; const have = new Set(Object.entries(now).filter(([f]) => f !== "key").map(([, v]) => String(v).trim())); const want = Object.entries(g).filter(([f, v]) => f !== "key" && String(v).trim() !== "").map(([, v]) => String(v).trim()); return want.length === 0 || want.filter((v) => have.has(v)).length / want.length >= 0.7; });
+        const need = Math.max(1, Math.ceil(goldenRows.length * 0.7));
+        test("previously seen records are still the same records", matched.length >= need, `${matched.length} of ${goldenRows.length} earlier records found with the same key and values (need ${need})`);
+      } else test("previously seen records are still the same records", false, "no earlier records were saved for this capability, so its meaning cannot be checked");
+    } catch (e) { test("the new list can be read end to end", false, String((e as Error).message).split("\n")[0] ?? "error"); }
+    const ok = tests.every((t) => t.pass);
+    if (!ok) { this.models.set(kind, old); this.memo.clear(); return { status: "not_repaired", tests, before: old }; }
+    this.driftNotes.delete(kind);
+    this.golden.set(kind, recs.slice(0, 6).map((r) => ({ ...r })));
+    return { status: "repaired", tests, before: old, after: cand };
   }
 
   /** Every row of a kind. Moves between pages by address, by clicking the pager, or by scrolling. */
@@ -624,7 +730,8 @@ export class TableAdapter implements Adapter {
       let frame = await this.frameFor(m);
       let t = this.pickGrid(await this.rawTables(frame), m);
       for (let tries = 0; t && t.rows.length === 0 && m.rows > 0 && tries < 6; tries++) { await page.waitForTimeout(400); t = this.pickGrid(await this.rawTables(frame), m); }
-      if (!t) break;
+      if (!t) { if (p === 0) throw await this.driftFor(page, m, [{ what: "the list is no longer on the page", expected: m.columns, blocking: true }]); break; }
+      if (p === 0) this.checkContract(m, t);
       if (m.scrolls && p === 0) {
         const n = await this.scrollGrowth(frame, t.index, page, m);
         if (n > 0) { route.push({ scroll: n }); frame = await this.frameFor(m); t = this.pickGrid(await this.rawTables(frame), m) ?? t; }
@@ -707,7 +814,7 @@ export class TableAdapter implements Adapter {
     const out: Record<Kind, number> = {};
     for (const k of forKind ? [forKind] : this.kinds()) {
       if (!this.models.has(k)) continue;
-      try { out[k] = (await this.scan(k)).recs.length; } catch { /* a page that no longer loads is skipped, not fatal */ }
+      try { out[k] = (await this.scan(k)).recs.length; } catch (e) { if (e instanceof CapabilityDrift) throw e; /* a page that no longer loads is skipped, not fatal */ }
     }
     return out;
   }
@@ -716,7 +823,7 @@ export class TableAdapter implements Adapter {
     const out: Record<Kind, Rec[]> = {};
     for (const k of forKind ? [forKind] : this.kinds()) {
       if (!this.models.has(k)) continue;
-      try { out[k] = (await this.scan(k)).recs; } catch { /* skipped */ }
+      try { out[k] = (await this.scan(k)).recs; } catch (e) { if (e instanceof CapabilityDrift) throw e; /* skipped */ }
     }
     return out;
   }

@@ -26,7 +26,7 @@ const targets: Record<string, Record<string, (...a: any[]) => unknown>> = {
 };
 const ALLOWED: Record<string, string[]> = {
   forms: ["compile", "signIn", "open", "refresh", "summary", "formIds", "read", "list", "create", "delete", "update", "validate", "normalize", "counts", "exportAll", "pendingPublish", "publish", "reset"],
-  tables: ["attach", "summary", "read", "list", "create", "delete", "counts", "exportAll", "pendingPublish", "publish", "reset"],
+  tables: ["attach", "summary", "read", "list", "create", "delete", "counts", "exportAll", "pendingPublish", "publish", "reset", "driftCheck", "repair"],
 };
 
 const authed = (header: string | undefined): boolean => {
@@ -45,7 +45,7 @@ const oneAtATime = <T>(fn: () => Promise<T>): Promise<T> => {
 };
 
 const errorName = (e: unknown): string =>
-  e instanceof NotAuthorized ? "NotAuthorized" : e instanceof NoBrowser ? "NoBrowser" : e instanceof NoSecret ? "NoSecret" : e instanceof HumanRequired ? "HumanRequired" : "Error";
+  (e as { name?: string })?.name === "CapabilityDrift" ? "CapabilityDrift" : e instanceof NotAuthorized ? "NotAuthorized" : e instanceof NoBrowser ? "NoBrowser" : e instanceof NoSecret ? "NoSecret" : e instanceof HumanRequired ? "HumanRequired" : "Error";
 
 const server = createServer((req, res) => {
   const send = (code: number, body: unknown) => { res.statusCode = code; res.setHeader("content-type", "application/json"); res.end(JSON.stringify(body)); };
@@ -76,7 +76,8 @@ const server = createServer((req, res) => {
       const result = await oneAtATime(async () => await targets[target]![method]!.apply(targets[target], args ?? []));
       send(200, { ok: true, result: result ?? null, kinds: kindsNow() });
     } catch (e) {
-      send(200, { ok: false, error: { name: errorName(e), message: String((e as Error).message ?? e).split("\n")[0] }, kinds: kindsNow() });
+      const d = e as { kind?: string; klass?: string; drifts?: unknown };
+      send(200, { ok: false, error: { name: errorName(e), message: String((e as Error).message ?? e).split("\n")[0], ...(d?.klass ? { kind: d.kind, klass: d.klass, drifts: d.drifts } : {}) }, kinds: kindsNow() });
     }
   });
 });

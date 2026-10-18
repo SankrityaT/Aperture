@@ -44,6 +44,9 @@ export class CompositeAdapter implements Adapter {
     return o?.validate ? o.validate(kind, key, patch) : [];
   }
   /** With a kind, only the system that owns it is read. Counting every system on every write would be slow and fragile. */
+  driftCheck(kind: Kind) { const o = this.owner(kind); if (!o?.driftCheck) throw new Error(`no drift check for ${kind}`); return o.driftCheck(kind); }
+  repair(kind: Kind) { const o = this.owner(kind); if (!o?.repair) throw new Error(`no repair for ${kind}`); return o.repair(kind); }
+
   async counts(forKind?: Kind): Promise<Record<Kind, number>> {
     if (forKind) { const o = this.owner(forKind); return o ? o.counts(forKind) : {}; }
     // One at a time: parts may share one browser page, and two scans would navigate it out from under each other.

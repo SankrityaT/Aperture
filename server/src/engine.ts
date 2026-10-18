@@ -65,6 +65,14 @@ export interface Delegation {
   createdAt: number; expiresAt: number; note: string; paused: string | null; revoked: boolean;
 }
 
+/** What was compiled for one capability, whether it still holds, and every repair it has had. */
+export interface RepairEntry { at: number; fromVersion: number; toVersion: number | null; failure: string; evidence: unknown; tests: unknown; outcome: "repaired" | "not_repaired"; before?: unknown; after?: unknown }
+export interface ContractRecord {
+  kind: Kind; version: number; status: "active" | "disabled"; since: number; lastOkAt: number | null;
+  lastDrift: { klass: string; drifts: unknown; at: number } | null; history: RepairEntry[];
+}
+const isDrift = (e: unknown): e is { name: string; kind: string; klass: string; drifts: { what: string; blocking: boolean }[]; message: string } => !!e && typeof e === "object" && (e as { name?: string }).name === "CapabilityDrift";
+
 export class Wicket {
   readonly plans = new Map<string, Plan>();
   readonly receipts = new Map<string, Receipt>();
@@ -98,12 +106,12 @@ export class Wicket {
     if (!this.ledger) return;
     this.ledger.save({
       v: 1, plans: [...this.plans.values()], receipts: [...this.receipts.values()], escalations: this.escalations,
-      delegations: [...this.delegations.values()], seq: this.seq, deletesToday: this.deletesToday, mandate: this.mandate, rules: this.rules.exportRules(),
+      delegations: [...this.delegations.values()], contracts: [...this.contracts.values()], seq: this.seq, deletesToday: this.deletesToday, mandate: this.mandate, rules: this.rules.exportRules(),
     });
   }
 
   private restore(): void {
-    const s = this.ledger?.load() as { plans?: Plan[]; receipts?: Receipt[]; escalations?: Escalation[]; delegations?: Delegation[]; seq?: { pln: number; rcpt: number; esc: number }; deletesToday?: number; mandate?: Mandate; rules?: { kind: string; op: "delete" | "create" | "update"; cascades: { kind: string; by: string }[]; vouched: boolean }[] } | null;
+    const s = this.ledger?.load() as { plans?: Plan[]; receipts?: Receipt[]; escalations?: Escalation[]; delegations?: Delegation[]; contracts?: ContractRecord[]; seq?: { pln: number; rcpt: number; esc: number }; deletesToday?: number; mandate?: Mandate; rules?: { kind: string; op: "delete" | "create" | "update"; cascades: { kind: string; by: string }[]; vouched: boolean }[] } | null;
     if (!s) return;
     for (const p of s.plans ?? []) {
       // The server stopped while this change was running. Whether it happened is not known, and it must not be retried blind.
@@ -113,6 +121,7 @@ export class Wicket {
     for (const r of s.receipts ?? []) this.receipts.set(r.id, r);
     this.escalations.push(...(s.escalations ?? []));
     for (const d of s.delegations ?? []) this.delegations.set(d.id, d);
+    for (const c of s.contracts ?? []) this.contracts.set(c.kind, c);
     if (s.seq) this.seq = s.seq;
     if (typeof s.deletesToday === "number") this.deletesToday = s.deletesToday;
     if (s.mandate) this.mandate = { ...this.mandate, ...s.mandate };
@@ -164,7 +173,10 @@ export class Wicket {
   async find(kind: Kind, query?: string, limit = 20): Promise<Record<string, unknown> | Refusal> {
     this.metrics.calls++;
     if (!this.adapter.kinds().includes(kind)) return this.r(refuse("unknown_kind", `No kind '${kind}'.`, [`find with one of: ${this.adapter.kinds().join(", ")}`]));
-    const { data, ageMs } = await this.cached(`list:${kind}`, () => this.adapter.list(kind));
+    const blocked = this.gate(kind); if (blocked) return blocked;
+    let loaded: { data: Rec[]; ageMs: number };
+    try { loaded = await this.cached(`list:${kind}`, () => this.adapter.list(kind)); } catch (e) { if (isDrift(e)) return this.onDrift(kind, e); throw e; }
+    const { data, ageMs } = loaded;
     const q = query?.toLowerCase().trim();
     const hits = q ? data.filter((r) => Object.values(r).some((v) => typeof v === "string" && v.toLowerCase().includes(q))) : data;
     const note = hits.length > 1 && q ? "Several matches. Names are not unique, use the key." : undefined;
@@ -177,7 +189,9 @@ export class Wicket {
   async preview(op: Op, batchDeletes = 0): Promise<Plan | Refusal> {
     this.metrics.calls++;
     const t0 = performance.now();
-    const out = await this.previewInner(op, batchDeletes);
+    const blocked = this.gate(op.kind); if (blocked) return blocked;
+    let out: Plan | Refusal;
+    try { out = await this.previewInner(op, batchDeletes); } catch (e) { if (isDrift(e) && op.kind) return this.onDrift(op.kind, e); throw e; }
     if (!isRefusal(out)) { this.metrics.previews++; this.metrics.previewMs.push(performance.now() - t0); }
     return out;
   }
@@ -286,7 +300,19 @@ export class Wicket {
 
   async commit(planId: string): Promise<Receipt | Refusal | Plan> {
     this.metrics.calls++;
-    return this.queue.run(() => this.commitInner(planId));
+    return this.queue.run(async () => {
+      const k = this.plans.get(planId)?.op.kind;
+      const blocked = this.gate(k); if (blocked) return blocked;
+      try { return await this.commitInner(planId); }
+      catch (e) {
+        if (!isDrift(e) || !k) throw e;
+        // If the change had already started, we no longer know whether it happened: say so, never retry.
+        const plan = this.plans.get(planId);
+        if (plan?.status === "executing") { plan.status = "unknown"; plan.reasons = ["The page changed while this was running. Whether it happened is not known."]; this.persist(); }
+        const r = this.onDrift(k, e);
+        return plan?.status === "unknown" ? this.r(refuse("outcome_unknown", "The page changed while this change was running, so it is not known whether it happened.", ["call reconcile with this plan_id", "never commit it again"], { plan_id: planId })) : r;
+      }
+    });
   }
 
   private async commitInner(planId: string): Promise<Receipt | Refusal | Plan> {
@@ -496,6 +522,72 @@ export class Wicket {
     return { status: halted ? "halted_by_canary" : "batch_done", committed: committed.length, refused: refused.length, not_attempted: notAttempted, ...(halted ? { canary_halt: halted } : {}), items: { committed, refused } };
   }
 
+  // ---------- contracts: a compiled capability is only trusted while the page still matches it ----------
+
+  private contracts = new Map<string, ContractRecord>();
+  private repairing = new Set<string>();
+
+  private contractOf(kind: Kind): ContractRecord {
+    let c = this.contracts.get(kind);
+    if (!c) { c = { kind, version: 1, status: "active", since: this.now(), lastOkAt: null, lastDrift: null, history: [] }; this.contracts.set(kind, c); }
+    return c;
+  }
+
+  /** A disabled capability refuses all work until it is repaired and the repair has passed its tests. */
+  private gate(kind: Kind | undefined): Refusal | null {
+    if (!kind) return null;
+    const c = this.contracts.get(kind);
+    if (!c || c.status !== "disabled") return null;
+    return this.r(refuse("capability_disabled", `The page for '${kind}' changed since it was compiled, so Wicket stopped using it.`, ["check_capability to see what changed", "repair_capability to re-learn it; it is only re-enabled if the repair passes its tests", "do not retry the change until then"], { kind, version: c.version, drift: c.lastDrift }));
+  }
+
+  private onDrift(kind: Kind, e: { klass: string; drifts: unknown; message: string }): Refusal {
+    const c = this.contractOf(kind);
+    c.lastDrift = { klass: e.klass, drifts: e.drifts, at: this.now() };
+    if (e.klass === "ui_changed") c.status = "disabled";
+    this.persist();
+    if (e.klass === "auth") return this.r(refuse("signed_out", "The system is asking for a sign-in again.", ["ask the operator to sign in again, then retry", "nothing was changed"], { kind }));
+    return this.r(refuse("capability_changed", e.message, ["check_capability to see exactly what changed", "repair_capability to re-learn it", "nothing was changed by this call"], { kind, drift: e.drifts }));
+  }
+
+  /** Read-only: does the page still match what was compiled? */
+  async checkCapability(kind: Kind): Promise<Record<string, unknown> | Refusal> {
+    this.metrics.calls++;
+    if (!this.adapter.kinds().includes(kind)) return this.r(refuse("unknown_kind", `No kind '${kind}'.`, [`use one of: ${this.adapter.kinds().join(", ")}`]));
+    if (!this.adapter.driftCheck) return this.r(refuse("unsupported", "This system cannot be checked for page changes.", []));
+    return this.queue.run(async () => {
+      const c = this.contractOf(kind);
+      const r = await this.adapter.driftCheck!(kind);
+      if (r.ok) { c.lastOkAt = this.now(); if (c.status === "disabled") { c.status = "active"; c.lastDrift = null; } this.persist(); return { kind, status: c.status, version: c.version, matches_contract: true, notes: r.drifts.filter((d) => !d.blocking), last_ok_at: c.lastOkAt }; }
+      if (r.klass === "ui_changed") { c.status = "disabled"; c.lastDrift = { klass: r.klass, drifts: r.drifts, at: this.now() }; }
+      this.persist();
+      const next = r.klass === "ui_changed" ? ["repair_capability to re-learn it; changes stay refused until it passes"] : r.klass === "auth" ? ["ask the operator to sign in again"] : ["try again; this is not a change to the page"];
+      return { kind, status: c.status, version: c.version, matches_contract: false, class: r.klass, drifts: r.drifts, ...(r.note ? { note: r.note } : {}), next };
+    });
+  }
+
+  /** Re-learn a disabled capability. Read-only on the system. Re-enabled only if every test passes; otherwise it stays disabled and the owner is told. */
+  async repairCapability(kind: Kind): Promise<Record<string, unknown> | Refusal> {
+    this.metrics.calls++;
+    const c = this.contracts.get(kind);
+    if (!c || c.status !== "disabled") return this.r(refuse("not_broken", `'${kind}' is not disabled, so there is nothing to repair.`, ["check_capability to look for page changes"]));
+    if (!this.adapter.repair) return this.r(refuse("unsupported", "This system cannot be repaired automatically.", ["ask the operator"]));
+    if (this.repairing.has(kind)) return this.r(refuse("repair_in_progress", "A repair of this capability is already running.", ["wait and call check_capability"]));
+    this.repairing.add(kind);
+    try {
+      return await this.queue.run(async () => {
+        const failure = JSON.stringify(c.lastDrift?.drifts ?? "unknown").slice(0, 600);
+        const r = await this.adapter.repair!(kind);
+        const entry: RepairEntry = { at: this.now(), fromVersion: c.version, toVersion: r.status === "repaired" ? c.version + 1 : null, failure, evidence: c.lastDrift, tests: r.tests, outcome: r.status, before: r.before, after: r.after };
+        c.history.push(entry);
+        if (r.status === "repaired") { c.version++; c.status = "active"; c.lastDrift = null; c.lastOkAt = this.now(); this.persist(); return { kind, status: "repaired", version: c.version, tests: r.tests, note: "Re-enabled. This repair only changes how the page is read. It adds no permissions: delegations and approvals are unchanged.", rollback: `version ${entry.fromVersion} is kept in the history` }; }
+        this.escalate(`The page for '${kind}' changed and the repair could not be proven correct. It stays disabled. ${r.tests.filter((t) => !t.pass).map((t) => t.name + ": " + t.detail).join("; ")}`);
+        this.persist();
+        return this.r(refuse("repair_not_proven", "The repair did not pass its tests, so the capability stays disabled.", ["do not retry the change", "the owner has been told", "a person should look at the page"], { kind, tests: r.tests }));
+      });
+    } finally { this.repairing.delete(kind); }
+  }
+
   // ---------- delegation: authority granted once by the owner, inside which no per-item approval is needed ----------
 
   private delegations = new Map<string, Delegation>();
@@ -689,6 +781,7 @@ export class Wicket {
       unknown_outcomes: [...this.plans.values()].filter((p) => p.status === "unknown").map((p) => ({ id: p.id, diff: p.diff })),
       mandate: this.mandate,
       deletes_today: this.deletesToday,
+      capabilities: [...this.contracts.values()].map((c) => ({ kind: c.kind, version: c.version, status: c.status, repairs: c.history.length, last_drift: c.lastDrift })),
       delegations: [...this.delegations.values()].map((d) => ({ ...d, active: !d.revoked && !d.paused && this.now() <= d.expiresAt && d.used < d.limit })),
       rules: this.rules.describe(),
       metrics: { calls: this.metrics.calls, previews: this.metrics.previews, commits: this.metrics.commits, refusals: this.metrics.refusals, undos: this.metrics.undos, human_decisions: this.metrics.humanDecisions, surprises: this.metrics.surprises, avg_preview_ms: avg(this.metrics.previewMs), avg_commit_ms: avg(this.metrics.commitMs) },

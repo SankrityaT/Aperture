@@ -300,6 +300,26 @@ server.get("/registry", (c) => c.json({ note: "Shared profiles: structure and le
 
 server.tool(
   {
+    name: "check_capability",
+    description: "Read-only. Does the page still match what was compiled for this kind? Returns matches_contract, or what changed and how serious it is (ui_changed stops work on the kind; signed out and transient errors do not). Changes nothing.",
+    inputSchema: z.object({ kind: z.string() }),
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  },
+  async ({ kind }) => reply((await wicket.checkCapability(kind)) as Record<string, unknown>),
+);
+
+server.tool(
+  {
+    name: "repair_capability",
+    description: "For a capability that was disabled because its page changed: re-learn the page and re-enable it only if every test passes (a matching list, a usable key, delete still meaning delete, and earlier records still being the same records). Reads only; never changes a record. If it cannot prove the repair, it stays disabled and the owner is told.",
+    inputSchema: z.object({ kind: z.string() }),
+    annotations: { destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  },
+  async ({ kind }) => reply((await wicket.repairCapability(kind)) as Record<string, unknown>),
+);
+
+server.tool(
+  {
     name: "reconcile",
     description: "Use when commit says outcome_unknown (the server stopped while a change was running). Reads the system to find out what really happened, and never re-runs the change. Returns a receipt if it happened, or retires the plan if it did not.",
     inputSchema: z.object({ plan_id: z.string() }),

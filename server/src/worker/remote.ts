@@ -39,6 +39,7 @@ export class RemoteWorker {
     if (body.kinds) this.kinds = body.kinds;
     if (body.ok) return body.result as T;
     const { name, message } = body.error ?? { name: "Error", message: "worker error" };
+    if (name === "CapabilityDrift") { const x = body.error as unknown as { kind: string; klass: string; drifts: unknown[] }; throw Object.assign(new Error(message), { name: "CapabilityDrift", kind: x.kind, klass: x.klass, drifts: x.drifts }); }
     if (name === "NotAuthorized") throw new NotAuthorized(message);
     if (name === "NoBrowser") throw new NoBrowser(message);
     if (name === "NoSecret") throw new NoSecret(message);
@@ -84,5 +85,7 @@ export class RemoteForms extends RemoteBase {
 export class RemoteTables extends RemoteBase {
   constructor(w: RemoteWorker) { super(w, "tables"); }
   attach(): Promise<TableModel[]> { return this.w.call("tables", "attach"); }
+  driftCheck(kind: Kind) { return this.w.call<Awaited<ReturnType<NonNullable<Adapter["driftCheck"]>>>>("tables", "driftCheck", [kind]); }
+  repair(kind: Kind) { return this.w.call<Awaited<ReturnType<NonNullable<Adapter["repair"]>>>>("tables", "repair", [kind]); }
   summary(): Promise<TableModel[]> { return this.w.call("tables", "summary"); }
 }
