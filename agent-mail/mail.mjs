@@ -142,7 +142,8 @@ switch (cmd) {
         cursor = page.cursor;
         for (const e of page.emails) console.log(`NEW MAIL ${line(e)}`);
       } catch (err) {
-        console.error(`watch error: ${err.message.split("\n")[0]}; retrying in 10s`);
+        const detail = `${err.stdout ?? ""} ${err.stderr ?? ""}`.replace(/\s+/g, " ").trim().slice(0, 300);
+        console.error(`watch error: ${detail || err.message.split("\n")[0]}; retrying in 10s`);
         await new Promise((r) => setTimeout(r, 10_000));
       }
     }
