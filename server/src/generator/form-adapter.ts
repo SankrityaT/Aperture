@@ -88,6 +88,13 @@ export function assertMayAct(url: string, what: string): void {
   throw new NotAuthorized(`Aperture can read '${host || url}' but may not ${what} there: changes and stored logins are only for systems the operator listed (WICKET_ALLOWED_HOSTS). Reading a public site never grants permission to change it.`);
 }
 
+/** Open a page and start once its document is in. Big public sites (retail, news) can take far longer than a call's deadline to
+ *  fire "load" because of ads and trackers; the records are in the document long before that. Give "load" a few seconds, no more. */
+export async function gotoQuick(page: Page, url: string): Promise<void> {
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 12_000 });
+  await page.waitForLoadState("load", { timeout: 4000 }).catch(() => undefined);
+}
+
 /** Block every request (redirects and sub-resources included) to an internal address that is not a listed system. */
 export async function guardNetwork(page: Page): Promise<void> {
   await page.context().route("**/*", (route) => {
@@ -117,7 +124,7 @@ export class FormAdapter implements Adapter {
   async compile(url: string): Promise<CompileSummary> {
     assertAuthorized(url);
     const page = await this.ensurePage();
-    await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    await gotoQuick(page, url);
     return this.refresh();
   }
 
@@ -130,7 +137,7 @@ export class FormAdapter implements Adapter {
     assertMayAct(url, "use a stored login");
     const creds = readSecret(secretName);
     const page = await this.ensurePage();
-    await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    await gotoQuick(page, url);
     // Client-rendered apps draw their login form after load. Let the page go quiet, then give a password field a moment to appear before deciding there is none.
     await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => undefined);
     await page.waitForSelector('input[type="password"]', { timeout: 4000 }).catch(() => undefined);
@@ -160,7 +167,7 @@ export class FormAdapter implements Adapter {
   async open(url: string): Promise<void> {
     assertAuthorized(url);
     const page = await this.ensurePage();
-    await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    await gotoQuick(page, url);
     await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => undefined);
   }
 
