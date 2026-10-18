@@ -286,6 +286,7 @@ export class Wicket {
     }
 
     // Do the change.
+    let appError: string | null = null;
     try {
       if (op.op === "update" && op.kind && op.key && op.patch && this.adapter.update) await this.adapter.update(op.kind, op.key, op.patch);
       else if (op.op === "delete" && op.kind && op.key) await this.adapter.delete(op.kind, op.key);
@@ -293,7 +294,13 @@ export class Wicket {
       else if (op.op === "publish") await this.adapter.publish();
     } catch (e) {
       this.invalidate();
-      return this.finish(plan, snapshot, { status: "failed", verified: { error: String((e as Error).message) } }, t0);
+      // The app errored or hung. That says nothing about whether the change happened. Look, instead of guessing.
+      let gone: boolean | null = null;
+      if (op.op === "delete" && op.kind && op.key) { try { gone = (await this.adapter.read(op.kind, op.key)) === null; } catch { gone = null; } }
+      if (gone !== true) {
+        return this.finish(plan, snapshot, { status: "failed", verified: { error: String((e as Error).message).split("\n")[0], subject_present: gone === null ? "unknown" : true, note: gone === null ? "The app errored and the state could not be read back. Check the system before retrying." : "The app errored and the record is still there. Nothing changed." } }, t0);
+      }
+      appError = String((e as Error).message).split("\n")[0] ?? "the app errored";
     }
     this.invalidate();
 
@@ -321,6 +328,7 @@ export class Wicket {
         if (a !== p) surprises.push({ kind: k, delta: a - p });
       }
     }
+    if (appError) verified.app_error = `The app reported an error (${appError}) but the change did happen. It was confirmed by reading the system back.`;
     verified.counts_after = after;
     verified.matches_prediction = surprises.length === 0;
     const okSubject = op.op === "delete" ? verified.subject_present === false : op.op === "create" ? verified.subject_present === true : op.op === "update" ? verified.fields_match === true : verified.still_pending === 0;

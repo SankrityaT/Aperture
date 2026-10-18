@@ -172,6 +172,7 @@ export class FormAdapter implements Adapter {
       throw new NoBrowser(`No browser could be started here (${String((e as Error).message).split("\n")[0]}). Run the worker on a machine with a browser.`);
     }
     this.page = await this.browser.newPage({ viewport: process.env.WICKET_HEADED === "1" ? { width: 1280, height: 800 } : undefined });
+    if (process.env.WICKET_ACTION_TIMEOUT_MS) this.page.setDefaultTimeout(Number(process.env.WICKET_ACTION_TIMEOUT_MS));
     return this.page;
   }
 

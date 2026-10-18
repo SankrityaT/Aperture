@@ -590,7 +590,7 @@ export class TableAdapter implements Adapter {
   // ---------- reading ----------
 
   /** Every row of a kind. Moves between pages by address, by clicking the pager, or by scrolling. */
-  private async scan(kind: Kind, maxPages = 12): Promise<{ recs: Rec[]; where: Where[] }> {
+  private async scan(kind: Kind, maxPages = 120): Promise<{ recs: Rec[]; where: Where[] }> {
     const m = this.models.get(kind);
     if (!m) throw new Error(`unknown kind ${kind}`);
     const page = this.need();

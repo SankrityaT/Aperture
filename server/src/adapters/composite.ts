@@ -46,11 +46,16 @@ export class CompositeAdapter implements Adapter {
   /** With a kind, only the system that owns it is read. Counting every system on every write would be slow and fragile. */
   async counts(forKind?: Kind): Promise<Record<Kind, number>> {
     if (forKind) { const o = this.owner(forKind); return o ? o.counts(forKind) : {}; }
-    return Object.assign({}, ...(await Promise.all(this.parts.map((p) => p.counts()))));
+    // One at a time: parts may share one browser page, and two scans would navigate it out from under each other.
+    const out: Record<Kind, number>[] = [];
+    for (const p of this.parts) out.push(await p.counts());
+    return Object.assign({}, ...out);
   }
   async exportAll(forKind?: Kind): Promise<Record<Kind, Rec[]>> {
     if (forKind) { const o = this.owner(forKind); return o ? o.exportAll(forKind) : {}; }
-    return Object.assign({}, ...(await Promise.all(this.parts.map((p) => p.exportAll()))));
+    const out: Record<Kind, Rec[]>[] = [];
+    for (const p of this.parts) out.push(await p.exportAll());
+    return Object.assign({}, ...out);
   }
   async pendingPublish(): Promise<string[]> {
     return (await Promise.all(this.parts.map((p) => p.pendingPublish()))).flat();
