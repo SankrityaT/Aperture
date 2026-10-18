@@ -1,0 +1,62 @@
+{
+  "evaluation": {
+    "id": "bb6943b2-b554-46c8-9378-ea5e6e0897fe",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "8a2d5256-7ffd-5b84-9ee8-e160bfd181c5",
+    "evaluator_agent_run_id": "72354710-b853-4a8c-9e10-61ff7c0f6b5f",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "All three criteria passed: tester found exactly three residents for unit 107D via read-only tool calls, with all facts traceable to returned data.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:05:36.317Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "d108f9a9-8952-4f4a-afcb-229989ded9ef",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "bb6943b2-b554-46c8-9378-ea5e6e0897fe",
+      "workflow_criterion_id": "ed89ef3e-04a0-4cd3-ad1a-7922379ae623",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Final output table lists all three required residents with correct directory codes: Hal Alder (1008), Hal Cole (1048), Hal Ellis (1088).",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:05:36.317Z",
+      "position": 1,
+      "criterion_text": "The answer lists exactly three residents for unit 107D: Hal Alder (1008), Hal Cole (1048) and Hal Ellis (1088).",
+      "is_required": true
+    },
+    {
+      "id": "6ae09630-4c79-4aaa-adec-2bd752ffb3f9",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "bb6943b2-b554-46c8-9378-ea5e6e0897fe",
+      "workflow_criterion_id": "8a6554d9-3ed6-4fb8-b0f3-e6bb451c076a",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace contains only read-only tool calls: find_systems, compile_site, and find. No create, delete, update, apply, or publish operations appear.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:05:36.317Z",
+      "position": 2,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "713147b9-7b2c-4eb9-85f5-145fa0772397",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "bb6943b2-b554-46c8-9378-ea5e6e0897fe",
+      "workflow_criterion_id": "87c994d0-0cb3-4a8f-9134-d7a8da407a61",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "All facts in output are directly from find result: resident names, directory codes, unit notes, SL value (02), and tenant type (T) are all present in the returned records.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:05:36.317Z",
+      "position": 3,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

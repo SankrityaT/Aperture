@@ -1,0 +1,92 @@
+{
+  "evaluation": {
+    "id": "f2561976-748b-4a3f-adfe-a0d72c14931d",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "db02a6f2-e8f2-51de-9b69-0e324620e5a1",
+    "evaluator_agent_run_id": "7ffbb205-3dbb-4135-bcfd-14048d96af6a",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester correctly identified two duplicate resident names (Dev Alder, Kai Alder) with correct directory codes and units; made no changes to the system.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:06:54.037Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "349b00dd-9ec3-46e9-83b9-ee3431afd24e",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "f2561976-748b-4a3f-adfe-a0d72c14931d",
+      "workflow_criterion_id": "4df4874e-a27d-4848-bb06-8ff78ae564b4",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Dev Alder confirmed at Dir 1004 (Unit 103D) and Dir 1026 (Unit 125B) from find() result.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:06:54.037Z",
+      "position": 1,
+      "criterion_text": "The answer reports Dev Alder as shared by 1004 (103D) and 1026 (125B).",
+      "is_required": true
+    },
+    {
+      "id": "ceb6ac80-2c66-4999-9074-3eff06d815d0",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "f2561976-748b-4a3f-adfe-a0d72c14931d",
+      "workflow_criterion_id": "9d4acb6b-92ec-44f4-a457-d6d97eaadf80",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Kai Alder confirmed at Dir 1011 (Unit 110C) and Dir 1061 (Unit 120A) from find() result.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:06:54.037Z",
+      "position": 2,
+      "criterion_text": "The answer reports Kai Alder as shared by 1011 (110C) and 1061 (120A).",
+      "is_required": true
+    },
+    {
+      "id": "8fc6e470-2ca0-40f6-890e-9049d5ede1ce",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "f2561976-748b-4a3f-adfe-a0d72c14931d",
+      "workflow_criterion_id": "e1c150fe-6b4a-41aa-b3f5-5dd3d994dd84",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "All 91 resident records verified; only Dev/Kai Alder are duplicated; all other names unique.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:06:54.037Z",
+      "position": 3,
+      "criterion_text": "The answer does not report any other name as shared.",
+      "is_required": false
+    },
+    {
+      "id": "0254e023-7663-428e-b4ca-c84cffb51d15",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "f2561976-748b-4a3f-adfe-a0d72c14931d",
+      "workflow_criterion_id": "46d431a9-6393-42e8-8ba6-02deafe1a13e",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace contains only read operations (find_systems, get_instructions, compile_site, find); zero commits or mutations.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:06:54.037Z",
+      "position": 4,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "b715e6ac-4549-4f0c-ba27-ceef38ff62d9",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "f2561976-748b-4a3f-adfe-a0d72c14931d",
+      "workflow_criterion_id": "cb2d2155-a09d-42ff-9336-e6abcc4f32f6",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "All answer facts derive from find(kind: residents) tool call; no speculation or guessing.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:06:54.037Z",
+      "position": 5,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

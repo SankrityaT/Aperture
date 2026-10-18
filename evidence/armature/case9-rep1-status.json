@@ -1,0 +1,201 @@
+{
+  "run": {
+    "id": "db02a6f2-e8f2-51de-9b69-0e324620e5a1",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "1d4399f4-634c-4927-b79a-f2b90332cdd0",
+    "workflow_version_id": "ffb3890e-a579-4a6e-9362-6471b047047e",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "1d4399f4-634c-4927-b79a-f2b90332cdd0_1792328652039",
+    "idempotency_key": "mcp-run:029adb841341d9ecda3eda52f2ae88bb95b8b0180ec7696ad14dab6199bccf4e",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T13:04:09.274Z",
+    "status": "completed",
+    "evaluation_verdict": "passed",
+    "evaluation_summary": "Tester correctly identified two duplicate resident names (Dev Alder, Kai Alder) with correct directory codes and units; made no changes to the system.",
+    "started_at": "2026-10-18T13:04:12.039Z",
+    "tester_completed_at": "2026-10-18T13:05:21.649Z",
+    "evaluation_completed_at": "2026-10-18T13:06:54.073Z",
+    "completed_at": "2026-10-18T13:06:54.073Z",
+    "duration_ms": 69610,
+    "summary": "Tester: I checked the gate access system (GateAdmin replica, Residents.aspx) via `find(kind: residents)`. Out of 91 resident records, two names appear more than once: | Name | Directory Codes | Units | |---|---|---| | **Dev Alder** | 1004, 1026 | 103D, 125B | | **Kai Alder** | 1011, 1061 | 110C, 120A | All other names in the directory (Alder/Brook/Cole/Dunn/Ellis series) are unique — these two are the only collisions, so before removing a resident named \"Dev Alder\" or \"Kai Alder\" you must disambiguate ...\nEvaluator: Tester correctly identified two duplicate resident names (Dev Alder, Kai Alder) with correct directory codes and units; made no changes to the system.",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Names shared by more than one resident",
+    "workflow_version_number": 2,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T13:04:09.250Z",
+    "updated_at": "2026-10-18T13:06:54.550Z",
+    "evaluation_score": 5,
+    "evaluation_classification": null,
+    "metadata": {
+      "case": 9,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "I checked the gate access system (GateAdmin replica, Residents.aspx) via `find(kind: residents)`. Out of 91 resident records, two names appear more than once:\n\n| Name | Directory Codes | Units |\n|---|---|---|\n| **Dev Alder** | 1004, 1026 | 103D, 125B |\n| **Kai Alder** | 1011, 1061 | 110C, 120A |\n\nAll other names in the directory (Alder/Brook/Cole/Dunn/Ellis series) are unique — these two are the only collisions, so before removing a resident named \"Dev Alder\" or \"Kai Alder\" you must disambiguate by directory code/unit, not by name alone.",
+        "summary": "I checked the gate access system (GateAdmin replica, Residents.aspx) via `find(kind: residents)`. Out of 91 resident records, two names appear more than once: | Name | Directory Codes | Units | |---|---|---| | **Dev Alder** | 1004, 1026 | 103D, 125B | | **Kai Alder** | 1011, 1061 | 110C, 120A | All other names in the directory (Alder/Brook/Cole/Dunn/Ellis series) are unique — these two are the only collisions, so before removing a resident named \"Dev Alder\" or \"Kai Alder\" you must disambiguate ...",
+        "completed_at": "2026-10-18T13:05:21.649Z"
+      },
+      "instance_id": "local:169.254.0.101",
+      "agent_runtime": "lambda",
+      "manual_reason": "read-only batch a, rep 1",
+      "scheduled_for": "2026-10-18T13:04:09.274Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:029adb841341d9ecda3eda52f2ae88bb95b8b0180ec7696ad14dab6199bccf4e",
+      "agent_sandbox_id": "id904blt12acvi1bi8p89",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "98a11216-b1f0-4ab9-b8e4-08bc4dccdeab",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 92552,
+      "lambda_agent_account_email": "theotzen@gmail.com",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "b59d7c0f-e16f-4a88-9139-d39071bc4062",
+      "lambda_agent_auth_profile_key": "claude-runner-3"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 69610,
+    "total_duration_ms": 162034,
+    "tool_call_count": 4,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 8,
+    "output_tokens": 3390,
+    "cache_read_input_tokens": "155922",
+    "cache_creation_input_tokens": "12019",
+    "cache_write_5m_input_tokens": "12019",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.14272185,
+    "cost_usd": 0.14272185,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "success",
+    "tokens_total": 171339,
+    "usage_breakdown": {
+      "input_tokens": 8,
+      "output_tokens": 3390,
+      "cache_read_input_tokens": 155922,
+      "cache_creation_input_tokens": 12019,
+      "cache_write_5m_input_tokens": 12019,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 9,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "I checked the gate access system (GateAdmin replica, Residents.aspx) via `find(kind: residents)`. Out of 91 resident records, two names appear more than once:\n\n| Name | Directory Codes | Units |\n|---|---|---|\n| **Dev Alder** | 1004, 1026 | 103D, 125B |\n| **Kai Alder** | 1011, 1061 | 110C, 120A |\n\nAll other names in the directory (Alder/Brook/Cole/Dunn/Ellis series) are unique — these two are the only collisions, so before removing a resident named \"Dev Alder\" or \"Kai Alder\" you must disambiguate by directory code/unit, not by name alone.",
+        "summary": "I checked the gate access system (GateAdmin replica, Residents.aspx) via `find(kind: residents)`. Out of 91 resident records, two names appear more than once: | Name | Directory Codes | Units | |---|---|---| | **Dev Alder** | 1004, 1026 | 103D, 125B | | **Kai Alder** | 1011, 1061 | 110C, 120A | All other names in the directory (Alder/Brook/Cole/Dunn/Ellis series) are unique — these two are the only collisions, so before removing a resident named \"Dev Alder\" or \"Kai Alder\" you must disambiguate ...",
+        "completed_at": "2026-10-18T13:05:21.649Z"
+      },
+      "instance_id": "local:169.254.0.101",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "read-only batch a, rep 1",
+      "scheduled_for": "2026-10-18T13:04:09.274Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "98a11216-b1f0-4ab9-b8e4-08bc4dccdeab",
+      "idempotency_key": "mcp-run:029adb841341d9ecda3eda52f2ae88bb95b8b0180ec7696ad14dab6199bccf4e",
+      "agent_sandbox_id": "id904blt12acvi1bi8p89",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 92552,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "Before anyone removes a resident by name, check the gate access system: which resident names belong to more than one person? Give each such name with the directory codes and units.",
+    "success_criteria_snapshot": [
+      {
+        "id": "4df4874e-a27d-4848-bb06-8ff78ae564b4",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The answer reports Dev Alder as shared by 1004 (103D) and 1026 (125B)."
+      },
+      {
+        "id": "9d4acb6b-92ec-44f4-a457-d6d97eaadf80",
+        "position": 2,
+        "is_required": true,
+        "criterion_text": "The answer reports Kai Alder as shared by 1011 (110C) and 1061 (120A)."
+      },
+      {
+        "id": "e1c150fe-6b4a-41aa-b3f5-5dd3d994dd84",
+        "position": 3,
+        "is_required": false,
+        "criterion_text": "The answer does not report any other name as shared."
+      },
+      {
+        "id": "46d431a9-6393-42e8-8ba6-02deafe1a13e",
+        "position": 4,
+        "is_required": true,
+        "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine)."
+      },
+      {
+        "id": "cb2d2155-a09d-42ff-9336-e6abcc4f32f6",
+        "position": 5,
+        "is_required": false,
+        "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing."
+      }
+    ]
+  }
+}
