@@ -11,6 +11,7 @@ import { CompositeAdapter } from "./src/adapters/composite.js";
 import { FormAdapter, HumanRequired, NoBrowser, NoSecret, NotAuthorized, type CompileSummary } from "./src/generator/form-adapter.js";
 import { TableAdapter, type TableModel } from "./src/generator/tables.js";
 import { RemoteWorker } from "./src/worker/remote.js";
+import { split } from "./src/worker/split.js";
 import type { Adapter } from "./src/types.js";
 import { OWNER_PAGE } from "./src/owner-page.js";
 import type { Op } from "./src/types.js";
@@ -26,6 +27,7 @@ const server = new MCPServer({
   instructions: [
     "Aperture is for changing records in a web admin portal or legacy business system that has no API: resident lists, user lists, customer or inventory screens, registrar pages.",
     "What it does that driving the page by hand does not: it turns the page into typed tools, shows what a change will affect before it happens (including records that go with it), reads the system back afterwards and compares it with the prediction, gives a receipt, and can undo.",
+    "Reading is open: compile_site works on any public page without setup. Signing in and changing anything only happen on systems the operator listed, through the owner's authority.",
     "Start with find_systems (what you need, in plain words) or compile_site (a page address), then find to get exact keys, then delete or create with dry_run first. Compile every page whose records a change touches.",
     "Not for: systems that have a real API, sites you are not allowed to automate, or CAPTCHA and sign-in steps (a person does those).",
   ].join(" "),
@@ -46,11 +48,21 @@ let worker: RemoteWorker | null = null;
 if (process.env.WICKET_WORKER_URL) {
   worker = new RemoteWorker(process.env.WICKET_WORKER_URL, process.env.WICKET_WORKER_TOKEN ?? "");
   forms = worker.forms; tables = worker.tables;
+  // Optional second browser for public pages on an ordinary connection (see src/worker/split.ts). Without it, one worker does both.
+  if (process.env.WICKET_PUBLIC_WORKER_URL) {
+    const s = split(worker, new RemoteWorker(process.env.WICKET_PUBLIC_WORKER_URL, process.env.WICKET_PUBLIC_WORKER_TOKEN ?? ""));
+    forms = s.forms; tables = s.tables;
+  }
 } else {
   const local = new FormAdapter();
   forms = local; tables = new TableAdapter(() => local.currentPage());
 }
 const wicket = new Wicket(new CompositeAdapter([...(process.env.WICKET_FAKE_SCHOOL === "1" ? [new FakeSchool()] : []), forms, tables]), { rules, ...(process.env.WICKET_LEDGER_PATH ? { ledger: new FileLedger(process.env.WICKET_LEDGER_PATH) } : {}) });
+
+/** Item cards read from public pages are for reading only: refuse a change on them before any plan exists. */
+const readOnly = (kind: string | undefined) => kind && /_items(_\d+)?$/.test(kind) && !tables.kinds().includes(kind) && !forms.kinds().some((k) => k === kind && !/_items(_\d+)?$/.test(k))
+  ? reply({ status: "refused", error: "read_only", detail: `'${kind}' is a list of item cards read from a public page. Aperture reads it; it never changes anything there.`, next: ["use find to read it", "to change records, use a system the operator listed (find_systems)"] })
+  : null;
 
 /** Small on purpose: an agent pays for every token of this. */
 const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), ...(t.keySource === "none" ? { writes: "refused: no column or link on this list identifies a row uniquely, so a change could hit the wrong record. Reading and previews are unavailable for the same reason." } : {}), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}), ...(t.recoveryHints?.length ? { recovery_options_seen: t.recoveryHints, recovery_note: "The application offers these. Aperture has not used or tested them; ask the owner whether a reversible option (archive, deactivate) is enough before deleting." } : {}) });
@@ -114,6 +126,7 @@ server.tool(
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, key, dry_run, plan_id }) => {
+    const ro = readOnly(kind); if (ro) return ro;
     if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "delete", kind, key });
     return reply(wicket.present(plan));
@@ -128,6 +141,7 @@ server.tool(
     annotations: { destructiveHint: false, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, record, plan_id }) => {
+    const ro = readOnly(kind); if (ro) return ro;
     if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "create", kind, record: record as Op["record"] });
     return reply(wicket.present(plan));
@@ -160,7 +174,7 @@ const opSchema = z.object({ op: z.enum(["delete", "create", "update", "publish"]
 // ---- compiling a web system on demand (the generator) ----
 
 const compileFail = (e: unknown) => {
-  if (e instanceof NotAuthorized) return reply({ status: "refused", error: "not_authorized", detail: e.message, next: ["ask the operator to add the host they own or have permission to use", "never try to get around this"] });
+  if (e instanceof NotAuthorized) return reply({ status: "refused", error: "not_authorized", detail: e.message, next: ["to read: use a public address (internal and private addresses are never browsed)", "to sign in or change something: only on systems the operator listed; ask the operator to list it", "never try to get around this"] });
   if (e instanceof NoSecret) return reply({ status: "refused", error: "no_stored_login", detail: e.message, next: ["ask the operator to store the login on the server", "never ask a person to paste a password into the chat"] });
   if (e instanceof HumanRequired) return reply({ status: "refused", error: "human_required", detail: e.message, next: ["a person must complete this step, then call compile_site again"] });
   if (e instanceof NoBrowser) return reply({ status: "refused", error: "no_browser", detail: e.message, next: ["run the worker on a machine with a browser (see BRIEF.md)"] });
@@ -192,7 +206,7 @@ server.tool(
       rememberSendSteps(s);
       const t = await tables.attach();
       wicket.flush();
-      return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
+      return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["item cards (search results, product grids): find(kind) with the items kind; read-only", "records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
     } catch (e) { return compileFail(e); }
   }),
 );
@@ -207,7 +221,7 @@ server.tool(
     inputSchema: opSchema,
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async (args) => replyWrite((await wicket.apply(args as Op)) as Record<string, unknown>),
+  async (args) => readOnly((args as Op).kind) ?? replyWrite((await wicket.apply(args as Op)) as Record<string, unknown>),
 );
 
 server.tool(
@@ -218,6 +232,7 @@ server.tool(
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
   async ({ ops, plan_ids, stop_on_failure, dry_run, canary }) => {
+    for (const o of ops ?? []) { const ro = readOnly((o as Op).kind); if (ro) return ro; }
     if (plan_ids?.length) return replyWrite(await wicket.commitBatch(plan_ids, canary ?? 1));
     if (!ops?.length) return reply({ status: "refused", error: "nothing_to_do", detail: "Give ops (changes to make) or plan_ids (approved plans to commit).", next: ["apply_batch with ops: [{op, kind, key}]"] });
     return replyWrite(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary }));
@@ -257,8 +272,8 @@ server.tool(
       const hits = [...want].filter((w) => have.has(w));
       return { sy, host, prof, hits, score: hits.length };
     }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
-    if (!systems.length) return reply({ status: "refused", error: "no_systems_registered", detail: "The operator has not listed any systems for agents to work in.", next: ["ask the operator to set WICKET_SYSTEMS", "or call compile_site with an address they gave you"] });
-    if (!scored.length) return reply({ status: "none_found", detail: "Nothing the operator registered matches that description.", registered: systems.map((x) => x.name), next: ["describe it with different words", "ask the operator to register the system you need"] });
+    if (!systems.length) return reply({ status: "refused", error: "no_systems_registered", detail: "The operator has not listed any systems for agents to work in.", next: ["to read a public site: call compile_site with its address", "to change records: ask the operator to register the system"] });
+    if (!scored.length) return reply({ status: "none_found", detail: "Nothing the operator registered matches that description.", registered: systems.map((x) => x.name), next: ["describe it with different words", "to read a public site: call compile_site with its address", "to change records somewhere else: ask the operator to register it"] });
     return reply({ status: "found", matches: scored.map((x) => ({ name: x.sy.name, address: x.sy.url, about: x.sy.about, ...(x.sy.login ? { sign_in: `needs the operator's stored login '${x.sy.login}': compile_site with login '${x.sy.login}', url '${x.sy.sign_in_url ?? x.sy.url}', then '${x.sy.url}'. You never see or type the password.` } : {}), matched_on: x.hits, shared_profile: x.prof ? { dependents_known: x.prof.rules.filter((r) => r.cascades.length).length, shared_at: x.prof.shared_at } : null })), next: ["compile_site with the address of the best match", "if it has a shared profile, call use_profile with its host before changing anything"] });
   },
 );

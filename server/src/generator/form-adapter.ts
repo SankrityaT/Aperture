@@ -8,6 +8,7 @@
 import { serialize } from "./browser-lock.js";
 import type { Browser, Page } from "playwright-core";
 import type { Adapter, Kind, Rec } from "../types.js";
+import { readCards, cardKind, type CardRow } from "./cards.js";
 import { explorePage, type FieldModel, type FormModel, type PageModel } from "./explore.js";
 
 export interface CompileSummary {
@@ -16,6 +17,8 @@ export interface CompileSummary {
   warnings: string[];
   /** Controls on this page that send changes elsewhere. Aperture never presses them; publish does, with the owner. */
   send_steps?: string[];
+  /** Repeated item cards (search results, product grids) read as records: find(kind) lists them. Read-only. */
+  items?: { kind: string; count: number; key: string; fields: string[]; sample: Record<string, unknown>[]; note: string }[];
   forms: {
     id: string;
     title: string;
@@ -45,16 +48,64 @@ export function allowedHosts(): string[] {
   return (process.env.WICKET_ALLOWED_HOSTS ?? "127.0.0.1,localhost,the-internet.herokuapp.com").split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
 }
 
-/** Wicket only works on systems the operator has said it may use. */
+// Two different permissions, never confused:
+//  - OBSERVE: visit, read and compile public pages. Open by default (WICKET_PUBLIC_WEB=0 turns it off). Internal and private
+//    addresses are never reachable this way: loopback, private ranges, link-local and cloud metadata, *.local / *.internal.
+//  - ACT: sign in with a stored login, create, delete, update, publish. Only on systems the operator listed in
+//    WICKET_ALLOWED_HOSTS, and then still through preview, the owner's authority, read-back, receipt and undo.
+export const publicWeb = (): boolean => process.env.WICKET_PUBLIC_WEB !== "0";
+
+/** An address that must never be reached through public browsing. */
+export function isPrivateHost(host: string): boolean {
+  const h = host.toLowerCase().replace(/^\[|\]$/g, "");
+  if (h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h.endsWith(".internal") || h.endsWith(".lan") || h.endsWith(".home.arpa")) return true;
+  if (h.includes(":")) return true; // IPv6 literals: not needed for public sites, too many internal forms to list
+  if (/^\d+$/.test(h) || /^0x/i.test(h)) return true; // integer or hex IP spellings
+  const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(h);
+  if (!m) return false;
+  const [a, b] = [Number(m[1]), Number(m[2])];
+  return a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127) || a >= 224;
+}
+
+/** May Aperture visit and read this address? Listed systems always; any other public site when public browsing is on. */
 export function assertAuthorized(url: string): URL {
   let u: URL;
   try { u = new URL(url); } catch { throw new NotAuthorized(`'${url}' is not a valid URL.`); }
   if (u.protocol !== "http:" && u.protocol !== "https:") throw new NotAuthorized("Only http and https addresses are supported.");
   const host = u.hostname.toLowerCase();
-  if (!allowedHosts().includes(host)) {
-    throw new NotAuthorized(`'${host}' is not on this server's list of authorized systems. The operator adds hosts they own or have permission to use with WICKET_ALLOWED_HOSTS.`);
-  }
-  return u;
+  if (allowedHosts().includes(host)) return u;
+  // Government and military sites, and any host the operator denies (WICKET_DENY_HOSTS, suffixes allowed), are never browsed unless listed.
+  const denied = [".gov", ".mil", ...(process.env.WICKET_DENY_HOSTS ?? "").split(",").map((h) => h.trim().toLowerCase()).filter(Boolean)].some((d) => host === d.replace(/^\./, "") || host.endsWith(d.startsWith(".") ? d : `.${d}`));
+  if (denied) throw new NotAuthorized(`'${host}' is a site Aperture does not browse without the operator's explicit listing (government, military, or on the operator's deny list).`);
+  if (publicWeb() && !isPrivateHost(host)) return u;
+  throw new NotAuthorized(isPrivateHost(host)
+    ? `'${host}' is an internal or private address. Aperture never browses those unless the operator lists that exact system.`
+    : `'${host}' is not on this server's list of systems, and public browsing is off here. The operator can list it in WICKET_ALLOWED_HOSTS.`);
+}
+
+/** May Aperture sign in or change something here? Only on systems the operator listed. Reading a public site never grants this. */
+export function assertMayAct(url: string, what: string): void {
+  let host = "";
+  try { host = new URL(url).hostname.toLowerCase(); } catch { /* fall through */ }
+  if (host && allowedHosts().includes(host)) return;
+  throw new NotAuthorized(`Aperture can read '${host || url}' but may not ${what} there: changes and stored logins are only for systems the operator listed (WICKET_ALLOWED_HOSTS). Reading a public site never grants permission to change it.`);
+}
+
+/** Open a page and start once its document is in. Big public sites (retail, news) can take far longer than a call's deadline to
+ *  fire "load" because of ads and trackers; the records are in the document long before that. Give "load" a few seconds, no more. */
+export async function gotoQuick(page: Page, url: string): Promise<void> {
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 12_000 });
+  await page.waitForLoadState("load", { timeout: 4000 }).catch(() => undefined);
+}
+
+/** Block every request (redirects and sub-resources included) to an internal address that is not a listed system. */
+export async function guardNetwork(page: Page): Promise<void> {
+  await page.context().route("**/*", (route) => {
+    let host = "";
+    try { host = new URL(route.request().url()).hostname.toLowerCase(); } catch { return route.continue(); }
+    if (isPrivateHost(host) && !allowedHosts().includes(host)) return route.abort("blockedbyclient");
+    return route.continue();
+  });
 }
 
 const esc = (s: string) => s.replace(/["\\]/g, "\\$&");
@@ -63,6 +114,9 @@ export class FormAdapter implements Adapter {
   private browser: Browser | null = null;
   private page: Page | null = null;
   private model: PageModel | null = null;
+  /** Cards seen per site, merged across searches on that site so several searches add up to one list. */
+  private cards = new Map<string, Map<string, CardRow>>();
+  private pageItems: { kind: string; key: string; rows: CardRow[] }[] = [];
   private dirty = new Set<string>();
   private lastResult: Rec | null = null;
 
@@ -76,7 +130,7 @@ export class FormAdapter implements Adapter {
   async compile(url: string): Promise<CompileSummary> {
     assertAuthorized(url);
     const page = await this.ensurePage();
-    await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    await gotoQuick(page, url);
     return this.refresh();
   }
 
@@ -86,9 +140,10 @@ export class FormAdapter implements Adapter {
    */
   async signIn(url: string, secretName: string): Promise<{ signedIn: boolean; detail: string }> {
     assertAuthorized(url);
+    assertMayAct(url, "use a stored login");
     const creds = readSecret(secretName);
     const page = await this.ensurePage();
-    await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    await gotoQuick(page, url);
     // Client-rendered apps draw their login form after load. Let the page go quiet, then give a password field a moment to appear before deciding there is none.
     await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => undefined);
     await page.waitForSelector('input[type="password"]', { timeout: 4000 }).catch(() => undefined);
@@ -118,7 +173,7 @@ export class FormAdapter implements Adapter {
   async open(url: string): Promise<void> {
     assertAuthorized(url);
     const page = await this.ensurePage();
-    await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    await gotoQuick(page, url);
     await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => undefined);
   }
 
@@ -127,6 +182,16 @@ export class FormAdapter implements Adapter {
     if (!page) throw new NoBrowser("Nothing compiled yet. Call compile_site first.");
     this.model = await explorePage(page);
     this.dirty.clear();
+    this.pageItems = [];
+    const groups = await readCards(page).catch(() => []);
+    groups.forEach((g, i) => {
+      const kind = cardKind(page.url(), i);
+      const m = this.cards.get(kind) ?? new Map<string, CardRow>();
+      for (const r of g.rows) m.set(r.key, r);
+      while (m.size > 500) m.delete(m.keys().next().value as string);
+      this.cards.set(kind, m);
+      this.pageItems.push({ kind, key: g.attr.replace(/^data-/, ""), rows: g.rows });
+    });
     return this.summary();
   }
 
@@ -135,7 +200,9 @@ export class FormAdapter implements Adapter {
     if (!m) throw new NoBrowser("Nothing compiled yet. Call compile_site first.");
     return {
       url: m.url, title: m.title, warnings: m.warnings, ...(m.sendControls?.length ? { send_steps: m.sendControls } : {}),
-      forms: m.forms.map((f) => ({
+      ...(this.pageItems.length ? { items: this.pageItems.map((g) => ({ kind: g.kind, count: g.rows.length, key: g.key, fields: ["title", "price", "rating", "ratings", "url", "sku", "note"], sample: g.rows.slice(0, 3), note: `find('${g.kind}') lists every card read on this site so far (${this.cards.get(g.kind)?.size ?? g.rows.length}); search again and they add up. Read-only: what the cards show, not the product page.` })) } : {}),
+      // Retail pages carry dozens of hidden widget forms; with item cards present only the first few are worth an agent's tokens.
+      forms: (this.pageItems.length ? m.forms.slice(0, 3) : m.forms).map((f) => ({
         id: f.id, title: f.title, submit: f.submit?.label ?? null,
         fields: f.fields.map((x) => ({
           name: x.name, label: x.label, type: x.type, required: x.required,
@@ -196,6 +263,7 @@ export class FormAdapter implements Adapter {
     // An explicit context (not browser.newPage) so a stuck page can be replaced inside the same signed-in session.
     const ctx = await this.browser.newContext({ viewport: process.env.WICKET_HEADED === "1" ? { width: 1280, height: 800 } : undefined });
     this.page = await ctx.newPage();
+    await guardNetwork(this.page);
     if (process.env.WICKET_ACTION_TIMEOUT_MS) this.page.setDefaultTimeout(Number(process.env.WICKET_ACTION_TIMEOUT_MS));
     return this.page;
   }
@@ -207,11 +275,13 @@ export class FormAdapter implements Adapter {
   // ---------- Adapter ----------
 
   kinds(): Kind[] {
-    return [...this.formIds(), ...(this.lastResult ? ["result"] : [])];
+    return [...this.formIds(), ...this.cards.keys(), ...(this.lastResult ? ["result"] : [])];
   }
 
   async read(kind: Kind, key: string): Promise<Rec | null> {
     if (kind === "result") return key === "latest" ? this.lastResult : null;
+    const cards = this.cards.get(kind);
+    if (cards) return (cards.get(key) as Rec | undefined) ?? null;
     const form = this.form(kind);
     if (!form || key !== "current" || !this.page) return null;
     const values = await this.page.locator(form.selector).evaluate((formEl: HTMLFormElement, fields: FieldModel[]) => {
@@ -230,6 +300,8 @@ export class FormAdapter implements Adapter {
   }
 
   async list(kind: Kind): Promise<Rec[]> {
+    const cards = this.cards.get(kind);
+    if (cards) return [...cards.values()] as Rec[];
     const r = await this.read(kind, kind === "result" ? "latest" : "current");
     return r ? [r] : [];
   }
@@ -291,6 +363,7 @@ export class FormAdapter implements Adapter {
     const form = this.form(kind);
     const page = this.page;
     if (!form || !page) throw new Error(`unknown form '${kind}'`);
+    assertMayAct(page.url(), "fill in or submit a form");
     const scope = page.locator(form.selector);
     for (const [name, raw] of Object.entries(patch)) {
       const f = form.fields.find((x) => x.name === name);
@@ -333,6 +406,7 @@ export class FormAdapter implements Adapter {
   async publish(): Promise<{ published: number; notified: number }> {
     const page = this.page;
     if (!page) throw new NoBrowser("Nothing compiled yet.");
+    assertMayAct(page.url(), "publish");
     let published = 0;
     for (const id of [...this.dirty]) {
       const form = this.form(id);
@@ -355,6 +429,7 @@ export class FormAdapter implements Adapter {
     this.dirty.clear();
     this.lastResult = null;
     this.model = null;
+    this.cards.clear(); this.pageItems = [];
   }
 }
 
