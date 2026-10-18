@@ -24,7 +24,7 @@ function Burger({ open }: { open: boolean }) {
 
 // Sticky header: the logo, a pill of section links that follows the page, and the two actions.
 // Below lg the links move into a full-screen menu that opens like an aperture.
-export function Nav({ name, links, docs, github, start, cta }: { name: string; links: Link[]; docs: string; github: string; start: string; cta: string }) {
+export function Nav({ name, links, docs, github }: { name: string; links: Link[]; docs: string; github: string }) {
   const [active, setActive] = useState("");
   const [open, setOpen] = useState(false);
   // true on the client only, so the menu portal is never rendered on the server
@@ -108,7 +108,6 @@ export function Nav({ name, links, docs, github, start, cta }: { name: string; l
             <span className="hidden lg:inline-flex"><ViewToggle current="human" /></span>
             <a href={docs} className="hidden text-[#f2f0ff]/90 transition hover:text-white lg:inline">Docs</a>
             <a href={github} className="hidden text-[#f2f0ff]/90 transition hover:text-white lg:inline">GitHub</a>
-            <a href={start} className="hidden shrink-0 whitespace-nowrap rounded-full bg-white px-4 py-1.5 font-medium text-[#1426e6] transition hover:bg-[#e8ebff] md:inline-block">{cta}</a>
             <button
               ref={burgerRef}
               type="button"
@@ -179,9 +178,7 @@ export function Nav({ name, links, docs, github, start, cta }: { name: string; l
                 </span>
               </div>
 
-              <div className="menu-item mt-6 flex flex-col gap-3" style={{ transitionDelay: `${open ? 420 + items.length * 55 + 40 : 0}ms` }}>
-                <a href={start} onClick={() => setOpen(false)} className="rounded-full bg-white px-6 py-3.5 text-center text-base font-medium text-[#1426e6] transition hover:bg-[#e8ebff]">{cta}</a>
-              </div>
+
             </div>
           </div>,
           document.body,

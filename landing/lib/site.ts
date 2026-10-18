@@ -2,6 +2,7 @@
 export const site = {
   name: "Aperture",
   github: "https://github.com/SankrityaT/wicket-build",
+  // TODO: docs page, to build once the MCP server work is done (see TODO.md). Until then this is a placeholder.
   docs: "#",
   start: "#",
   // The MCP server the setup prompt connects agents to.

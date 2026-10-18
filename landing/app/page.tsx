@@ -173,7 +173,6 @@ const NAV_LINKS = [
 const FOOTER_LINKS = [
   { title: "Product", links: [{ label: "How it works", href: "#how" }, { label: "See it work", href: "#action" }, { label: "Built for agents", href: "#built" }, { label: "Works with your agent", href: "#agents" }, { label: "FAQ", href: "#faq" }] },
   { title: "Developers", links: [{ label: "Docs", href: site.docs }, { label: "GitHub", href: site.github }] },
-  { title: "Start", links: [{ label: "Get started", href: site.start }] },
 ];
 
 const INK = "text-[#0b1240]";
@@ -185,7 +184,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#f4f5fb] p-3 sm:p-5 md:p-7">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd()).replace(/</g, "\\u003c") }} />
     <main className="relative mx-auto max-w-[1680px] overflow-clip rounded-[18px] bg-[#1426e6] text-[#f2f0ff] md:rounded-[24px]">
-      <Nav name={n} links={NAV_LINKS} docs={site.docs} github={site.github} start={site.start} cta={copy.primary} />
+      <Nav name={n} links={NAV_LINKS} docs={site.docs} github={site.github} />
 
       {/* hero */}
       <section id="top" className="relative -mt-16 min-h-[860px] overflow-hidden pt-16 md:min-h-[max(700px,calc(100dvh-136px))]">
@@ -210,8 +209,7 @@ export default function Home() {
           </h1>
           <p className="mt-6 max-w-[50ch] text-balance text-lg leading-relaxed text-[#f2f0ff]/90">{copy.heroSub(n)}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button href={site.start} solid>{copy.primary}</Button>
-            <Button href={site.github}>{copy.secondary}</Button>
+            <Button href={site.github} solid>{copy.secondary}</Button>
           </div>
           <CopySetupLink prompt={setupPrompt(n, site.slug, site.mcpUrl)} ask={copy.agents.ask} copy={copy.agents.copy} copied={copy.agents.copied} />
         </div>
