@@ -7,6 +7,8 @@ export function pageMarkdown(): string {
   const n = site.name;
   const steps = copy.how.steps(n);
   const faq = copy.faq.items(n);
+  const stats = copy.evidence.stats(n);
+  const race = stats[0].viz.kind === "bars" ? stats[0].viz : null;
   const prompt = setupPrompt(n, site.slug, site.mcpUrl);
 
   return [
@@ -28,6 +30,22 @@ export function pageMarkdown(): string {
     `## ${copy.how.title}`,
     "",
     ...steps.flatMap((s) => [`${Number(s.n)}. **${s.name}.** ${s.text}`]),
+    "",
+    `## ${copy.evidence.title}`,
+    "",
+    copy.evidence.sub,
+    "",
+    ...(race
+      ? [
+          `| ${race.names[0]} vs ${race.names[1]} | ${race.names[0]} | ${race.names[1]} |`,
+          "| --- | --- | --- |",
+          ...race.metrics.map((m) => `| ${m.label} | ${m.aText} | ${m.bText} |`),
+          "",
+        ]
+      : []),
+    ...stats.flatMap((st) => [`- **${st.big} ${st.unit}. ${st.head}** ${st.text} Run with ${st.ran.map((r) => r.name).join(", ")}.`]),
+    "",
+    copy.evidence.note,
     "",
     `## ${copy.built.title}`,
     "",
