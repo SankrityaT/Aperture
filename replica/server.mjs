@@ -86,7 +86,7 @@ function pending() {
 const note = (what) => { state.log.push({ at: new Date().toISOString(), what }); if (state.log.length > 500) state.log.shift(); };
 
 // Windows-7-era desktop chrome, drawn in CSS. No vendor icons: toolbar glyphs are plain Unicode.
-const CSS = `*{box-sizing:border-box}#form1{display:flex;flex-direction:column;flex:1;min-height:0}body{font-family:"Segoe UI",Tahoma,Verdana,Arial,sans-serif;font-size:12px;background:#6d8fb5;margin:0;color:#000}
+const CSS = `*{box-sizing:border-box}.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}#form1{display:flex;flex-direction:column;flex:1;min-height:0}body{font-family:"Segoe UI",Tahoma,Verdana,Arial,sans-serif;font-size:12px;background:#6d8fb5;margin:0;color:#000}
 .win{margin:8px;border:1px solid #3c5a80;border-radius:6px 6px 0 0;background:#f0f0f0;box-shadow:0 2px 8px rgba(0,0,0,.4);height:calc(100vh - 16px);min-height:520px;display:flex;flex-direction:column}
 .title{background:linear-gradient(#cfe0f4,#a8c4e8);border-radius:6px 6px 0 0;padding:5px 8px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #8aa6cc}
 .title .app{font-size:13px}.title .rep{margin-left:auto;background:#ffffe1;border:1px solid #c9a227;padding:0 6px;font-size:11px;white-space:nowrap}
@@ -116,7 +116,7 @@ table.rgMasterTable{border-collapse:collapse;background:#fff;min-width:100%}
 
 const glyph = { Account: "🗂", Add: "➕", "Add Dev": "▤", Delete: "⊗", Assign: "⎘", AntiPass: "⛔", Sort: "⇅", Search: "🔍", Stats: "▦", "Sec Level": "🔒", "Elev. Ref": "▯", "Snd Data": "⇉", "Rcv Data": "⇇", "Rcv Tran": "⇆", "Config Ports": "⚙", Registration: "🔑", Activity: "▥", Messages: "●", "Share Info": "👥" };
 const tool = (label, { on = false, href = "", name = "", confirm = "" } = {}) => {
-  const inner = `<span class="g">${glyph[label] ?? "□"}</span><span>${esc(label)}</span>`;
+  const inner = `<span class="g" aria-hidden="true">${glyph[label] ?? "□"}</span><span>${esc(label)}</span>`;
   if (!on) return `<span class="tb off" aria-disabled="true">${inner}</span>`;
   if (name) return `<button type="submit" class="tb" name="${name}" id="${name}" value="${esc(label)}"${confirm ? ` onclick="return confirm('${confirm}');"` : ""}>${inner}</button>`;
   return `<a class="tb" href="${href}">${inner}</a>`;
@@ -124,13 +124,13 @@ const tool = (label, { on = false, href = "", name = "", confirm = "" } = {}) =>
 
 function page(title, inner, { tools = "", cur = "", dialog = "", status = "Ready" } = {}) {
   const t = (key, label, href, cls) => `<div class="${cls}"><a href="${href}"${cur === key ? ' class="cur"' : ""}>${label}</a></div>`;
-  const tree = `<div class="tree">${t("sched", "⏰ Scheduled Transfers", "/Accounts.aspx", "")}${t("accounts", "📂 Accounts", "/Accounts.aspx", "")}
-<div class="i1">📁 ${esc(ACCOUNTS[3].name)}</div><div class="i1">📁 ${esc(ACCOUNTS[1].name)}</div>
-<div class="i1">📂 ${esc(ACCOUNT)}</div><div class="i2">▤ System Information</div><div class="i3">⚿ Hold Open</div><div class="i3">🔒 Security Level</div><div class="i3">⛔ Anti Pass</div>
-${t("res", "👤 Resident", "/Residents.aspx", "i2")}${t("dev", "▦ Devices", "/Devices.aspx", "i2")}<div class="i2">✎ Transactions</div><div class="i1">📁 ${esc(ACCOUNTS[2].name)}</div>
-<div style="margin-top:8px">${`<a href="/Logout.aspx">⏻ Log off</a>`}</div></div>`;
+  const tree = `<nav class="tree" role="tree" aria-label="Accounts">${t("sched", "<span aria-hidden='true'>⏰</span> Scheduled Transfers", "/Accounts.aspx", "")}${t("accounts", "<span aria-hidden='true'>📂</span> Accounts", "/Accounts.aspx", "")}
+<div role="treeitem" class="i1"><span aria-hidden='true'>📁</span> ${esc(ACCOUNTS[3].name)}</div><div role="treeitem" class="i1"><span aria-hidden='true'>📁</span> ${esc(ACCOUNTS[1].name)}</div>
+<div role="treeitem" class="i1"><span aria-hidden='true'>📂</span> ${esc(ACCOUNT)}</div><div role="treeitem" class="i2"><span aria-hidden='true'>▤</span> System Information</div><div role="treeitem" class="i3"><span aria-hidden='true'>⚿</span> Hold Open</div><div role="treeitem" class="i3"><span aria-hidden='true'>🔒</span> Security Level</div><div role="treeitem" class="i3"><span aria-hidden='true'>⛔</span> Anti Pass</div>
+${t("res", "<span aria-hidden='true'>👤</span> Resident", "/Residents.aspx", "i2")}${t("dev", "<span aria-hidden='true'>▦</span> Devices", "/Devices.aspx", "i2")}<div role="treeitem" class="i2"><span aria-hidden='true'>✎</span> Transactions</div><div role="treeitem" class="i1"><span aria-hidden='true'>📁</span> ${esc(ACCOUNTS[2].name)}</div>
+<div style="margin-top:8px"><a href="/Logout.aspx"><span aria-hidden='true'>⏻</span> Log off</a></div></nav>`;
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)} - GateAdmin32 (replica)</title><style>${CSS}</style></head><body>
-<div class="win"><div class="title"><span>👑</span><span class="app">${esc(title)} - GateAdmin32</span><span class="rep">REPLICA for testing AI agents - not a real gate system, no real data, not affiliated with any vendor</span><span class="btns"><span>–</span><span>▢</span><span class="x">✕</span></span></div>
+<div class="win"><div class="title"><span aria-hidden="true">👑</span><span class="app">${esc(title)} - GateAdmin32</span><span class="rep">REPLICA for testing AI agents - not a real gate system, no real data, not affiliated with any vendor</span><span class="btns"><span>–</span><span>▢</span><span class="x">✕</span></span></div>
 <div class="menu"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>V</u>iew</span><span><u>A</u>ction</span><span><u>O</u>ptions</span><span><u>H</u>elp</span></div>
 ${inner(tree, tools)}${dialog}
 <div class="status"><span>For Help, press F1</span><span>${esc(status)}</span><span>NUM</span></div></div></body></html>`;
@@ -147,17 +147,17 @@ function loginPage(message) {
 <table><tr><td><label for="txtUser">User name:</label></td><td><input type="text" id="txtUser" name="txtUser" autocomplete="username"></td></tr>
 <tr><td><label for="txtPassword">Password:</label></td><td><input type="password" id="txtPassword" name="txtPassword" autocomplete="current-password"></td></tr></table></fieldset>
 <div class="btncol"><input type="submit" name="btnLogin" value="Log In" id="btnLogin"><button type="reset">Cancel</button></div></div></form></div>`;
-  return page("Log On", (tree) => `<div class="tools">${["Add", "Delete", "Snd Data", "Rcv Data", "Rcv Tran", "Sort"].map((l) => tool(l)).join("")}</div><div class="main">${tree}<div class="pane"><div class="grid res"></div></div></div>`, { dialog: dlg, status: "Not logged on" });
+  return page("Log On", (tree) => `<div class="tools" role="toolbar" aria-label="Toolbar">${["Add", "Delete", "Snd Data", "Rcv Data", "Rcv Tran", "Sort"].map((l) => tool(l)).join("")}</div><div class="main">${tree}<div class="pane"><div class="grid res"></div></div></div>`, { dialog: dlg, status: "Not logged on" });
 }
 
 function accountsPage(v, msg) {
   const rows = ACCOUNTS.map((a, i) => `<tr class="rgRow"><td class="rs">${i === 0 ? "▸" : ""}</td><td>${esc(a.name)}</td><td>${esc(a.contact)}</td><td>${esc(a.phone)}</td><td>${a.series}</td><td><b>History</b></td></tr>`).join("");
   const dialog = v.sendOpen ? `<div class="dlgback"><div class="dlg" id="dlgSend"><div class="title"><span>Send Data Now</span><span class="btns"><span class="x">✕</span></span></div>
-<div class="body"><fieldset><legend>Choose which accounts to send now:</legend><table class="rgMasterTable" id="gvSend"><tr><th>Account Name</th><th>Snd Now</th></tr>
+<div class="body"><fieldset><legend>Choose which accounts to send now:</legend><table class="rgMasterTable" id="gvSend" aria-label="Accounts to send"><caption class="vh">Accounts to send</caption><tr><th>Account Name</th><th>Snd Now</th></tr>
 ${ACCOUNTS.map((a) => `<tr><td>${esc(a.name)}</td><td style="text-align:center"><input type="checkbox" name="chkSend" value="${esc(a.name)}" form="form1"></td></tr>`).join("")}</table></fieldset>
 <div class="btncol"><button type="button" onclick="document.querySelectorAll('input[name=chkSend]').forEach(c=>c.checked=false)">Clear All</button><input type="submit" name="btnSendOK" value="OK" id="btnSendOK" form="form1"><input type="submit" name="btnSendCancel" value="Cancel" id="btnSendCancel" form="form1"></div></div></div></div>` : "";
-  return page("Accounts", (tree) => `${formOpen(v)}<div class="tools">${tool("Add")}${tool("Delete")}${tool("Snd Data", { on: true, name: "btnSend" })}${tool("Rcv Data")}${tool("Rcv Tran")}${tool("Sort")}${tool("Config Ports")}${tool("Registration")}${tool("Activity")}${tool("Messages")}${tool("Share Info")}</div>
-<div class="main">${tree}<div class="pane"><div class="grid res"><table id="gvAccounts" class="rgMasterTable"><tr><th></th><th>Account Name</th><th>Contact Name</th><th>Contact Phone</th><th>Series</th><th>Status</th></tr>${rows}</table></div></div></div></form>`, { cur: "accounts", dialog, status: msg || "Ready" });
+  return page("Accounts", (tree) => `${formOpen(v)}<div class="tools" role="toolbar" aria-label="Toolbar">${tool("Add")}${tool("Delete")}${tool("Snd Data", { on: true, name: "btnSend" })}${tool("Rcv Data")}${tool("Rcv Tran")}${tool("Sort")}${tool("Config Ports")}${tool("Registration")}${tool("Activity")}${tool("Messages")}${tool("Share Info")}</div>
+<div class="main">${tree}<div class="pane"><div class="grid res"><table id="gvAccounts" class="rgMasterTable" aria-label="Accounts"><caption class="vh">Accounts</caption><tr><th></th><th>Account Name</th><th>Contact Name</th><th>Contact Phone</th><th>Series</th><th>Status</th></tr>${rows}</table></div></div></div></form>`, { cur: "accounts", dialog, status: msg || "Ready" });
 }
 
 const searchBox = (v) => (v.searchOpen ? `<div class="search">Find resident: <input type="text" name="fRes" value="${esc(v.flt)}"> <input type="submit" name="fGo" value="Find"> <input type="submit" name="fClear" value="Show All"></div>` : "");
@@ -174,16 +174,16 @@ function residentsPage(v, msg) {
     : `<tr class="new"><td class="rs">*</td><td colspan="13"></td></tr>`;
   const vendors = VENDORS.map((x) => `<tr><td class="rs">&nbsp;</td><td>${esc(x.name)}</td><td></td><td></td><td>*VENDOR*</td><td>${x.dir}</td><td></td><td>05</td><td></td><td></td><td></td><td>1</td><td class="notes"></td></tr>`).join("");
   const head = `<th></th><th>Resident</th><th>Hide</th><th>AAC</th><th>Phone</th><th>Dir</th><th>Ent</th><th>SL</th><th>T</th><th>Device #</th><th>FL</th><th>ER</th><th>Notes</th>`;
-  return page(`Account ${ACCOUNT}`, (tree) => `${formOpen(v)}<div class="tools">${tool("Account", { on: true, href: "/Accounts.aspx" })}<a class="tb" id="lnkAdd" href="javascript:__doPostBack('lnkAdd','')"><span class="g">${glyph.Add}</span><span>Add</span></a>${tool("Add Dev")}${tool("Delete", { on: !!v.sel, name: "btnDelete", confirm: "Delete this resident and their devices?" })}${tool("Assign")}${tool("AntiPass")}${tool("Sort")}${tool("Search", { on: true, name: "btnSearch" })}${tool("Stats")}${tool("Sec Level")}${tool("Elev. Ref")}</div>
-<div class="main">${tree}<div class="pane">${searchBox(v)}<div class="grid res"><table id="gv" class="rgMasterTable"><tr>${head}<th></th></tr>${rows}${addRow}</table></div>
-<div class="grid ven"><table id="gvVendor" class="rgMasterTable"><tr><th></th><th>Vendor</th><th></th><th></th><th></th><th>Dir</th><th>Ent</th><th>SL</th><th>T</th><th>Device #</th><th>FL</th><th>ER</th><th>Notes</th></tr>${vendors}<tr class="new"><td class="rs">*</td><td colspan="12"></td></tr></table></div></div></div></form>`, { cur: "res", status: msg || `${list.length} resident(s)` });
+  return page(`Account ${ACCOUNT}`, (tree) => `${formOpen(v)}<div class="tools" role="toolbar" aria-label="Toolbar">${tool("Account", { on: true, href: "/Accounts.aspx" })}<a class="tb" id="lnkAdd" href="javascript:__doPostBack('lnkAdd','')" title="Add"><span class="g" aria-hidden="true">${glyph.Add}</span><span>Add</span></a>${tool("Add Dev")}${tool("Delete", { on: !!v.sel, name: "btnDelete", confirm: "Delete this resident and their devices?" })}${tool("Assign")}${tool("AntiPass")}${tool("Sort")}${tool("Search", { on: true, name: "btnSearch" })}${tool("Stats")}${tool("Sec Level")}${tool("Elev. Ref")}</div>
+<div class="main">${tree}<div class="pane">${searchBox(v)}<div class="grid res"><table id="gv" class="rgMasterTable" aria-label="Residents"><caption class="vh">Residents</caption><tr>${head}<th></th></tr>${rows}${addRow}</table></div>
+<div class="grid ven"><table id="gvVendor" class="rgMasterTable" aria-label="Vendors"><caption class="vh">Vendors</caption><tr><th></th><th>Vendor</th><th></th><th></th><th></th><th>Dir</th><th>Ent</th><th>SL</th><th>T</th><th>Device #</th><th>FL</th><th>ER</th><th>Notes</th></tr>${vendors}<tr class="new"><td class="rs">*</td><td colspan="12"></td></tr></table></div></div></div></form>`, { cur: "res", status: msg || `${list.length} resident(s)` });
 }
 
 function devicesPage(v, msg) {
   const name = (dir) => state.residents.find((r) => r.dir === dir)?.name ?? "";
   const rows = state.devices.map((d) => `<tr class="rgRow"><td class="rs">&nbsp;</td><td>${KIND_LETTER[d.kind] ?? ""}</td><td>${d.id}</td><td>${d.dir}</td><td>${esc(name(d.dir))}</td><td>${esc(d.kind)}</td><td>02</td><td class="act"><a href="javascript:__doPostBack('gv','Delete$${d.id}')" onclick="return confirm('Delete this device?');">Delete</a></td></tr>`).join("");
-  return page(`Account ${ACCOUNT}`, (tree) => `${formOpen(v)}<div class="tools">${tool("Account", { on: true, href: "/Accounts.aspx" })}${tool("Add")}${tool("Add Dev")}${tool("Delete")}${tool("Assign")}${tool("Sort")}${tool("Search")}</div>
-<div class="main">${tree}<div class="pane"><div class="grid res"><table id="gv" class="rgMasterTable"><tr><th></th><th>T</th><th>Device #</th><th>Dir</th><th>Resident</th><th>Type</th><th>SL</th><th></th></tr>${rows}</table></div></div></div></form>`, { cur: "dev", status: msg || `${state.devices.length} device(s)` });
+  return page(`Account ${ACCOUNT}`, (tree) => `${formOpen(v)}<div class="tools" role="toolbar" aria-label="Toolbar">${tool("Account", { on: true, href: "/Accounts.aspx" })}${tool("Add")}${tool("Add Dev")}${tool("Delete")}${tool("Assign")}${tool("Sort")}${tool("Search")}</div>
+<div class="main">${tree}<div class="pane"><div class="grid res"><table id="gv" class="rgMasterTable" aria-label="Devices"><caption class="vh">Devices</caption><tr><th></th><th>T</th><th>Device #</th><th>Dir</th><th>Resident</th><th>Type</th><th>SL</th><th></th></tr>${rows}</table></div></div></div></form>`, { cur: "dev", status: msg || `${state.devices.length} device(s)` });
 }
 
 const blankView = () => ({ addOpen: false, error: "", flt: "", sel: "", searchOpen: false, sendOpen: false });
