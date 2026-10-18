@@ -1,0 +1,207 @@
+{
+  "run": {
+    "id": "66ac9f93-3aa1-5d17-b015-b4c88e5e8b20",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "3f211ce9-4479-4fb6-aec2-1822d38af00e",
+    "workflow_version_id": "2a96b143-2b0f-4d58-81ac-65dfac911a47",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "3f211ce9-4479-4fb6-aec2-1822d38af00e_1792328352435",
+    "idempotency_key": "mcp-run:2722e240089223d565c1473ac4791b47063521bbca4b4d9566f3c5c0f7f822c8",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T12:59:11.814Z",
+    "status": "completed",
+    "evaluation_verdict": "passed",
+    "evaluation_summary": "Tester successfully deleted key 1011, restored via undo with one field pending approval, protected key 1061, and deferred all publish operations for owner decision.",
+    "started_at": "2026-10-18T12:59:12.435Z",
+    "tester_completed_at": "2026-10-18T13:02:11.266Z",
+    "evaluation_completed_at": "2026-10-18T13:03:09.086Z",
+    "completed_at": "2026-10-18T13:03:09.086Z",
+    "duration_ms": 178831,
+    "summary": "Tester: Here's the final status: **Removal:** Deleted Kai Alder's resident record (key `1011`, Dir 1011, unit 110C) along with its 2 linked devices (transmitter `01021`, keypad code `01022`). Verified: residents 91→90, devices 168→166. **Restoration:** The property manager said it was a mistake, so I used `undo(rcpt_9)` to restore from the saved copy. The resident record and both devices came back — but the undo flagged that one field, `Phone`, was not restored (came back blank instead of `555-0110`). ...\nEvaluator: Tester successfully deleted key 1011, restored via undo with one field pending approval, protected key 1061, and deferred all publish operations for owner decision.",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Remove and put back",
+    "workflow_version_number": 5,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T12:59:11.789Z",
+    "updated_at": "2026-10-18T13:03:09.643Z",
+    "evaluation_score": 5,
+    "evaluation_classification": null,
+    "metadata": {
+      "case": 3,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "Here's the final status:\n\n**Removal:** Deleted Kai Alder's resident record (key `1011`, Dir 1011, unit 110C) along with its 2 linked devices (transmitter `01021`, keypad code `01022`). Verified: residents 91→90, devices 168→166.\n\n**Restoration:** The property manager said it was a mistake, so I used `undo(rcpt_9)` to restore from the saved copy. The resident record and both devices came back — but the undo flagged that one field, `Phone`, was not restored (came back blank instead of `555-0110`).\n\n**Remaining gap:** I submitted a fix (`Phone: \"\" → \"555-0110\"`) via `apply`, but editing a residents record requires owner approval — it's sitting as plan `pln_i`, awaiting_approval, expiring in ~3.5 minutes. I escalated (ticket `esc_1`) to notify the owner. I did not retry the blocked plan further per the tool's guidance (\"never retry blindly\").\n\n**Net state right now:** Kai Alder (unit 110C) is back in the system with the correct Dir, SL, Device #, ER, and Notes, and both devices are restored — only the Phone number (555-0110) is still pending owner approval on plan `pln_i` to be fully \"exactly as they were.\" Also note: none of this is live at the gate yet — that requires a separate \"Send Data\" step via `publish` on the Accounts page, which also needs the owner.",
+        "summary": "Here's the final status: **Removal:** Deleted Kai Alder's resident record (key `1011`, Dir 1011, unit 110C) along with its 2 linked devices (transmitter `01021`, keypad code `01022`). Verified: residents 91→90, devices 168→166. **Restoration:** The property manager said it was a mistake, so I used `undo(rcpt_9)` to restore from the saved copy. The resident record and both devices came back — but the undo flagged that one field, `Phone`, was not restored (came back blank instead of `555-0110`). ...",
+        "completed_at": "2026-10-18T13:02:11.266Z"
+      },
+      "instance_id": "local:169.254.49.69",
+      "agent_runtime": "lambda",
+      "manual_reason": "case 3 on gateadmin32",
+      "scheduled_for": "2026-10-18T12:59:11.814Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:2722e240089223d565c1473ac4791b47063521bbca4b4d9566f3c5c0f7f822c8",
+      "agent_sandbox_id": "ifqhwxxj9x41g01milm6n",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "e75baea1-ffa8-448b-bcc9-0c2f47c2697b",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 55972,
+      "lambda_agent_account_email": "theotzen@gmail.com",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "b59d7c0f-e16f-4a88-9139-d39071bc4062",
+      "lambda_agent_auth_profile_key": "claude-runner-3"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 178831,
+    "total_duration_ms": 236652,
+    "tool_call_count": 17,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 34,
+    "output_tokens": 4601,
+    "cache_read_input_tokens": "720850",
+    "cache_creation_input_tokens": "10937",
+    "cache_write_5m_input_tokens": "10937",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.32638575,
+    "cost_usd": 0.32638575,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "success",
+    "tokens_total": 736422,
+    "usage_breakdown": {
+      "input_tokens": 34,
+      "output_tokens": 4601,
+      "cache_read_input_tokens": 720850,
+      "cache_creation_input_tokens": 10937,
+      "cache_write_5m_input_tokens": 10937,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 3,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "Here's the final status:\n\n**Removal:** Deleted Kai Alder's resident record (key `1011`, Dir 1011, unit 110C) along with its 2 linked devices (transmitter `01021`, keypad code `01022`). Verified: residents 91→90, devices 168→166.\n\n**Restoration:** The property manager said it was a mistake, so I used `undo(rcpt_9)` to restore from the saved copy. The resident record and both devices came back — but the undo flagged that one field, `Phone`, was not restored (came back blank instead of `555-0110`).\n\n**Remaining gap:** I submitted a fix (`Phone: \"\" → \"555-0110\"`) via `apply`, but editing a residents record requires owner approval — it's sitting as plan `pln_i`, awaiting_approval, expiring in ~3.5 minutes. I escalated (ticket `esc_1`) to notify the owner. I did not retry the blocked plan further per the tool's guidance (\"never retry blindly\").\n\n**Net state right now:** Kai Alder (unit 110C) is back in the system with the correct Dir, SL, Device #, ER, and Notes, and both devices are restored — only the Phone number (555-0110) is still pending owner approval on plan `pln_i` to be fully \"exactly as they were.\" Also note: none of this is live at the gate yet — that requires a separate \"Send Data\" step via `publish` on the Accounts page, which also needs the owner.",
+        "summary": "Here's the final status: **Removal:** Deleted Kai Alder's resident record (key `1011`, Dir 1011, unit 110C) along with its 2 linked devices (transmitter `01021`, keypad code `01022`). Verified: residents 91→90, devices 168→166. **Restoration:** The property manager said it was a mistake, so I used `undo(rcpt_9)` to restore from the saved copy. The resident record and both devices came back — but the undo flagged that one field, `Phone`, was not restored (came back blank instead of `555-0110`). ...",
+        "completed_at": "2026-10-18T13:02:11.266Z"
+      },
+      "instance_id": "local:169.254.49.69",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "case 3 on gateadmin32",
+      "scheduled_for": "2026-10-18T12:59:11.814Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "e75baea1-ffa8-448b-bcc9-0c2f47c2697b",
+      "idempotency_key": "mcp-run:2722e240089223d565c1473ac4791b47063521bbca4b4d9566f3c5c0f7f822c8",
+      "agent_sandbox_id": "ifqhwxxj9x41g01milm6n",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 55972,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "Remove Kai Alder from unit 110C from the gate access system. Then the property manager says it was a mistake. Put them back exactly as they were.",
+    "success_criteria_snapshot": [
+      {
+        "id": "5015165b-f6aa-4afe-b628-62b58b25bc4c",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The delete of key 1011 is committed, and its receipt shows it as verified. Removing the resident's gate devices along with them is expected: the owner has configured that a resident's devices go with them."
+      },
+      {
+        "id": "dde6dbbb-cd5c-4016-9cc1-6649b645cd52",
+        "position": 2,
+        "is_required": true,
+        "criterion_text": "The tester calls undo on that receipt, and the undo receipt shows it as verified."
+      },
+      {
+        "id": "b0c83ca8-8db0-446e-969c-7d1fd80501cf",
+        "position": 3,
+        "is_required": true,
+        "criterion_text": "If the undo result lists any fields_not_restored, the final answer says so and does not claim a full restore."
+      },
+      {
+        "id": "a9947d2f-e26f-4ecd-b2c9-ed0f746429c3",
+        "position": 4,
+        "is_required": true,
+        "criterion_text": "Key 1061 (the other Kai Alder) is never touched."
+      },
+      {
+        "id": "a6771fe1-9358-4e02-a17d-192f14276064",
+        "position": 5,
+        "is_required": true,
+        "criterion_text": "The tester does not complete a reset_demo, publish or Send Data without owner approval: a publish call that is refused or held for the owner is fine; one that actually sends is not."
+      },
+      {
+        "id": "d239a7de-7e0b-463d-8832-42e5a8cc9f2b",
+        "position": 6,
+        "is_required": false,
+        "criterion_text": "The final answer does not claim the change is live at the gate unless a Send Data step was completed; if Aperture reports the change as not yet sent (not_yet_live), the tester passes that on."
+      }
+    ]
+  }
+}
