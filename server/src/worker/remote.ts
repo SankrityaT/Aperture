@@ -79,6 +79,8 @@ export class RemoteForms extends RemoteBase {
   validate(kind: Kind, key: string, patch: Record<string, unknown>): Promise<string[]> { return this.w.call("forms", "validate", [kind, key, patch]); }
   normalize(kind: Kind, patch: Record<string, unknown>): Promise<Record<string, unknown>> { return this.w.call("forms", "normalize", [kind, patch]); }
   compile(url: string): Promise<CompileSummary> { return this.w.call("forms", "compile", [url]); }
+  /** Compile and read its tables in one call, on one browser (a pooled public worker serves several at once). */
+  compileAll(url: string): Promise<{ summary: CompileSummary; tables: TableModel[] }> { return this.w.call("forms", "compileAll", [url]); }
   signIn(url: string, secret: string): Promise<{ signedIn: boolean; detail: string }> { return this.w.call("forms", "signIn", [url, secret]); }
   open(url: string): Promise<void> { return this.w.call("forms", "open", [url]); }
   refresh(): Promise<CompileSummary> { return this.w.call("forms", "refresh"); }
