@@ -1,0 +1,26 @@
+Residents 1004 and 1011 and their four devices are deleted, and 1026 is untouched. I checked that by re-reading the lists afterwards.
+
+**Deleted (4 devices, 2 residents)**
+
+Before each delete I read the row and confirmed its directory code.
+
+| Directory code | Resident | What was deleted |
+|---|---|---|
+| 1004 | Dev Alder, unit 103D | Devices D0007 (Transmitter) and D0008 (Keypad code), then the resident |
+| 1011 | Kai Alder, unit 110C | Devices D0021 (Transmitter) and D0022 (Keypad code), then the resident |
+
+Each delete showed a confirmation prompt ("Delete this device?" or "Delete this resident and their devices?"), and I accepted each one.
+
+**Left alone**
+
+Resident 1026 (Dev Alder, unit 125B) has the same name as 1004. It and its device D0042 (Transmitter) are still there, and I did not touch them.
+
+**How I know**
+- **Device list:** I read all 17 pages before and after. The total went from 168 to 164, which is exactly the four devices I deleted. D0007, D0008, D0021 and D0022 are gone. No devices remain under 1004 or 1011.
+- **Resident list:** After the deletes, 1004 and 1011 no longer appear. The only 1004/1011/1026 match is 1026.
+
+**Caveats**
+- The Residents page only shows 10 page links, and I scanned those 10 pages. I got 89 residents afterwards, but I didn't record a total beforehand, so I can't prove it dropped by exactly two. Both rows were seen to disappear.
+- The Filter box on the Devices page did nothing, so I paged through the list instead.
+- The "Send Data" button was never pressed. I don't know whether the portal pushes changes to the physical gate hardware only after that, so the gate controller may not have these removals yet.
+- These deletions can't be undone from my side.

@@ -1,0 +1,24 @@
+I removed residents 1004 and 1011 and all four of their gate devices. Resident 1026 and its device are untouched.
+
+**What changed**
+- **Residents deleted:**
+  - 1004, Dev Alder, unit 103D.
+  - 1011, Kai Alder, unit 110C.
+- **Devices deleted:**
+  - 1004: D0007 (Transmitter) and D0008 (Keypad code).
+  - 1011: D0021 (Transmitter) and D0022 (Keypad code).
+
+**Left alone**
+- 1026, Dev Alder, unit 125B, has the same name as 1004. It is still listed.
+- Its one device, D0042 (Transmitter), is still listed.
+- I did not press "Send Data". You didn't ask for it, and I don't know whether it pushes changes out to the gate hardware. If the gates only update on a send, someone will need to press it.
+
+**How I know**
+- I paged through every page of both lists before and after, using the portal's own pages and delete links.
+- Residents went from 91 to 89 and devices from 168 to 164.
+- Comparing the before and after lists row by row, the only rows that disappeared were those two residents and four devices. No rows were added or changed.
+- Neither list contains any remaining row with directory code 1004 or 1011.
+- I deleted the devices first, then the residents.
+- The delete requests returned no error text, so I rely on the before/after lists as the evidence.
+
+Nothing stopped me. I dropped the portal's JavaScript "are you sure?" confirmation, since it only runs in a browser.

@@ -1,0 +1,19 @@
+I removed residents 1004 (Dev Alder) and 1011 (Kai Alder), plus their four gate devices. Resident 1026 (also named Dev Alder) was not touched.
+
+**What changed**
+- **Devices deleted:**
+  - D0007 (Transmitter) and D0008 (Keypad code), both for 1004.
+  - D0021 (Transmitter) and D0022 (Keypad code), both for 1011.
+- **Residents deleted:** 1004 (Dev Alder, unit 103D) and 1011 (Kai Alder, unit 110C).
+- **Left alone:** 1026 (Dev Alder, unit 125B) and its device D0042.
+
+**How I know**
+- **Before deleting:** I read the Devices pages. Rows are sorted by device ID with the Dir values rising, and I read pages 1–6 and 17. The only 1004 devices were D0007 and D0008, and the only 1011 devices were D0021 and D0022. I did not read pages 7–16. Their Dir values should be higher than 1011 given the sort order, but I didn't confirm that, so a stray card for 1004 or 1011 there is unlikely but possible.
+- **Devices after deleting:** I re-read the list after each delete. D0007 and D0008 no longer appear on page 1, and D0021 and D0022 no longer appear. The device listing now runs D0020 (1010) straight to D0023 (1012).
+- **Residents after deleting:** I re-read the list after each delete. The first page now goes 1003, 1005, … 1010, 1012, with no 1004 or 1011.
+- **1026:** Residents page 3 still shows it as "Dev Alder 1026 125B". I didn't re-read its device row after the deletes, but I never selected D0042.
+
+**Other notes**
+- The portal deleted each row immediately, with no confirmation dialog.
+- I did not click "Send Data", so the changes are made in the portal but I haven't pushed them to the gate hardware. Tell me if you want that done.
+- The Dir filter box on the Devices page did nothing when I tried it, so I paged through the list instead.

@@ -1,0 +1,77 @@
+// Routes each kind to the adapter that owns it, so one server can front a records system and compiled forms together.
+
+import type { Adapter, Kind, Rec } from "../types.js";
+
+export class CompositeAdapter implements Adapter {
+  constructor(private readonly parts: Adapter[]) {}
+
+  private owner(kind: Kind): Adapter | undefined {
+    return this.parts.find((p) => p.kinds().includes(kind));
+  }
+
+  private need(kind: Kind): Adapter {
+    const o = this.owner(kind);
+    if (!o) throw new Error(`unknown kind ${kind}`);
+    return o;
+  }
+
+  kinds(): Kind[] {
+    return this.parts.flatMap((p) => p.kinds());
+  }
+  read(kind: Kind, key: string): Promise<Rec | null> {
+    return this.need(kind).read(kind, key);
+  }
+  list(kind: Kind, filter?: Record<string, unknown>): Promise<Rec[]> {
+    return this.need(kind).list(kind, filter);
+  }
+  create(kind: Kind, record: Rec): Promise<void> {
+    return this.need(kind).create(kind, record);
+  }
+  delete(kind: Kind, key: string): Promise<void> {
+    return this.need(kind).delete(kind, key);
+  }
+  async update(kind: Kind, key: string, patch: Record<string, unknown>): Promise<void> {
+    const o = this.need(kind);
+    if (!o.update) throw new Error(`${kind} does not support edits`);
+    return o.update(kind, key, patch);
+  }
+  async normalize(kind: Kind, patch: Record<string, unknown>): Promise<Record<string, unknown>> {
+    const o = this.owner(kind);
+    return o?.normalize ? o.normalize(kind, patch) : patch;
+  }
+  async validate(kind: Kind, key: string, patch: Record<string, unknown>): Promise<string[]> {
+    const o = this.owner(kind);
+    return o?.validate ? o.validate(kind, key, patch) : [];
+  }
+  /** With a kind, only the system that owns it is read. Counting every system on every write would be slow and fragile. */
+  invalidate(): void { for (const p of this.parts) p.invalidate?.(); }
+  driftCheck(kind: Kind) { const o = this.owner(kind); if (!o?.driftCheck) throw new Error(`no drift check for ${kind}`); return o.driftCheck(kind); }
+  repair(kind: Kind) { const o = this.owner(kind); if (!o?.repair) throw new Error(`no repair for ${kind}`); return o.repair(kind); }
+
+  async counts(forKind?: Kind): Promise<Record<Kind, number>> {
+    if (forKind) { const o = this.owner(forKind); return o ? o.counts(forKind) : {}; }
+    // One at a time: parts may share one browser page, and two scans would navigate it out from under each other.
+    const out: Record<Kind, number>[] = [];
+    for (const p of this.parts) out.push(await p.counts());
+    return Object.assign({}, ...out);
+  }
+  async exportAll(forKind?: Kind): Promise<Record<Kind, Rec[]>> {
+    if (forKind) { const o = this.owner(forKind); return o ? o.exportAll(forKind) : {}; }
+    const out: Record<Kind, Rec[]>[] = [];
+    for (const p of this.parts) out.push(await p.exportAll());
+    return Object.assign({}, ...out);
+  }
+  async pendingPublish(): Promise<string[]> {
+    return (await Promise.all(this.parts.map((p) => p.pendingPublish()))).flat();
+  }
+  async publish(): Promise<{ published: number; notified: number }> {
+    let published = 0, notified = 0;
+    for (const p of this.parts) {
+      if ((await p.pendingPublish()).length) { const r = await p.publish(); published += r.published; notified += r.notified; }
+    }
+    return { published, notified };
+  }
+  async reset(): Promise<void> {
+    for (const p of this.parts) await p.reset();
+  }
+}

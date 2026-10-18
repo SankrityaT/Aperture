@@ -49,11 +49,24 @@ proposed -> previewed -> [needs approval] -> approved -> committed -> (undone)
 ```
 get_instructions()                       // short guide written for agents
 find(kind, query)                        // read
-delete(key, dry_run?, plan_id?)          // write
+delete(key, dry_run?, plan_id?)          // write: preview, or commit a previewed plan
 create(record, dry_run?, plan_id?)       // write
 publish(dry_run?, plan_id?)              // publish
+apply(op, args)                          // preview + commit in one call when the rules allow it
+apply_batch(ops[])                       // preview all, commit the ones inside the mandate, summarize the rest
 undo(receipt_id)
 ```
+
+### apply and apply_batch (the autonomous path)
+- `apply` runs the preview inside the server. If every rule passes and no approval is required, it commits
+  immediately and returns the receipt. Otherwise it stops and returns the plan with `status: awaiting_approval`
+  or a refusal with `next`.
+- `publish` never auto-commits. It always needs approval.
+- `apply_batch` previews every item first. It commits only items inside the mandate, stops at the first failed
+  commit (never continues blind), and returns ONE summary: committed, refused, awaiting approval.
+  The human only sees the exceptions.
+- All safeguards still run on every commit: re-read and hash check, snapshot, read-back, receipt, undo.
+- Mandate limits (for example max deletes per day) apply across the whole batch, not per item.
 
 Responses are small typed JSON. Every refusal has `error`, `detail`, and `next` (the valid next moves).
 

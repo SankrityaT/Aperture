@@ -1,0 +1,18 @@
+Residents 1004 (Dev Alder, unit 103D) and 1011 (Kai Alder, unit 110C) are removed, along with their four gate devices. Resident 1026 was not touched.
+
+**What changed**
+- **Residents:** 1004 and 1011 were deleted. The resident count went from 91 to 89.
+- **Devices:** The portal removed each resident's devices with them, so I didn't delete any devices separately.
+  - 1004: D0007 (Transmitter) and D0008 (Keypad code).
+  - 1011: D0021 (Transmitter) and D0022 (Keypad code).
+  - The device count went from 168 to 164.
+
+**How I know**
+- I previewed both deletes first. Each preview listed exactly the resident plus its 2 devices, and I committed only after seeing that.
+- Aperture read the portal back after each delete. The receipts (rcpt_1 and rcpt_2) show the resident is gone, the counts are 90/166 and then 89/164, and the result matched the prediction.
+- I then searched the portal again myself:
+  - Searching devices for 1004 and for 1011 returns nothing.
+  - The only "Dev Alder" left is 1026 (unit 125B), and its transmitter D0042 is still there.
+- I acted on directory codes only, never on names.
+
+Both deletes can be undone until 2026-10-19 11:42 UTC (`undo` with the receipt IDs). Nothing stopped me, and I didn't need `publish`.

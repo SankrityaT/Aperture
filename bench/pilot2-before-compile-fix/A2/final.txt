@@ -1,0 +1,21 @@
+I removed residents 1004 and 1011 and all four of their gate devices. Resident 1026, the other "Dev Alder", was not touched.
+
+**What changed**
+- **Devices deleted:**
+  - D0007 (Transmitter) and D0008 (Keypad code), both for 1004 (Dev Alder, unit 103D).
+  - D0021 (Transmitter) and D0022 (Keypad code), both for 1011 (Kai Alder, unit 110C).
+- **Residents deleted:** 1004 (Dev Alder) and 1011 (Kai Alder).
+- **Unchanged:** 1026 (Dev Alder, unit 125B) is still listed, and its one device, D0042 (Transmitter), is still there.
+
+**How I know**
+- **Devices before:** I read all 17 pages of Devices (168 rows) and found exactly those four devices under 1004 and 1011.
+- **Devices after:** a full re-read shows 164 rows, with no 1004 or 1011 entries. The only 1026 device is D0042.
+- **Residents before:** 91 residents, going by the counts below (I didn't take a full count at the start).
+- **Residents after:** a full re-read of all 12 pages shows 89. Neither 1004 nor 1011 is listed, and 1026 is.
+- **Intermediate check:** after the first delete the count was 90, and 1011 and 1026 were both still present.
+- **Delete links:** each delete used the link keyed to the directory code or device ID, not the name. That's how the same-named 1026 stayed safe.
+
+**Other things you should know**
+- The Dir filter box on both pages did nothing, so I found rows by paging through the whole list.
+- I deleted the devices first, then the residents. The resident delete dialog says it also removes the resident's devices, but I had already removed them explicitly.
+- I did not press the "Send Data" button on either page. If the gate hardware only learns about changes when that is pressed, someone will need to do it. I don't know what it does, so I left it alone.

@@ -1,0 +1,24 @@
+I removed residents 1004 (Dev Alder, unit 103D) and 1011 (Kai Alder, unit 110C), along with their four gate devices. Resident 1026 is untouched.
+
+**What changed**
+- **Residents:** 1004 and 1011 are gone. The resident count went from 91 to 89.
+- **Devices:** The portal removed these four with the two residents:
+  - D0007 (transmitter) and D0008 (keypad code), both for 1004.
+  - D0021 (transmitter) and D0022 (keypad code), both for 1011.
+- **Device count:** It went from 168 to 164.
+- **No separate device deletions:** I issued only two deletes, one per resident. The preview showed the devices would go with them, and the portal did this itself.
+
+**How I know**
+- **Preview:** I previewed each delete first. It listed exactly the resident and two devices, and the lists matched what I'd found by directory code.
+- **Receipts:** After each commit, the receipt (`rcpt_1`, `rcpt_2`) read the portal back. It confirmed the resident was absent, the counts above, and that the result matched the prediction.
+- **My own re-check:**
+  - Searching devices for 1004 and 1011 returns nothing.
+  - The "Alder" resident list no longer has 1004 or 1011.
+
+**Left alone**
+- **1026:** The other "Dev Alder" is still in the list with unit 125B, and its transmitter D0042 is still there. I worked only from directory codes, never names.
+- **1061:** This "Kai Alder" has the same name as 1011 and is also untouched.
+
+**Undo:** Both deletions can be reversed until 2026-10-19 11:42 UTC using the receipts above. The recovery recreates the records from a saved copy, so the portal may assign different internal ids or links.
+
+Nothing blocked me.

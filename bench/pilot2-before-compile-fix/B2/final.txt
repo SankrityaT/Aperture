@@ -1,0 +1,27 @@
+Residents 1004 and 1011 and all four of their devices are deleted, and 1026 is untouched. I checked each deletion in the portal afterwards.
+
+**What I deleted**
+- **Devices for 1004:** D0007 (Transmitter) and D0008 (Keypad code).
+- **Devices for 1011:** D0021 (Transmitter) and D0022 (Keypad code).
+- **Resident 1004:** Dev Alder, unit 103D.
+- **Resident 1011:** Kai Alder, unit 110C.
+
+**Left alone**
+- Resident 1026 (Dev Alder, unit 125B) is still listed.
+- Its device D0042 (Transmitter) is also still there.
+
+**Order and checks**
+- I read all 17 Devices pages first to find every device for 1004, 1011 and 1026. Only the four above belong to the two leavers.
+- I deleted the four devices first, then the two residents.
+- I picked each row from a fresh listing by its exact device ID or directory code before clicking Delete.
+- The portal's confirmation prompts ("Delete this device?" and "Delete this resident and their devices?") don't name the record. The directory code check was therefore mine, not the portal's.
+
+**How I know**
+- After each device deletion I reloaded the list and the row was gone, with no neighbouring rows missing.
+- After the last deletion I re-read every page of both lists. Residents went from 91 to 89, and no resident or device with directory code 1004 or 1011 remains.
+- 1026 still shows exactly one resident row and one device.
+
+**What I couldn't verify**
+- I didn't record the starting device count, so I can't confirm "exactly four devices removed" from totals. The four removals are confirmed one by one, and the final list has 164 devices.
+- I haven't clicked "Send Data". If the gate hardware only learns about changes when it's pressed, the physical remotes and codes may still work until someone sends the data. I didn't press it because you didn't ask for it.
+- The Residents page logged one console error on load. It didn't affect anything I did.

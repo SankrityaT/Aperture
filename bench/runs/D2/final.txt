@@ -1,0 +1,19 @@
+I removed residents 1004 (Dev Alder, unit 103D) and 1011 (Kai Alder, unit 110C), and the four gate devices that belonged to them. The portal confirms each change.
+
+**What changed**
+- **Residents:** the portal's count went from 91 to 89.
+- **Devices:** the count went from 168 to 164.
+- **Devices removed:** D0007 (Transmitter) and D0008 (Keypad code) for 1004, and D0021 (Transmitter) and D0022 (Keypad code) for 1011.
+- **Cascade:** deleting a resident removes their devices automatically, so I deleted only the two residents.
+- **Receipts:** `rcpt_1` covers 1004 and `rcpt_2` covers 1011.
+
+**How I know**
+- **Preview:** before committing, a dry run of each delete listed the resident plus exactly 2 devices.
+- **Receipts:** the portal's read-back after each delete reported the resident gone, matching the prediction. The counts went 91→90 residents and 168→166 devices, then 90→89 and 166→164.
+- **Fresh check:** I searched again afterwards.
+  - Devices for 1004 and 1011 return nothing.
+  - The Alder list no longer has 1004 or 1011.
+
+**Left alone:** resident 1026, the other Dev Alder (unit 125B), is still there with its transmitter D0042. I only acted on directory codes, never names. I also left 1061, a different Kai Alder (unit 120A), because it shares a name with 1011 but you didn't ask for it.
+
+Nothing stopped me. The deletes can be undone with `undo` until 2026-10-19 11:42 UTC. The restore recreates the records from a saved copy, so any IDs the portal assigns itself may differ.

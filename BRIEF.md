@@ -26,6 +26,35 @@ Say what is real and what is not. The live system is a real open-source app we h
 The real DoorKing job was done earlier with a plain browser agent, before Wicket existed. Never claim otherwise.
 Never put real names, resident data, or credentials in the repo, the demo, or any public page.
 
+## Decisions (Oct 17, after mentor feedback)
+- Mentor feedback: loved legacy-to-MCP. Worried the preview step is slow. Sold if the tool queue is fast.
+- No throwaway sandbox copies in v1. Everything is on demand. Compile = a quick read-only exploration in one
+  logged-in session, cached per system.
+- Preview is computed from a cache plus learned rules, in milliseconds, once per action. The commit re-reads the
+  record and compares. Writes go through a per-system queue, one at a time. Reads skip the queue.
+- Predicted versus actual on every commit. A surprise becomes a learned rule and the next similar action asks first.
+- Throwaway copies and vendor test environments are an optional later tier, not v1 and not in the demo.
+- Latency budget (targets, to be measured): find and dry-run under 300 ms from cache, queue ack under 100 ms.
+- Prefer direct form posts over browser clicks where the system allows it (spike on Gibbon).
+
+## Honesty rules for the demo (no hardcoding)
+1. One general generator. No code specific to Gibbon or the DS-160. The tools come from exploring the live pages.
+2. Gibbon is the development set. A second real open-source app we host ourselves (openSIS, Dolibarr or OrangeHRM)
+   is held out and only run at the end, so we do not tune to it.
+3. Pass criteria are written BEFORE the held-out run: per section, fields end with the right values, the read-back
+   matches, and manual edits are counted.
+4. Count and disclose every manual edit to generated adapters ("3 of 5 pages worked unaided").
+5. Report failures plainly. Never present a scripted or hand-fixed path as generated.
+6. No automated access to systems we do not own or have permission for. The DS-160 (a US government site) showed a
+   Computer Fraud and Abuse Act warning on Oct 17, so it is OFF LIMITS: no retries, no demo, no recordings of it.
+   Never get around a block, a CAPTCHA, or bot detection. Only hit systems we host or have written permission for.
+
+## Schedule (Sunday 10 AM PT submission)
+- about 11 PM Sat: generator working on Gibbon
+- (removed) the held-out DS-160 run: ruled out, see ground rule 6. The held-out check now uses public demo apps made to be tried (test/heldout.ts).
+- about 6 AM Sun: feature freeze
+- 7 to 9 AM Sun: record the demo and submit
+
 ## Split
 - Kinjal: the system under test. Gibbon on an InstaBox machine, seeded with fake data, resettable.
 - Sanki: the product. Manufact MCP server, ticket engine, rules, owner page.

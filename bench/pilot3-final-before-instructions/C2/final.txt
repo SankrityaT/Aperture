@@ -1,0 +1,19 @@
+I removed residents 1004 and 1011 and their four gate devices. Resident 1026 is untouched.
+
+**Removed**
+- Resident 1004 (Dev Alder, unit 103D) and resident 1011 (Kai Alder, unit 110C).
+- Devices D0007 (transmitter) and D0008 (keypad code) for 1004.
+- Devices D0021 (transmitter) and D0022 (keypad code) for 1011.
+
+I deleted by directory code and device key only, never by name. I deleted the devices first, then the residents.
+
+**How I know**
+- Each delete returned a receipt with a read-back (rcpt_1 to rcpt_6). Each receipt showed the record gone and the count matching the prediction. Device count went from 168 to 164 and resident count from 91 to 89.
+- Searches on the Devices page for "1004" and "1011" now return nothing.
+- Searching residents for "Alder" still shows Dev Alder, directory code 1026, unit 125B. Kai Alder, directory code 1061, was never targeted and is still there.
+
+**Not checked**
+- I didn't check whether 1026 has devices of its own. I only searched devices for 1004 and 1011.
+- I searched devices by directory code, so a device that matched neither code wouldn't have shown up.
+
+Nothing blocked me. The portal didn't ask for owner approval on any of the deletes. They can be undone until about 2026-10-19 11:35 (receipts rcpt_1 to rcpt_6). An undo recreates each record from a saved copy, so it should come back with the same values, but the app may assign new ids.

@@ -1,0 +1,21 @@
+I removed both residents and all four of their gate devices. I then checked the portal again and the result matches. I did not read the last 13 pages of the Devices list, so I can't fully rule out a stray device under 1004 or 1011 there.
+
+**What changed**
+- **Resident 1004** (Dev Alder, unit 103D) is deleted.
+- **Resident 1011** (Kai Alder, unit 110C) is deleted.
+- **Devices for 1004:** D0007 (Transmitter) and D0008 (Keypad code) are deleted.
+- **Devices for 1011:** D0021 (Transmitter) and D0022 (Keypad code) are deleted.
+
+Before each deletion I found the row by its directory code and checked the code on that row before clicking Delete.
+
+**How I know**
+- **Residents list:** Pages 1 and 3 no longer show 1004 or 1011. Page 2 and the pages after 3 I did not read.
+- **Resident 1026:** The other Dev Alder, unit 125B, is still there. I never touched that record.
+- **Devices list:** Pages 1, 2 and 4 are consistent with the changes. D0007, D0008, D0021 and D0022 are gone, and D0042 (the 1026 Transmitter) is still there. Every other device I saw is still there. I did not read page 3.
+- **Coverage before deleting:** I read Devices pages 1–8 before deleting. Those showed only the four devices above for 1004 and 1011.
+
+**What I couldn't verify or that went wrong**
+- **Unread pages:** I did not read Devices pages 5–17 after the deletions, or Residents pages beyond 1 and 3. The lists are ordered by directory code, so a stray device for 1004 or 1011 would be unlikely to sit there. That is an inference, not something I checked.
+- **Filter box:** The Dir filter on the Devices page did nothing when I tried it, so I paged through the list by hand.
+- **Unseen confirmation:** I moved on right after confirming the D0022 and 1011 deletions without waiting for the page to reload. The later page reads show both gone.
+- **Not done:** I did not click "Send Data" on either page. I don't know whether the gate hardware needs that to pick up the removals. Check that if it matters to you.

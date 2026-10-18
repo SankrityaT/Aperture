@@ -1,0 +1,26 @@
+Residents 1004 and 1011 are gone from the portal, along with their four devices. Resident 1026 and its device are untouched.
+
+**What I deleted** (each one through the portal's own Delete link, confirming its prompt):
+- **Devices:**
+  - D0007 (1004, Transmitter)
+  - D0008 (1004, Keypad code)
+  - D0021 (1011, Transmitter)
+  - D0022 (1011, Keypad code)
+- **Residents:**
+  - 1004 (Dev Alder, unit 103D)
+  - 1011 (Kai Alder, unit 110C)
+
+I deleted the devices first, then the residents, so no orphaned devices were left behind.
+
+**How I know**
+- Before deleting, I read every page of the Devices list. 1004 and 1011 had exactly the four devices above, and 1026 had one (D0042, Transmitter).
+- After each delete, I re-read the list and the row was gone. For example, the first Residents page went from "Dev Alder 1004" to "Eli Alder 1005" in that slot.
+- At the end I re-read every page of both lists:
+  - **Residents:** 1004 and 1011 no longer appear. "Dev Alder 1026 125B" is still there.
+  - **Devices:** nothing is listed for 1004 or 1011. D0042 (1026) is still there.
+
+**Things to know**
+- The Dir filter box on the Devices page didn't narrow the list when I tried it. I read the pages one by one instead, and nothing was deleted by accident.
+- Other residents share the first name "Kai" (for example, 1031 and 1051), but Kai Alder 1011 was the only one I deleted. I matched on directory code every time.
+- The page also has a "Send Data" button, which I did not press. If the gate hardware only updates when that button is used, someone needs to press it. I didn't want to push changes to the hardware without you asking.
+- I didn't record the full row counts before I started, so I can't give a before-and-after total. The lists now hold 89 residents and 164 devices.

@@ -1,0 +1,24 @@
+I removed the four gate devices, but I did not remove the two residents. The tools I have can't delete resident records.
+
+**What changed**
+
+I deleted these devices, one at a time, by their device keys:
+
+| Device | Directory code | Type |
+|---|---|---|
+| D0007 | 1004 | Transmitter |
+| D0008 | 1004 | Keypad code |
+| D0021 | 1011 | Transmitter |
+| D0022 | 1011 | Keypad code |
+
+**How I know**
+- The device count went from 168 to 164. Each delete returned a receipt (rcpt_1 to rcpt_4) with a read-back showing the device gone and the count matching the prediction.
+- I searched again afterwards. Searching 1004 and 1011 now returns nothing, so no devices are left for either.
+- Searching 1026 still returns its transmitter, D0042, so I left that resident's device alone.
+- I made no changes under 1026.
+
+**What stopped me**
+- **Resident records:** the portal tools expose only a devices table, plus a form on the Residents page with two text fields, `fRes` and `fDir`. Looking up residents returned "unknown kind", so I couldn't find or delete the residents for 1004 and 1011. I didn't try to fill the form, because submitting it needs the owner's approval and I couldn't tell it would remove anyone.
+- **Name check:** I never saw the resident list, so I couldn't check the 1004/1026 shared name myself. I worked only from the directory codes you gave me.
+- **Next step:** someone with direct access to Residents.aspx needs to delete residents 1004 and 1011 there, and leave 1026 alone. If you'd like me to try the form route, I'd need your go-ahead.
+- **Undoing:** the device deletes can be undone until 2026-10-19 11:12 UTC.

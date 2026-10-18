@@ -1,0 +1,26 @@
+I removed residents 1004 (Dev Alder, unit 103D) and 1011 (Kai Alder, unit 110C) and the four gate devices that belonged to them. Nothing stopped me.
+
+**What changed**
+
+| Receipt | Deleted | Detail |
+|---|---|---|
+| rcpt_1 | Device D0007 | 1004's transmitter |
+| rcpt_2 | Device D0008 | 1004's keypad code |
+| rcpt_3 | Device D0021 | 1011's transmitter |
+| rcpt_4 | Device D0022 | 1011's keypad code |
+| rcpt_5 | Resident 1004 | Dev Alder |
+| rcpt_6 | Resident 1011 | Kai Alder |
+
+I deleted the devices first, then the residents. For every delete I previewed it, checked that the preview listed only that one record, and then committed it.
+
+**How I know**
+- **Each delete was read back.** Each receipt says the record was gone and the count matched the prediction. Devices went from 168 to 164 and residents from 91 to 89.
+- **I searched again afterwards.** A search for devices matching 1004 and one for 1011 both return nothing. The Alder residents list no longer has 1004 or 1011.
+
+**Left alone**
+- **Resident 1026:** the other Dev Alder, unit 125B, is still there. Its transmitter D0042 is still there too.
+- **Resident 1061:** another Kai Alder, unit 120A, shares a name with 1011. I deleted only by directory code, so it is untouched.
+
+**Limits of the check**
+- **Device search:** the full device list was cut off at 100 entries. I found each resident's devices by searching their directory code instead, and those searches returned exactly the four devices above. That is a text match on any field, not a full listing.
+- **Undo:** the deletes can be undone using the receipts until about 2026-10-19 11:15 UTC. A restored record would have the same values, but any IDs the portal assigns itself might differ.

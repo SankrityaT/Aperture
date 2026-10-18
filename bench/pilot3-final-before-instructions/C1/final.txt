@@ -1,0 +1,21 @@
+I removed both residents and all four of their gate devices. Resident 1026 and its device were not touched.
+
+**Devices deleted (receipts rcpt_1 to rcpt_4):**
+- D0007 (Transmitter) and D0008 (Keypad code), both belonging to 1004.
+- D0021 (Transmitter) and D0022 (Keypad code), both belonging to 1011.
+
+**Residents deleted (receipts rcpt_5 and rcpt_6):**
+- 1004, Dev Alder, unit 103D.
+- 1011, Kai Alder, unit 110C.
+
+**How I know:**
+- **Receipts:** each delete returned a read-back with `verified.ok: true`, the record gone, and the count matching the prediction.
+- **Counts:** devices went from 168 to 164 and residents from 91 to 89. That is exactly the 4 devices and 2 residents I deleted.
+- **Final lookups:** searching devices for 1004 and for 1011 now returns nothing. Searching residents for "Alder" no longer lists 1004 or 1011.
+- **1026 and 1004:** both are named Dev Alder. I deleted by directory code only, never by name, so 1026 (unit 125B) is still there. Its transmitter D0042 is also still there.
+
+Nothing blocked me. The first delete was approved under an existing delegation (`dlg_1`), so I didn't need to ask you.
+
+I searched devices by directory code because the full device list was cut off at 100 of 168 rows. The searches for 1004 and 1011 found only the four devices above.
+
+Each deletion can be undone for 24 hours by calling undo with its receipt id. An undo would recreate the record from its saved copy, so any ids the portal assigns itself may differ.
