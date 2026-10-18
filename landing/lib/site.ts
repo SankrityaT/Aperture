@@ -1,9 +1,10 @@
+//created by kinjal
 // The product name and links live here only; the name is not final.
 export const site = {
   name: "Aperture",
   github: "https://github.com/SankrityaT/Aperture",
-  // TODO: docs page, to build once the MCP server work is done (see TODO.md). Until then this is a placeholder.
-  docs: "#",
+  // The docs page: every tool, the change lifecycle and the errors (markdown at /docs.md).
+  docs: "/docs",
   start: "#",
   // The MCP server the setup prompt connects agents to.
   slug: "aperture",

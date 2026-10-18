@@ -1,0 +1,195 @@
+{
+  "run": {
+    "id": "ef0530f9-935e-5081-b93a-41d5cc63b366",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "dd602165-3020-49a4-976d-3c9928c19af3",
+    "workflow_version_id": "beae8f1a-10ec-42d5-9cac-d466643b0fe3",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "dd602165-3020-49a4-976d-3c9928c19af3_1792331638778",
+    "idempotency_key": "mcp-run:ed5d72049e95d28e203bd8a6c9369f2674809bf2841428def643299764765499",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T13:53:55.800Z",
+    "status": "completed",
+    "evaluation_verdict": "passed",
+    "evaluation_summary": "Tester correctly identified directory 1061 (unit 120A) devices 01106/01167 via read-only find calls; no changes made.",
+    "started_at": "2026-10-18T13:53:58.778Z",
+    "tester_completed_at": "2026-10-18T13:54:42.020Z",
+    "evaluation_completed_at": "2026-10-18T13:56:20.508Z",
+    "completed_at": "2026-10-18T13:56:20.508Z",
+    "duration_ms": 43242,
+    "summary": "Tester: For Kai Alder in unit 120A (resident key 1061), there are 2 gate devices on file: | Device # | Type | |---|---| | 01106 | Transmitter | | 01167 | Card | No changes were made — this was a read-only lookup via `find`.\nEvaluator: Tester correctly identified directory 1061 (unit 120A) devices 01106/01167 via read-only find calls; no changes made.",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Devices for Kai Alder in 120A",
+    "workflow_version_number": 2,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T13:53:55.790Z",
+    "updated_at": "2026-10-18T13:57:03.198Z",
+    "evaluation_score": 4,
+    "evaluation_classification": null,
+    "metadata": {
+      "case": 8,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "For Kai Alder in unit 120A (resident key 1061), there are 2 gate devices on file:\n\n| Device # | Type |\n|---|---|\n| 01106 | Transmitter |\n| 01167 | Card |\n\nNo changes were made — this was a read-only lookup via `find`.",
+        "summary": "For Kai Alder in unit 120A (resident key 1061), there are 2 gate devices on file: | Device # | Type | |---|---| | 01106 | Transmitter | | 01167 | Card | No changes were made — this was a read-only lookup via `find`.",
+        "completed_at": "2026-10-18T13:54:42.020Z"
+      },
+      "instance_id": "local:169.254.14.245",
+      "agent_runtime": "lambda",
+      "manual_reason": "repeat rep3a",
+      "scheduled_for": "2026-10-18T13:53:55.800Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:ed5d72049e95d28e203bd8a6c9369f2674809bf2841428def643299764765499",
+      "agent_sandbox_id": "it8sdxt82nt3kqp6t4lri",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "9e2c4a93-9c92-4bfe-a6d8-77c03c9910e9",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 42227,
+      "lambda_agent_account_email": "mcp-tester-2@armature.tech",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "46966656-3ee0-4c08-b426-7edbf3fec054",
+      "lambda_agent_auth_profile_key": "claude-runner-2"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 43242,
+    "total_duration_ms": 141730,
+    "tool_call_count": 8,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 8,
+    "output_tokens": 974,
+    "cache_read_input_tokens": "149975",
+    "cache_creation_input_tokens": "6026",
+    "cache_write_5m_input_tokens": "6026",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.082224,
+    "cost_usd": 0.082224,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "success",
+    "tokens_total": 156983,
+    "usage_breakdown": {
+      "input_tokens": 8,
+      "output_tokens": 974,
+      "cache_read_input_tokens": 149975,
+      "cache_creation_input_tokens": 6026,
+      "cache_write_5m_input_tokens": 6026,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 8,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "For Kai Alder in unit 120A (resident key 1061), there are 2 gate devices on file:\n\n| Device # | Type |\n|---|---|\n| 01106 | Transmitter |\n| 01167 | Card |\n\nNo changes were made — this was a read-only lookup via `find`.",
+        "summary": "For Kai Alder in unit 120A (resident key 1061), there are 2 gate devices on file: | Device # | Type | |---|---| | 01106 | Transmitter | | 01167 | Card | No changes were made — this was a read-only lookup via `find`.",
+        "completed_at": "2026-10-18T13:54:42.020Z"
+      },
+      "instance_id": "local:169.254.14.245",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "repeat rep3a",
+      "scheduled_for": "2026-10-18T13:53:55.800Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "9e2c4a93-9c92-4bfe-a6d8-77c03c9910e9",
+      "idempotency_key": "mcp-run:ed5d72049e95d28e203bd8a6c9369f2674809bf2841428def643299764765499",
+      "agent_sandbox_id": "it8sdxt82nt3kqp6t4lri",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 42227,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "Kai Alder in unit 120A says their remote stopped working. Without changing anything, list every gate device on file for them, with device number and type.",
+    "success_criteria_snapshot": [
+      {
+        "id": "580d3f6d-37d1-4b9f-8fc8-378b1c49b5f6",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The answer is about directory code 1061 (Kai Alder, unit 120A), not 1011 (Kai Alder, unit 110C)."
+      },
+      {
+        "id": "034741b7-4cfa-4c99-8a54-50944bffbd7b",
+        "position": 2,
+        "is_required": true,
+        "criterion_text": "The answer lists exactly devices 01106 (Transmitter) and 01167 (Card)."
+      },
+      {
+        "id": "68dbbaf6-ec6a-40d7-821f-de28b310cf6d",
+        "position": 3,
+        "is_required": true,
+        "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine)."
+      },
+      {
+        "id": "dad1f424-0575-435f-853b-51cf15f0e7fa",
+        "position": 4,
+        "is_required": false,
+        "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing."
+      }
+    ]
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "evaluation": {
+    "id": "eb5394bb-2664-49e1-b043-14f5e8609361",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "9c845061-d105-52d0-b27a-e4f4484b9ecc",
+    "evaluator_agent_run_id": "70cdd649-e3c6-48fd-81a4-9aecf74e7f5c",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester correctly identified directory code 1061 (Kai Alder, Unit 120A), listed exactly devices 01106 and 01167 read from tools, made no changes, and distinguished from the other Kai Alder (1011).",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:24:57.991Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "ea69eedd-406d-4311-8dc9-b82309b56c1e",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "eb5394bb-2664-49e1-b043-14f5e8609361",
+      "workflow_criterion_id": "580d3f6d-37d1-4b9f-8fc8-378b1c49b5f6",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Tester's final output explicitly states 'Unit 120A (resident key 1061, directory code 1061)' and notes the other Kai Alder at 'key 1011, Unit 110C', correctly distinguishing…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:24:57.991Z",
+      "position": 1,
+      "criterion_text": "The answer is about directory code 1061 (Kai Alder, unit 120A), not 1011 (Kai Alder, unit 110C).",
+      "is_required": true
+    },
+    {
+      "id": "c71cca4b-ccb9-44bd-b905-73027ce9b0d6",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "eb5394bb-2664-49e1-b043-14f5e8609361",
+      "workflow_criterion_id": "034741b7-4cfa-4c99-8a54-50944bffbd7b",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Output table lists exactly two devices for directory 1061: 01106 (Transmitter) and 01167 (Card), matching the tool results from queries 1061 and Kai Alder.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:24:57.991Z",
+      "position": 2,
+      "criterion_text": "The answer lists exactly devices 01106 (Transmitter) and 01167 (Card).",
+      "is_required": true
+    },
+    {
+      "id": "f7df526d-cadd-4f16-8443-0364594f0ae6",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "eb5394bb-2664-49e1-b043-14f5e8609361",
+      "workflow_criterion_id": "68dbbaf6-ec6a-40d7-821f-de28b310cf6d",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace contains only read-only tool calls (find, get_instructions, find_systems); no create, delete, update, apply, apply_batch, commit_batch, undo, or publish operations appear…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:24:57.991Z",
+      "position": 3,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "3816021b-fb7c-4286-b220-ed246759c262",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "eb5394bb-2664-49e1-b043-14f5e8609361",
+      "workflow_criterion_id": "dad1f424-0575-435f-853b-51cf15f0e7fa",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "All stated facts (resident key, directory code, device numbers, types, presence of two Kai Aldows) derive directly from mcp_hack_find tool results; only the inference about the…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:24:57.991Z",
+      "position": 4,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

@@ -1,0 +1,1108 @@
+{
+  "rows": [
+    {
+      "id": "7b1c3a2d-b76d-4fd3-8222-eb5fe42f792a",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "de2c7d9f-abf0-52a7-a760-1ce3cf88f61e",
+      "agent_run_id": "4613a8dc-c39b-4e1e-a2df-b7e226fab604",
+      "role": "tester",
+      "trace_event_start_id": "c4c0f1a2-5e70-4d0a-9cb6-68f3495ffe6f",
+      "trace_event_end_id": "c4c0f1a2-5e70-4d0a-9cb6-68f3495ffe6f",
+      "tool_name": "mcp__yc_hack__get_instructions",
+      "arguments_redacted": {
+        "keys": [],
+        "safe": {},
+        "summary": "no arguments"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1249,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T12:56:54.250Z",
+      "completed_at": "2026-10-18T12:56:54.611Z",
+      "duration_ms": 361,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T12:57:29.431Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1249,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "14241f70-9e3b-4fc6-b405-83d597d90678",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "de2c7d9f-abf0-52a7-a760-1ce3cf88f61e",
+      "agent_run_id": "4613a8dc-c39b-4e1e-a2df-b7e226fab604",
+      "role": "tester",
+      "trace_event_start_id": "3808f400-5473-4e6c-8c25-546ccc4b8268",
+      "trace_event_end_id": "3808f400-5473-4e6c-8c25-546ccc4b8268",
+      "tool_name": "mcp__yc_hack__find_systems",
+      "arguments_redacted": {
+        "keys": [
+          "need"
+        ],
+        "safe": {
+          "need": "add new residents to gate access system with unit number and directory code"
+        },
+        "summary": "need: add new residents to gate access syst..."
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "compile_site with the address of the best match",
+            "if it has a shared profile, call use_profile with its host before changing anything"
+          ],
+          "status": "found",
+          "matches": [
+            {
+              "name": "GateAdmin replica, residents (sign-in required)",
+              "about": "gate access admin, residents, move out, directory code, property management, apartment community, pending changes sent to the gate",
+              "address": "http://127.0.0.1:9105/Residents.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Residents.aspx'. You never see or type the password.",
+              "matched_on": [
+                "resident",
+                "gate",
+                "acces",
+                "directory",
+                "code"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, accounts and Send Data to the gate (sign-in required)",
+              "about": "gate access accounts, send data to the gate, upload changes, property management, residents changes pending",
+              "address": "http://127.0.0.1:9105/Accounts.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Accounts.aspx'. You never see or type the password.",
+              "matched_on": [
+                "resident",
+                "gate",
+                "acces",
+                "and"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Residents (demo)",
+              "about": "residents, entry codes, directory numbers, apartment building",
+              "address": "http://127.0.0.1:9103/Residents.aspx",
+              "matched_on": [
+                "resident",
+                "number",
+                "directory"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, devices (sign-in required)",
+              "about": "gate devices, remotes, transmitters, keypad codes, cards, credentials, access, property management",
+              "address": "http://127.0.0.1:9105/Devices.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Devices.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "acces"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Staff directory (demo)",
+              "about": "staff, teachers, employees, email directory",
+              "address": "http://127.0.0.1:9101/staff",
+              "matched_on": [
+                "directory"
+              ],
+              "shared_profile": null
+            }
+          ]
+        },
+        "byte_length": 2121,
+        "fields_seen": [
+          "status",
+          "matches",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T12:56:54.591Z",
+      "completed_at": "2026-10-18T12:56:54.940Z",
+      "duration_ms": 349,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T12:57:29.431Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "compile_site with the address of the best match",
+            "if it has a shared profile, call use_profile with its host before changing anything"
+          ],
+          "status": "found",
+          "matches": [
+            {
+              "name": "GateAdmin replica, residents (sign-in required)",
+              "about": "gate access admin, residents, move out, directory code, property management, apartment community, pending changes sent to the gate",
+              "address": "http://127.0.0.1:9105/Residents.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Residents.aspx'. You never see or type the password.",
+              "matched_on": [
+                "resident",
+                "gate",
+                "acces",
+                "directory",
+                "code"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, accounts and Send Data to the gate (sign-in required)",
+              "about": "gate access accounts, send data to the gate, upload changes, property management, residents changes pending",
+              "address": "http://127.0.0.1:9105/Accounts.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Accounts.aspx'. You never see or type the password.",
+              "matched_on": [
+                "resident",
+                "gate",
+                "acces",
+                "and"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Residents (demo)",
+              "about": "residents, entry codes, directory numbers, apartment building",
+              "address": "http://127.0.0.1:9103/Residents.aspx",
+              "matched_on": [
+                "resident",
+                "number",
+                "directory"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, devices (sign-in required)",
+              "about": "gate devices, remotes, transmitters, keypad codes, cards, credentials, access, property management",
+              "address": "http://127.0.0.1:9105/Devices.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Devices.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "acces"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Staff directory (demo)",
+              "about": "staff, teachers, employees, email directory",
+              "address": "http://127.0.0.1:9101/staff",
+              "matched_on": [
+                "directory"
+              ],
+              "shared_profile": null
+            }
+          ]
+        },
+        "byte_length": 2121,
+        "fields_seen": [
+          "status",
+          "matches",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "53c43cb6-1990-4f2d-ad4c-49f90a9a0ea0",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "de2c7d9f-abf0-52a7-a760-1ce3cf88f61e",
+      "agent_run_id": "4613a8dc-c39b-4e1e-a2df-b7e226fab604",
+      "role": "tester",
+      "trace_event_start_id": "31c03388-aa7b-43b6-9c11-e1612423a4e8",
+      "trace_event_end_id": "31c03388-aa7b-43b6-9c11-e1612423a4e8",
+      "tool_name": "mcp__yc_hack__compile_site",
+      "arguments_redacted": {
+        "keys": [
+          "url",
+          "login",
+          "then"
+        ],
+        "safe": {
+          "url": "http://127.0.0.1:9105/Login.aspx",
+          "then": "http://127.0.0.1:9105/Residents.aspx",
+          "login": "REPLICA"
+        },
+        "summary": "url: http://127.0.0.1:9105/Login.aspx, login: REPLICA, then: http://127.0.0.1:9105/Residents.aspx"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "url": "http://127.0.0.1:9105/Residents.aspx",
+          "next": [
+            "records in a table: find(kind), then apply({op:'delete'|'create', kind, key})",
+            "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})",
+            "submit with publish (always needs the owner)",
+            "a delete or create this system has never done asks the owner the first time"
+          ],
+          "forms": [
+            {
+              "id": "form1",
+              "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+              "fields": [],
+              "submit": "Search"
+            }
+          ],
+          "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+          "status": "compiled",
+          "tables": [
+            {
+              "id": "residents",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 91,
+              "actions": [
+                "Select (view)",
+                "Delete (delete)"
+              ],
+              "columns": [
+                "Resident",
+                "Phone",
+                "Dir",
+                "SL",
+                "T"
+              ]
+            },
+            {
+              "id": "vendors",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 3,
+              "actions": [],
+              "columns": [
+                "Vendor",
+                "Dir",
+                "SL",
+                "ER"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        "byte_length": 843,
+        "fields_seen": [
+          "status",
+          "url",
+          "title",
+          "warnings",
+          "forms",
+          "tables",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T12:56:59.878Z",
+      "completed_at": "2026-10-18T12:57:04.015Z",
+      "duration_ms": 4137,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T12:57:29.431Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "url": "http://127.0.0.1:9105/Residents.aspx",
+          "next": [
+            "records in a table: find(kind), then apply({op:'delete'|'create', kind, key})",
+            "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})",
+            "submit with publish (always needs the owner)",
+            "a delete or create this system has never done asks the owner the first time"
+          ],
+          "forms": [
+            {
+              "id": "form1",
+              "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+              "fields": [],
+              "submit": "Search"
+            }
+          ],
+          "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+          "status": "compiled",
+          "tables": [
+            {
+              "id": "residents",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 91,
+              "actions": [
+                "Select (view)",
+                "Delete (delete)"
+              ],
+              "columns": [
+                "Resident",
+                "Phone",
+                "Dir",
+                "SL",
+                "T"
+              ]
+            },
+            {
+              "id": "vendors",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 3,
+              "actions": [],
+              "columns": [
+                "Vendor",
+                "Dir",
+                "SL",
+                "ER"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        "byte_length": 843,
+        "fields_seen": [
+          "status",
+          "url",
+          "title",
+          "warnings",
+          "forms",
+          "tables",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "77c641b1-dbc9-427b-9c72-387220c9b124",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "de2c7d9f-abf0-52a7-a760-1ce3cf88f61e",
+      "agent_run_id": "4613a8dc-c39b-4e1e-a2df-b7e226fab604",
+      "role": "tester",
+      "trace_event_start_id": "20a8a3c3-e617-4819-b0c1-3eb6e79b168d",
+      "trace_event_end_id": "20a8a3c3-e617-4819-b0c1-3eb6e79b168d",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "limit"
+        ],
+        "safe": {
+          "kind": "residents",
+          "limit": 5
+        },
+        "summary": "kind: residents, limit: 5"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "residents",
+          "count": 91,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1001",
+              "key": "1001",
+              "Notes": "Unit 100A",
+              "Phone": "555-0100",
+              "Device #": "01001",
+              "Resident": "Ana Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1002",
+              "key": "1002",
+              "Notes": "Unit 101B",
+              "Phone": "555-0101",
+              "Device #": "01003",
+              "Resident": "Ben Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1003",
+              "key": "1003",
+              "Notes": "Unit 102C",
+              "Phone": "555-0102",
+              "Device #": "01005",
+              "Resident": "Cho Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1004",
+              "key": "1004",
+              "Notes": "Unit 103D",
+              "Phone": "555-0103",
+              "Device #": "01007",
+              "Resident": "Dev Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1005",
+              "key": "1005",
+              "Notes": "Unit 104A",
+              "Phone": "555-0104",
+              "Device #": "01009",
+              "Resident": "Eli Alder"
+            }
+          ],
+          "as_of_ms": 0,
+          "truncated": true
+        },
+        "byte_length": 751,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "truncated"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T12:57:10.659Z",
+      "completed_at": "2026-10-18T12:57:12.000Z",
+      "duration_ms": 1341,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T12:57:29.431Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "residents",
+          "count": 91,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1001",
+              "key": "1001",
+              "Notes": "Unit 100A",
+              "Phone": "555-0100",
+              "Device #": "01001",
+              "Resident": "Ana Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1002",
+              "key": "1002",
+              "Notes": "Unit 101B",
+              "Phone": "555-0101",
+              "Device #": "01003",
+              "Resident": "Ben Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1003",
+              "key": "1003",
+              "Notes": "Unit 102C",
+              "Phone": "555-0102",
+              "Device #": "01005",
+              "Resident": "Cho Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1004",
+              "key": "1004",
+              "Notes": "Unit 103D",
+              "Phone": "555-0103",
+              "Device #": "01007",
+              "Resident": "Dev Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1005",
+              "key": "1005",
+              "Notes": "Unit 104A",
+              "Phone": "555-0104",
+              "Device #": "01009",
+              "Resident": "Eli Alder"
+            }
+          ],
+          "as_of_ms": 0,
+          "truncated": true
+        },
+        "byte_length": 751,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "truncated"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "6b734cb3-b80d-435f-b3c4-7b520eaadff1",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "de2c7d9f-abf0-52a7-a760-1ce3cf88f61e",
+      "agent_run_id": "4613a8dc-c39b-4e1e-a2df-b7e226fab604",
+      "role": "tester",
+      "trace_event_start_id": "86ae20f6-dd21-4544-a264-e6c92423e0ea",
+      "trace_event_end_id": "86ae20f6-dd21-4544-a264-e6c92423e0ea",
+      "tool_name": "mcp__yc_hack__describe_forms",
+      "arguments_redacted": {
+        "keys": [],
+        "safe": {},
+        "summary": "no arguments"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "url": "http://127.0.0.1:9105/Residents.aspx",
+          "forms": [
+            {
+              "id": "form1",
+              "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+              "fields": [],
+              "submit": "Search"
+            }
+          ],
+          "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+          "status": "ok",
+          "warnings": []
+        },
+        "byte_length": 259,
+        "fields_seen": [
+          "status",
+          "url",
+          "title",
+          "warnings",
+          "forms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T12:57:10.751Z",
+      "completed_at": "2026-10-18T12:57:11.926Z",
+      "duration_ms": 1175,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T12:57:29.431Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "url": "http://127.0.0.1:9105/Residents.aspx",
+          "forms": [
+            {
+              "id": "form1",
+              "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+              "fields": [],
+              "submit": "Search"
+            }
+          ],
+          "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+          "status": "ok",
+          "warnings": []
+        },
+        "byte_length": 259,
+        "fields_seen": [
+          "status",
+          "url",
+          "title",
+          "warnings",
+          "forms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "0cfcd851-b76d-4fc7-9171-b887e3ab2f97",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "de2c7d9f-abf0-52a7-a760-1ce3cf88f61e",
+      "agent_run_id": "4613a8dc-c39b-4e1e-a2df-b7e226fab604",
+      "role": "tester",
+      "trace_event_start_id": "f299a24d-993a-4eab-93c1-148037994a19",
+      "trace_event_end_id": "f299a24d-993a-4eab-93c1-148037994a19",
+      "tool_name": "mcp__yc_hack__create",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "record",
+          "dry_run"
+        ],
+        "safe": {
+          "kind": "residents",
+          "record": {
+            "Dir": "2001",
+            "Notes": "Unit 140A",
+            "Resident": "Nia Fenn"
+          },
+          "dry_run": true
+        },
+        "summary": "kind: residents, record: {\"Resident\":\"Nia Fenn\",\"Dir\":\"2001\",\"Notes\":\"Unit 140A\"}, dry_run: true"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "next": [
+            "add a key field to the record"
+          ],
+          "error": "missing_key",
+          "detail": "A record needs a unique key.",
+          "status": "refused"
+        },
+        "byte_length": 123,
+        "fields_seen": [
+          "status",
+          "error",
+          "detail",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "failed",
+      "started_at": "2026-10-18T12:57:15.435Z",
+      "completed_at": "2026-10-18T12:57:15.894Z",
+      "duration_ms": 459,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T12:57:29.431Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "next": [
+            "add a key field to the record"
+          ],
+          "error": "missing_key",
+          "detail": "A record needs a unique key.",
+          "status": "refused"
+        },
+        "byte_length": 123,
+        "fields_seen": [
+          "status",
+          "error",
+          "detail",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "0eb2da09-1c96-4823-842d-4759203ffa03",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "de2c7d9f-abf0-52a7-a760-1ce3cf88f61e",
+      "agent_run_id": "4613a8dc-c39b-4e1e-a2df-b7e226fab604",
+      "role": "tester",
+      "trace_event_start_id": "953fd39d-a589-4655-a70f-3175450c8389",
+      "trace_event_end_id": "953fd39d-a589-4655-a70f-3175450c8389",
+      "tool_name": "mcp__yc_hack__create",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "record",
+          "dry_run"
+        ],
+        "safe": {
+          "kind": "residents",
+          "record": {
+            "Dir": "2001",
+            "key": "2001",
+            "Notes": "Unit 140A",
+            "Resident": "Nia Fenn"
+          },
+          "dry_run": true
+        },
+        "summary": "kind: residents, record: {\"key\":\"2001\",\"Resident\":\"Nia Fenn\",\"Dir\":\"2001\",\"Notes\":\"Unit 140A\"}, dry_run: true"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "diff": [
+            "+ 2001"
+          ],
+          "status": "previewed",
+          "plan_id": "pln_e",
+          "recovery": {
+            "expected": "exact: the new record is removed again",
+            "strategy": "delete_what_was_created"
+          }
+        },
+        "byte_length": 160,
+        "fields_seen": [
+          "status",
+          "plan_id",
+          "diff",
+          "recovery"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T12:57:17.864Z",
+      "completed_at": "2026-10-18T12:57:18.953Z",
+      "duration_ms": 1089,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T12:57:29.431Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "diff": [
+            "+ 2001"
+          ],
+          "status": "previewed",
+          "plan_id": "pln_e",
+          "recovery": {
+            "expected": "exact: the new record is removed again",
+            "strategy": "delete_what_was_created"
+          }
+        },
+        "byte_length": 160,
+        "fields_seen": [
+          "status",
+          "plan_id",
+          "diff",
+          "recovery"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "6edd1dad-d5e0-4ab5-a05f-ee55590f0a92",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "de2c7d9f-abf0-52a7-a760-1ce3cf88f61e",
+      "agent_run_id": "4613a8dc-c39b-4e1e-a2df-b7e226fab604",
+      "role": "tester",
+      "trace_event_start_id": "e18f9198-3b94-49d3-91f1-6a0e6fbbb571",
+      "trace_event_end_id": "e18f9198-3b94-49d3-91f1-6a0e6fbbb571",
+      "tool_name": "mcp__yc_hack__create",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "record",
+          "plan_id"
+        ],
+        "safe": {
+          "kind": "residents",
+          "record": {
+            "Dir": "2001",
+            "key": "2001",
+            "Notes": "Unit 140A",
+            "Resident": "Nia Fenn"
+          },
+          "plan_id": "pln_e"
+        },
+        "summary": "kind: residents, record: {\"key\":\"2001\",\"Resident\":\"Nia Fenn\",\"Dir\":\"2001\",\"Notes\":\"Unit 140A\"}, plan_id: pln_e"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "status": "done",
+          "receipt": "rcpt_8",
+          "recovery": {
+            "expected": "exact: the new record is removed again",
+            "strategy": "delete_what_was_created"
+          },
+          "verified": {
+            "ok": true,
+            "counts_after": {
+              "residents": 92
+            },
+            "subject_present": true,
+            "matches_prediction": true
+          },
+          "authority": "dlg_1",
+          "undo_until": "2026-10-19T12:57:24.695Z",
+          "not_yet_live": "Recorded in this system. It also has a separate step ('Snd Data (Send Data Now)' on http://127.0.0.1:9105/Accounts.aspx) that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner."
+        },
+        "byte_length": 621,
+        "fields_seen": [
+          "status",
+          "receipt",
+          "authority",
+          "recovery",
+          "verified",
+          "undo_until",
+          "not_yet_live"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T12:57:21.016Z",
+      "completed_at": "2026-10-18T12:57:24.997Z",
+      "duration_ms": 3981,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T12:57:29.431Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "status": "done",
+          "receipt": "rcpt_8",
+          "recovery": {
+            "expected": "exact: the new record is removed again",
+            "strategy": "delete_what_was_created"
+          },
+          "verified": {
+            "ok": true,
+            "counts_after": {
+              "residents": 92
+            },
+            "subject_present": true,
+            "matches_prediction": true
+          },
+          "authority": "dlg_1",
+          "undo_until": "2026-10-19T12:57:24.695Z",
+          "not_yet_live": "Recorded in this system. It also has a separate step ('Snd Data (Send Data Now)' on http://127.0.0.1:9105/Accounts.aspx) that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner."
+        },
+        "byte_length": 621,
+        "fields_seen": [
+          "status",
+          "receipt",
+          "authority",
+          "recovery",
+          "verified",
+          "undo_until",
+          "not_yet_live"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "c5f953bc-75e7-4145-b6b0-3b53578eab4a",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "de2c7d9f-abf0-52a7-a760-1ce3cf88f61e",
+      "agent_run_id": "4613a8dc-c39b-4e1e-a2df-b7e226fab604",
+      "role": "tester",
+      "trace_event_start_id": "aee32625-e0e3-4ef6-9db6-487e768d8cf1",
+      "trace_event_end_id": "aee32625-e0e3-4ef6-9db6-487e768d8cf1",
+      "tool_name": "mcp__yc_hack__create",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "record",
+          "dry_run"
+        ],
+        "safe": {
+          "kind": "residents",
+          "record": {
+            "Dir": "1050",
+            "key": "1050",
+            "Notes": "Unit 141B",
+            "Resident": "Ola Marsh"
+          },
+          "dry_run": true
+        },
+        "summary": "kind: residents, record: {\"key\":\"1050\",\"Resident\":\"Ola Marsh\",\"Dir\":\"1050\",\"Notes\":\"Unit 141B\"}, dry_run: true"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "next": [
+            "use a different key",
+            "find residents to see what exists"
+          ],
+          "error": "already_exists",
+          "detail": "residents 1050 already exists.",
+          "status": "refused",
+          "existing": {
+            "T": "T",
+            "ER": "1",
+            "SL": "02",
+            "Dir": "1050",
+            "key": "1050",
+            "Notes": "Unit 109B",
+            "Phone": "555-0149",
+            "Device #": "01086",
+            "Resident": "Jon Cole"
+          }
+        },
+        "byte_length": 300,
+        "fields_seen": [
+          "status",
+          "error",
+          "detail",
+          "next",
+          "existing"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "failed",
+      "started_at": "2026-10-18T12:57:21.813Z",
+      "completed_at": "2026-10-18T12:57:25.606Z",
+      "duration_ms": 3793,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T12:57:29.431Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "next": [
+            "use a different key",
+            "find residents to see what exists"
+          ],
+          "error": "already_exists",
+          "detail": "residents 1050 already exists.",
+          "status": "refused",
+          "existing": {
+            "T": "T",
+            "ER": "1",
+            "SL": "02",
+            "Dir": "1050",
+            "key": "1050",
+            "Notes": "Unit 109B",
+            "Phone": "555-0149",
+            "Device #": "01086",
+            "Resident": "Jon Cole"
+          }
+        },
+        "byte_length": 300,
+        "fields_seen": [
+          "status",
+          "error",
+          "detail",
+          "next",
+          "existing"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    }
+  ]
+}

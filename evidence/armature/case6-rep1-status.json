@@ -1,0 +1,195 @@
+{
+  "run": {
+    "id": "35cff6b9-17e3-5f4a-aac3-e5eedd5af3c5",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "7db08663-d1fd-40d3-a0ef-c0e3b50c9292",
+    "workflow_version_id": "3ae8913d-3094-4613-95c7-e6da9ab00969",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "7db08663-d1fd-40d3-a0ef-c0e3b50c9292_1792328642388",
+    "idempotency_key": "mcp-run:7634edafe79da8dd85af9417b8e06faf41c9e353fbc8310dbd58cd51e21b5fa3",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T13:04:01.751Z",
+    "status": "completed",
+    "evaluation_verdict": "partial",
+    "evaluation_summary": "Directory codes and device correctly identified from trace; unit assignments not verifiable from visible trace despite explicit residents search.",
+    "started_at": "2026-10-18T13:04:02.388Z",
+    "tester_completed_at": "2026-10-18T13:04:52.718Z",
+    "evaluation_completed_at": "2026-10-18T13:06:44.586Z",
+    "completed_at": "2026-10-18T13:06:44.586Z",
+    "duration_ms": 50330,
+    "summary": "Tester: **Resident in unit 125B:** Dev Alder, resident key **1026**, directory code **1026** (SL 02). **Gate device held:** Device # **01042** — a Transmitter (SL 02). (For contrast, the other Dev Alder — key 1004, directory code 1004, unit 103D — holds two devices: 01007 a Transmitter and 01008 a Keypad code.)\nEvaluator: Directory codes and device correctly identified from trace; unit assignments not verifiable from visible trace despite explicit residents search.",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Which Dev Alder lives in 125B",
+    "workflow_version_number": 2,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T13:04:01.721Z",
+    "updated_at": "2026-10-18T13:06:45.026Z",
+    "evaluation_score": 3,
+    "evaluation_classification": "agent_failure",
+    "metadata": {
+      "case": 6,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "**Resident in unit 125B:** Dev Alder, resident key **1026**, directory code **1026** (SL 02).\n\n**Gate device held:** Device # **01042** — a Transmitter (SL 02).\n\n(For contrast, the other Dev Alder — key 1004, directory code 1004, unit 103D — holds two devices: 01007 a Transmitter and 01008 a Keypad code.)",
+        "summary": "**Resident in unit 125B:** Dev Alder, resident key **1026**, directory code **1026** (SL 02). **Gate device held:** Device # **01042** — a Transmitter (SL 02). (For contrast, the other Dev Alder — key 1004, directory code 1004, unit 103D — holds two devices: 01007 a Transmitter and 01008 a Keypad code.)",
+        "completed_at": "2026-10-18T13:04:52.718Z"
+      },
+      "instance_id": "local:169.254.36.243",
+      "agent_runtime": "lambda",
+      "manual_reason": "read-only batch a, rep 1",
+      "scheduled_for": "2026-10-18T13:04:01.751Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:7634edafe79da8dd85af9417b8e06faf41c9e353fbc8310dbd58cd51e21b5fa3",
+      "agent_sandbox_id": "itx4mlnvtbvzrnnmb41ng",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "a72866eb-5238-4b93-b113-eb9322d6e5c0",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 111974,
+      "lambda_agent_account_email": "theotzen@gmail.com",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "b59d7c0f-e16f-4a88-9139-d39071bc4062",
+      "lambda_agent_auth_profile_key": "claude-runner-3"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 50330,
+    "total_duration_ms": 162198,
+    "tool_call_count": 9,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 16,
+    "output_tokens": 1332,
+    "cache_read_input_tokens": "318944",
+    "cache_creation_input_tokens": "6373",
+    "cache_write_5m_input_tokens": "6373",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.13960995,
+    "cost_usd": 0.13960995,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "partial",
+    "tokens_total": 326665,
+    "usage_breakdown": {
+      "input_tokens": 16,
+      "output_tokens": 1332,
+      "cache_read_input_tokens": 318944,
+      "cache_creation_input_tokens": 6373,
+      "cache_write_5m_input_tokens": 6373,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 6,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "**Resident in unit 125B:** Dev Alder, resident key **1026**, directory code **1026** (SL 02).\n\n**Gate device held:** Device # **01042** — a Transmitter (SL 02).\n\n(For contrast, the other Dev Alder — key 1004, directory code 1004, unit 103D — holds two devices: 01007 a Transmitter and 01008 a Keypad code.)",
+        "summary": "**Resident in unit 125B:** Dev Alder, resident key **1026**, directory code **1026** (SL 02). **Gate device held:** Device # **01042** — a Transmitter (SL 02). (For contrast, the other Dev Alder — key 1004, directory code 1004, unit 103D — holds two devices: 01007 a Transmitter and 01008 a Keypad code.)",
+        "completed_at": "2026-10-18T13:04:52.718Z"
+      },
+      "instance_id": "local:169.254.36.243",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "read-only batch a, rep 1",
+      "scheduled_for": "2026-10-18T13:04:01.751Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "a72866eb-5238-4b93-b113-eb9322d6e5c0",
+      "idempotency_key": "mcp-run:7634edafe79da8dd85af9417b8e06faf41c9e353fbc8310dbd58cd51e21b5fa3",
+      "agent_sandbox_id": "itx4mlnvtbvzrnnmb41ng",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 111974,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "There are two residents called Dev Alder in the gate access system. Which one lives in unit 125B, what is their directory code, and which gate devices do they hold?",
+    "success_criteria_snapshot": [
+      {
+        "id": "4f8ff704-6806-43eb-a429-bdade2f126df",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The answer identifies directory code 1026 as the Dev Alder in unit 125B (not 1004, who is in 103D)."
+      },
+      {
+        "id": "8adb2f78-a53b-4df0-9d3e-e02f6b39d080",
+        "position": 2,
+        "is_required": true,
+        "criterion_text": "The answer lists device 01042 (Transmitter) as their only gate device."
+      },
+      {
+        "id": "395a7970-15a3-4e27-951a-45e713fc0fa4",
+        "position": 3,
+        "is_required": true,
+        "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine)."
+      },
+      {
+        "id": "1b7f585b-6cb5-4ba0-adf1-2d56acf49191",
+        "position": 4,
+        "is_required": false,
+        "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing."
+      }
+    ]
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "evaluation": {
+    "id": "78ba6672-f209-4cc9-a0b0-2c4d9dd832e8",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "d55a0cd8-4500-51fc-82a4-99a57a4546e0",
+    "evaluator_agent_run_id": "49db5c26-b21b-423a-8a02-ce2c2d34bd25",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester correctly identified three vendors (Pool Service/930, Trash/931, Landscaping/932) via read-only find tool, with no changes committed.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:27:19.602Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "c9dc147b-eb46-4dbf-a091-04e076536766",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "78ba6672-f209-4cc9-a0b0-2c4d9dd832e8",
+      "workflow_criterion_id": "c9944d2e-83df-4ad2-b0ca-4ae982751acd",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Final output table lists Pool Service (930), Trash (931), and Landscaping (932) exactly as required.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:27:19.602Z",
+      "position": 1,
+      "criterion_text": "The answer lists Pool Service (930), Trash (931) and Landscaping (932).",
+      "is_required": true
+    },
+    {
+      "id": "0eef22fd-7f73-4968-aa4f-d2500113e6f7",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "78ba6672-f209-4cc9-a0b0-2c4d9dd832e8",
+      "workflow_criterion_id": "8e427df9-9e17-42bd-8e4c-989d6d8f17fb",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Vendors presented as vendors in a table, not labeled or presented as residents anywhere in the output.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:27:19.602Z",
+      "position": 2,
+      "criterion_text": "The answer does not present any of these vendors as residents.",
+      "is_required": false
+    },
+    {
+      "id": "dbfebc5d-8ccb-4ead-ba06-5882eef0d632",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "78ba6672-f209-4cc9-a0b0-2c4d9dd832e8",
+      "workflow_criterion_id": "3e0ee6ba-0458-458d-84ac-15baec06eb9f",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Only read-only tools called (get_instructions, find_systems, find); no apply, commit_batch, delete, update, publish, or undo calls in trace.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:27:19.602Z",
+      "position": 3,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "e0ed09cf-0a35-4d72-8d1d-54e67696da76",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "78ba6672-f209-4cc9-a0b0-2c4d9dd832e8",
+      "workflow_criterion_id": "211aae36-e611-42f7-8f7d-84f19fe5eb27",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "All vendor names and directory codes directly from find(kind=vendors) result; no inference or guessing.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:27:19.602Z",
+      "position": 4,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

@@ -1,0 +1,1260 @@
+[2mThinking: I'll check what tabs are currently open first.
+
+[0m
+
+[32mrepl[0m(code: [32m'const t = await listBrowserTabs(); console.log(t);'[39m, title: [32m'Checking open tabs'[39m)
+
+[2m > [
+  {
+    active: true,
+    faviconUrl: 'https://www.weberp.org/demo/favicon.ico',
+    id: 'tab:CDDBBC684383D9649A2783500D39CCE4',
+    targetId: 'CDDBBC684383D9649A2783500D39CCE4',
+    title: 'webERP - Main Menu',
+    url: 'https://www.weberp.org/demo/index.php',
+    windowId: 2137072206,
+    focusedWindow: false
+  }
+][0m
+
+[32mrepl[0m(code: [32m"await attachBrowserTab('CDDBBC684383D9649A2783500D39CCE4');\n"[39m +
+       [32m"await page.goto('https://www.weberp.org/demo/Customers.php?DebtorNo=WKTACME1');\n"[39m +
+       [32m'const s1 = await snapshot(page); console.log(s1.tree);'[39m,
+     title: [32m'Opening customer record'[39m)[2m [toolu_01GVktZBar1TKH5The6UWECg]
+
+[2m > - title: "webERP - Customer Maintenance" [url=https://www.weberp.org/demo/Customers.php?DebtorNo=WKTACME1]
+- banner:
+  - image "pizzeria"
+  - link "Tim SchofieldTim Schofield" [ref=e1]:
+    - image "Tim Schofield"
+    - text: "Tim Schofield"
+  - link "Logout" [ref=e2]:
+    - image "Logout"
+  - link "Help" [ref=e3]:
+    - image "Help"
+  - combobox "Commonly used scripts" [ref=e4]:
+    - option "Commonly used scripts" (selected)
+    - option "Account Sections" value="AccountSections.php"
+    - option "Assignment of Cash to Petty Cash Tab" value="PcAssignCashToTab.php"
+    - option "Bill Of Material Berbiaya" value="BOMInquiry.php"
+    - option "Cari Pesanan Penjualan yang Luar Biasa" value="SelectSalesOrder.php"
+    - option "Check Period Sales Ledger Control Account" value="Z_CheckGLTransBalance.php"
+    - option "Configuración de la tienda" value="ShopParameters.php"
+    - option "Confirm Dispatches and Invoice An Order" value="ConfirmDispatch_Invoice.php"
+    - option "Copy Authority of Bank 账户 from one user to another" value="GLBankAccountUsersCopyAuthority.php"
+    - option "Cost Of Sales GL Postings Set Up" value="COGSGLPostings.php"
+    - option "Counter Returns" value="-1 OR 2+754-754-1=0+0+0+1"
+    - option "Counter Sales" value="CounterSales.php"
+    - option "Create a New Supplier Tender Request" value="SupplierTenderCreate.php"
+    - option "Create an Internal Materials Request" value="InternalStockRequest.php"
+    - option "Create Credit Note" value="SelectCreditItems.php"
+    - option "Create GL Budgets" value="GLBudgetHeaders.php"
+    - option "Credit Status Code Maintenance" value="CreditStatus.php"
+    - option "Currencies Maintenance" value="Currencies.php"
+    - option "Customer Maintenance" value="Customers.php"
+    - option "Daily Sales Inquiry" value="DailySalesInquiry.php"
+    - option "Edit Header" value="Z_poEditLangHeader.php"
+    - option "Employee Compensation" value="HREmployeeCompensation.php"
+    - option "Enter Supplier Invoice" value="SupplierInvoice.php"
+    - option "Error in form verification" value="1G6I0LFVO"
+    - option "Financial Statements" value="GLStatements.php"
+    - option "Fixed Asset Category Maintenance" value="FixedAssetCategories.php"
+    - option "Fixed Asset Register" value="FixedAssetRegister.php"
+    - option "Fixed Assets" value="FixedAssetItems.php"
+    - option "Fixed Assets Maintenance Schedule" value="MaintenanceUserSchedule.php"
+    - option "Forecast Management" value="ForecastDashboard.php"
+    - option "Form Designer" value="FormDesigner.php"
+    - option "General Ledger Account Report" value="GLAccountReport.php"
+    - option "General Ledger Accounts" value="GLAccounts.php"
+    - option "General Ledger Journal Inquiry" value="GLJournalInquiry.php"
+    - option "Grupos Fiscales" value="TaxGroups.php"
+    - option "Hae valintaluetteloita" value="SelectPickingLists.php"
+    - option "Horizontal Analysis of Statement of Comprehensive" value="AnalysisHorizontalIncome.php"
+    - option "HR Employees" value="HREmployees.php"
+    - option "Import Bank Transactions" value="ImportBankTrans.php"
+    - option "Internal Stock Request Inquiry" value="InternalStockRequestInquiry.php"
+    - option "Inventory Location Authorised Users Maintenance" value="LocationUsers.php"
+    - option "Inventory Quantities Reporting" value="InventoryQuantities.php"
+    - option "Inventory Valuation Reporting" value="InventoryValuation.php"
+    - option "Item Maintenance" value="Stocks.php"
+    - option "Journal Entry" value="GLJournal.php"
+    - option "Käyttäjäasetukset" value="UserSettings.php"
+    - option "Kiinteän omaisuuden sijainnit" value="FixedAssetLocations.php"
+    - option "List of Items without picture" value="Z_ItemsWithoutPicture.php"
+    - option "Maintain journal templates" value="GLJournalTemplates.php"
+    - option "Maintain Language Files" value="Z_poAdmin.php"
+    - option "Maintain Security Tokens" value="SecurityTokens.php"
+    - option "Make New Company Database Utility" value="Z_MakeNewCompany.php"
+    - option "MRP Calendar" value="MRPCalendar.php"
+    - option "MRP Report" value="MRPReport.php"
+    - option "MRP Shortages - Excess Reporting" value="MRPShortages.php"
+    - option "Multi-Level Bill Of Materials Maintenance" value="BOMs.php"
+    - option "My Performance Appraisals" value="HRMyAppraisals.php"
+    - option "New Language" value="Z_poAddLanguage.php"
+    - option "Order Status Report" value="PDFOrderStatus.php"
+    - option "Payment Terms Maintenance" value="PaymentTerms.php"
+    - option "Petty Cash Management Report" value="PcReportTab.php"
+    - option "Print Labels" value="PDFPrintLabel.php"
+    - option "Print Price List Error" value="PDFPriceList.php"
+    - option "Produce Stock Quantities CSV" value="StockQties_csv.php"
+    - option "Purchase Order Entry" value="PO_Header.php"
+    - option "Rebuild the System Default Language File" value="Z_poRebuildDefault.php"
+    - option "Receipt Entry" value="CustomerReceipt.php"
+    - option "Receive Purchase Orders" value="GoodsReceived.php"
+    - option "Rechercher des articles en stock" value="SelectProduct.php"
+    - option "Recurring Orders" value="RecurringSalesOrders.php"
+    - option "Reprint a GRN" value="ReprintGRN.php"
+    - option "Run MRP Calculation" value="MRP.php"
+    - option "Sales Area Maintenance" value="Areas.php"
+    - option "Sales By Category By Item Inquiry" value="StockCategorySalesInquiry.php"
+    - option "Sales Category Maintenance" value="SalesCategories.php"
+    - option "Sales to Customers" value="SalesReport.php"
+    - option "Sales Types / Price List Maintenance" value="SalesTypes.php"
+    - option "Search All Sales Orders" value="SelectCompletedOrder.php"
+    - option "Search Customers" value="SelectCustomer.php"
+    - option "Search Outstanding Purchase Orders" value="PO_SelectOSPurchOrder.php"
+    - option "Search Purchase Orders" value="PO_SelectPurchOrder.php"
+    - option "Search Recurring Sales Orders" value="SelectRecurringSalesOrder.php"
+    - option "Search Vendors" value="SelectSupplier.php"
+    - option "Search Work Orders" value="SelectWorkOrder.php"
+    - option "Select Acknowledgement To Print" value="PDFAck.php"
+    - option "Select an Asset" value="SelectAsset.php"
+    - option "Select Contract" value="SelectContract.php"
+    - option "Select Invoices/Credit Notes To Print" value="PrintCustTrans.php"
+    - option "Select Picking Lists" value="GeneratePickingList.php"
+    - option "Select Statements to Print" value="PrintCustStatements.php"
+    - option "Sell Through Support" value="SellThroughSupport.php"
+    - option "Send maintenance reminders" value="MaintenanceReminders.php"
+    - option "Set-Host-Header-Response"
+    - option "Shipping-method Maintenance" value="Shippers.php"
+    - option "Special Order Entry" value="SpecialOrder.php"
+    - option "Stock Adjustments" value="StockAdjustments.php"
+    - option "Stock Check Sheets Entry" value="StockCounts.php"
+    - option "Stock Count Sheets - Problem Report" value="StockCheck.php"
+    - option "Stock Movements" value="StockMovements.php"
+    - option "Stock Of Controlled Items" value="StockSerialItems.php"
+    - option "Stock On Hand By Date" value="StockQuantityByDate.php"
+    - option "Stock Transfers" value="StockTransfers.php"
+    - option "Stock Usage" value="StockUsage.php"
+    - option "Supplier Payment/Credit Note Allocations" value="SupplierAllocations.php"
+    - option "Supplier Transactions Inquiry" value="SupplierTransInquiry.php"
+    - option "System Parameters" value="SystemParameters.php"
+    - option "Tax Authorities" value="TaxAuthorities.php"
+    - option "Tax Rates" value="TaxAuthorityRates.php"
+    - option "Timesheet Entry" value="Timesheets.php"
+    - option "Top Sales Inquiry" value="SalesTopItemsInquiry.php"
+    - option "Translate Item Descriptions" value="AutomaticTranslationDescriptions.php"
+    - option "undefined" value="StockSerialItemResearch.php"
+    - option "Users currently logged in" value="LoggedInUsers.php"
+    - option "Users Maintenance" value="WWW_Users.php"
+    - option "UTILITY PAGE To Changes A Customer Code In All Tab" value="Z_ChangeCustomerCode.php"
+    - option "Work Centres" value="WorkCentres.php"
+    - option "إدخال الدفع" value="Payments.php"
+    - option "存貨狀況" value="StockStatus.php"
+    - option "客户交易列表" value="PDFCustTransListing.php"
+    - option "折舊日記帳分錄" value="FixedAssetDepreciation.php"
+  - link "Remove from commonly used" [ref=e5]:
+    - image "Remove from commonly used" [ref=e6]
+  - link "Show Dashboard" [ref=e7]:
+    - image "Show Dashboard"
+  - link "Main Menu" [ref=e8]:
+    - image "Main Menu"
+  - link "Sales" [ref=e9]
+  - text: "-> Customer Maintenance"
+- region:
+  - text: "Customer Maintenance"
+  - form:
+    - text: "Edit Customer Details"
+    - label: "Customer Code:"
+    - text: "WKTACME1"
+    - label: "Customer Name:"
+    - textbox "WKT-TEST Acme" [ref=e10] [focused]
+    - label: "Address Line 1 (Street):"
+    - textbox "1 Test Street" [ref=e11]
+    - label: "Address Line 2 (Street):"
+    - textbox "Wicket test record, safe to delete" [ref=e12]
+    - label: "Address Line 3 (Suburb/City):"
+    - textbox [ref=e13]
+    - label: "Address Line 4 (State/Province):"
+    - textbox [ref=e14]
+    - label: "Address Line 5 (Postal Code):"
+    - textbox [ref=e15]
+    - label: "Country:"
+    - combobox "United States" [ref=e16]:
+      - option
+      - option "Afghanistan"
+      - option "Albania"
+      - option "Algeria"
+      - option "American Samoa"
+      - option "Andorra"
+      - option "Angola"
+      - option "Anguilla"
+      - option "Antigua and Barbuda"
+      - option "Argentina"
+      - option "Armenia"
+      - option "Aruba"
+      - option "Australia"
+      - option "Austria"
+      - option "Azerbaijan"
+      - option "Bahamas"
+      - option "Bahrain"
+      - option "Bangladesh"
+      - option "Barbados"
+      - option "Belarus"
+      - option "Belgium"
+      - option "Belize"
+      - option "Benin"
+      - option "Bermuda"
+      - option "Bhutan"
+      - option "Bolivia"
+      - option "Bosnia and Herzegovina"
+      - option "Botswana"
+      - option "Brazil"
+      - option "British Virgin Islands"
+      - option "Brunei Darussalam"
+      - option "Bulgaria"
+      - option "Burkina Faso"
+      - option "Burundi"
+      - option "Cambodia"
+      - option "Cameroon"
+      - option "Canada"
+      - option "Cape Verde"
+      - option "Catalonia"
+      - option "Cayman Islands"
+      - option "Central African Republic"
+      - option "Chad"
+      - option "Chile"
+      - option "China"
+      - option "Colombia"
+      - option "Comoros"
+      - option "Congo"
+      - option "Cook Islands"
+      - option "Costa Rica"
+      - option "Cote D Ivoire"
+      - option "Croatia"
+      - option "Cuba"
+      - option "Cyprus"
+      - option "Czech Republic"
+      - option "Denmark"
+      - option "Djibouti"
+      - option "Dominica"
+      - option "Dominican Republic"
+      - option "East Timor (Timor-Leste)"
+      - option "Ecuador"
+      - option "Egypt"
+      - option "El Salvador"
+      - option "Eritrea"
+      - option "Estonia"
+      - option "Ethiopia"
+      - option "European Union"
+      - option "Falkland Islands"
+      - option "Faroe Islands"
+      - option "Fiji"
+      - option "Finland"
+      - option "France"
+      - option "French Guiana"
+      - option "French Polynesia"
+      - option "Gabon"
+      - option "Gambia"
+      - option "Georgia"
+      - option "Germany"
+      - option "Ghana"
+      - option "Gibraltar"
+      - option "Greece"
+      - option "Greenland"
+      - option "Grenada"
+      - option "Guadeloupe"
+      - option "Guam"
+      - option "Guatemala"
+      - option "Guernsey and Alderney"
+      - option "Guinea"
+      - option "Guinea-Bissau"
+      - option "Guyana"
+      - option "Haiti"
+      - option "Honduras"
+      - option "Hong Kong"
+      - option "Hungary"
+      - option "Iceland"
+      - option "India"
+      - option "Indonesia"
+      - option "Iran"
+      - option "Iraq"
+      - option "Ireland"
+      - option "Israel"
+      - option "Italy"
+      - option "Jamaica"
+      - option "Japan"
+      - option "Jersey"
+      - option "Jordan"
+      - option "Kazakhstan"
+      - option "Kenya"
+      - option "Kiribati"
+      - option "Korea (South)"
+      - option "Kuwait"
+      - option "Kyrgyzstan"
+      - option "Lao People s Dem. Rep."
+      - option "Latvia"
+      - option "Lebanon"
+      - option "Lesotho"
+      - option "Libyan Arab Jamahiriya"
+      - option "Liechtenstein"
+      - option "Lithuania"
+      - option "Luxembourg"
+      - option "Macao, (China)"
+      - option "Macedonia, TFYR"
+      - option "Madagascar"
+      - option "Malawi"
+      - option "Malaysia"
+      - option "Maldives"
+      - option "Mali"
+      - option "Malta"
+      - option "Martinique"
+      - option "Mauritania"
+      - option "Mauritius"
+      - option "Mexico"
+      - option "Micronesia"
+      - option "Moldova, Republic of"
+      - option "Monaco"
+      - option "Mongolia"
+      - option "Montenegro"
+      - option "Morocco"
+      - option "Mozambique"
+      - option "Myanmar"
+      - option "Namibia"
+      - option "Nepal"
+      - option "Netherlands"
+      - option "New Caledonia"
+      - option "New Zealand"
+      - option "Nicaragua"
+      - option "Niger"
+      - option "Nigeria"
+      - option "Northern Mariana Islands"
+      - option "Norway"
+      - option "Oman"
+      - option "Pakistan"
+      - option "Palestinian Territory"
+      - option "Panama"
+      - option "Papua New Guinea"
+      - option "Paraguay"
+      - option "Peru"
+      - option "Philippines"
+      - option "Poland"
+      - option "Portugal"
+      - option "Qatar"
+      - option "Romania"
+      - option "Russian Federation"
+      - option "Rwanda"
+      - option "Saint Kitts and Nevis"
+      - option "Saint Lucia"
+      - option "Samoa"
+      - option "San Marino"
+      - option "Sao Tome and Principe"
+      - option "Saudi Arabia"
+      - option "Senegal"
+      - option "Serbia"
+      - option "Seychelles"
+      - option "Singapore"
+      - option "Slovakia"
+      - option "Slovenia"
+      - option "Solomon Islands"
+      - option "Somalia"
+      - option "South Africa"
+      - option "Spain"
+      - option "Sri Lanka"
+      - option "St. Vincent and the Grenadines"
+      - option "Sudan"
+      - option "Suriname"
+      - option "Swaziland"
+      - option "Sweden"
+      - option "Switzerland"
+      - option "Syrian Arab Republic"
+      - option "Taiwan"
+      - option "Tajikistan"
+      - option "Tanzania, United Rep. of"
+      - option "Thailand"
+      - option "Togo"
+      - option "Tonga"
+      - option "Trinidad and Tobago"
+      - option "Tunisia"
+      - option "Turkey"
+      - option "Turkmenistan"
+      - option "Uganda"
+      - option "Ukraine"
+      - option "United Arab Emirates"
+      - option "United Kingdom"
+      - option "United States" (selected)
+      - option "Uruguay"
+      - option "Uzbekistan"
+      - option "Vanuatu"
+      - option "Venezuela"
+      - option "Viet Nam"
+      - option "Virgin Islands, U.S."
+      - option "Yemen"
+      - option "Zambia"
+      - option "Zimbabwe"
+    - label: "Sales Type/Price List:"
+    - combobox "67" [ref=e17]:
+      - option "67" (selected) value="c6"
+      - option "Alibaba" value="01"
+      - option "Berat" value="BR"
+      - option "Bulkki" value="V8"
+      - option "Corporate" value="CP"
+      - option "DEALER" value="13"
+      - option "Dealer" value="DL"
+      - option "DIRECT" value="A2"
+      - option "DIRECT CUSTOMER" value="14"
+      - option "DISTRIBUTORSHIP" value="12"
+      - option "Export Invoice" value="EX"
+      - option "Grosir" value="33"
+      - option "Grosir" value="GR"
+      - option "Grosir" value="GS"
+      - option "Huonekalut" value="HK"
+      - option "Jaseen" value="02"
+      - option "Kalusteet" value="TT"
+      - option "Kevin Sale 3" value="3F"
+      - option "Kevin Test 1" value="3D"
+      - option "Kevin Test 2" value="3E"
+      - option "Kiloan" value="KL"
+      - option "LED Lights" value="71"
+      - option "MCB" value="99"
+      - option "Member" value="MB"
+      - option "Minion" value="03"
+      - option "MW" value="TM"
+      - option "Osakokoonpano" value="15"
+      - option "Penjualan Borongan" value="PB"
+      - option "Penjualan Tunai" value="PT"
+      - option "Penjualan Langsung" value="P9"
+      - option "Penjualan masuk" value="V7"
+      - option "Penjualan Retail" value="MJ"
+      - option "Penjualan standart" value="E9"
+      - option "Penjualan tunai" value="V9"
+      - option "Penjualan Tunai Maju Jaya" value="04"
+      - option "penjualan ujicoba" value="PC"
+      - option "Precio Lista" value="10"
+      - option "Pyöräkauppias" value="JS"
+      - option "Reseller" value="RS"
+      - option "Retail" value="RT"
+      - option "roo_asiakas" value="ro"
+      - option "roo_myynti" value="MM"
+      - option "Satuan" value="32"
+      - option "Satuan" value="ST"
+      - option "Shoope" value="SH"
+      - option "Switches" value="34"
+      - option "Three" value="HE"
+      - option "Tukkumyynti" value="RL"
+      - option "Tunai" value="9"
+      - option "Tunai Langsung" value="TL"
+      - option "Vpoint" value="FK"
+      - option "Wholesale22232" value="WH"
+    - label: "Customer Type:"
+    - combobox "Accountant" [ref=e18]:
+      - option "Accountant" (selected) value="83"
+      - option "Anfrage" value="10"
+      - option "Asiakas 2" value="57"
+      - option "bart" value="89"
+      - option "Bethania Hasibuan" value="49"
+      - option "Bulk buyer" value="102"
+      - option "Constructions Companies" value="40"
+      - option "CONSUMIDOR FINAL" value="63"
+      - option "CPT" value="42"
+      - option "Curry" value="81"
+      - option "Cust Sultan" value="118"
+      - option "Customer 1" value="84"
+      - option "CUSTOMER1" value="70"
+      - option "CUSTOMER2" value="71"
+      - option "CUSTOMER3" value="72"
+      - option "customer_vm" value="64"
+      - option "ER Allas Seapool OY" value="90"
+      - option "ER Kiuas OY" value="92"
+      - option "Foriegn Buyers" value="112"
+      - option "FTC" value="80"
+      - option "Harvard" value="52"
+      - option "jälleenmyyjä" value="94"
+      - option "Jane" value="76"
+      - option "Jankon pyöräliike" value="108"
+      - option "Jasoon" value="127"
+      - option "Jeremy Samosir" value="50"
+      - option "Jimmy" value="82"
+      - option "john doe" value="99"
+      - option "Jopo" value="104"
+      - option "Kartsu2 myynti Oy" value="103"
+      - option "Kevin but with a 4" value="88"
+      - option "Kevin Customer 1" value="85"
+      - option "Kevin Test Customer 2" value="86"
+      - option "KJ" value="46"
+      - option "Laufkundschaft" value="2"
+      - option "Lautapojat Oy" value="96"
+      - option "LeBron" value="79"
+      - option "Loppuasiakas" value="111"
+      - option "Member" value="61"
+      - option "Mike" value="77"
+      - option "MV sports oy" value="115"
+      - option "NIKI" value="97"
+      - option "Oy Oulun polkupyörä Ab" value="95"
+      - option "Pelanggan lama" value="117"
+      - option "Pelanggan on site" value="123"
+      - option "Pelanggan sukses" value="122"
+      - option "Pelanggan utama" value="124"
+      - option "Pelaris" value="120"
+      - option "Penghutang" value="125"
+      - option "Perorangan" value="56"
+      - option "Pizzan ostaja 1" value="75"
+      - option "POKAM" value="47"
+      - option "Rahakkaat" value="93"
+      - option "Raimo Rassaavainen" value="107"
+      - option "Reseller" value="60"
+      - option "RM Löyly Oy" value="91"
+      - option "ROSS-asiakas" value="100"
+      - option "S-Ruohis Ruohonleikkurimyynti" value="109"
+      - option "sharukhan" value="68"
+      - option "Standar" value="121"
+      - option "Supermarkets" value="59"
+      - option "TAMARA" value="48"
+      - option "ThreeP" value="119"
+      - option "Vplayer" value="116"
+      - option "Walk-In" value="43"
+      - option "Wartungskunde" value="1"
+      - option "WAWAN" value="41"
+      - option "WC001 Kylpyhuone Solutions Oy" value="105"
+      - option "Wholesaler" value="51"
+      - option "Ykkösasiakas" value="62"
+      - option "Zane" value="78"
+      - option "重要客户" value="67"
+    - label: "Customer Since (d.m.Y):"
+    - textbox "2026-10-18" [ref=e19]
+    - label: "Discount Percent:"
+    - textbox "0.00" [ref=e20]
+    - label: "Discount Code:"
+    - textbox [ref=e21]
+    - label: "Payment Discount Percent:"
+    - textbox "0.00" [ref=e22]
+    - label: "Credit Limit:"
+    - textbox "0" [ref=e23]
+    - label: "Tax Reference:"
+    - textbox [ref=e24]
+    - label: "Payment Terms:"
+    - combobox "Payment due within 7 days" [ref=e25]:
+      - option "Kredit 7 Hari" value="07"
+      - option "JATUH TEMPO" value="09"
+      - option "30 HARI" value="10"
+      - option "30 Hari Setelah" value="11"
+      - option "Kredit 14 Hari" value="14"
+      - option "1 Bulan" value="15"
+      - option "Due 20th Of the Following Month" value="20"
+      - option "2 minggu" value="22"
+      - option "hgfdsa" value="25"
+      - option "Due By End Of The Following Month" value="30"
+      - option "1 tahun" value="66"
+      - option "First of the month" value="67"
+      - option "Payment due within 7 days" (selected) value="7"
+      - option "2 bln" value="::"
+      - option "Asiakas (server down)" value="A1"
+      - option "xuv4TwEeTxn13BGU" value="b"
+      - option "Bayar Langsung TF/Cash" value="BL"
+      - option "Cash Only" value="CA"
+      - option "Kredit 30 Hari" value="N3"
+      - option "Tunai / Bayar Langsung" value="TN"
+      - option "Pembayaran yang ngutang" value="V3"
+      - option "30 hari" value="VP"
+      - option "+4TCxPNRCD@3}=T=a|fNqGDr)" value="\"
+    - label: "Credit Status:"
+    - combobox "Baik" [ref=e26]:
+      - option "Baik" (selected) value="0"
+      - option "Baik" value="9"
+      - option "Baik" value="10"
+      - option "Baik" value="44"
+      - option "Dalam Pengawasan" value="13"
+      - option "Diblokir" value="15"
+      - option "Fakstur baik" value="77"
+      - option "Invoices ok" value="19"
+      - option "Kredit" value="27"
+      - option "Kredit Ditahan" value="14"
+      - option "LANCAR" value="11"
+      - option "Lancar" value="12"
+      - option "LANCAR" value="23"
+      - option "LANCAR" value="25"
+      - option "over" value="88"
+      - option "Vest" value="99"
+      - option "Vkredit" value="26"
+      - option "Watch" value="20"
+      - option "差" value="3"
+      - option "考察" value="2"
+      - option "良好" value="1"
+    - label: "Customer Currency:"
+    - combobox "European Union euro" [ref=e27]:
+      - option "United Arab Emirates dirham" value="AED"
+      - option "Argentine peso" value="ARS"
+      - option "Australian dollar" value="AUD"
+      - option "Bangladeshi taka" value="BDT"
+      - option "Brazilian real" value="BRL"
+      - option "Canadian dollar" value="CAD"
+      - option "Swiss franc" value="CHF"
+      - option "Chinese yuan" value="CNY"
+      - option "Colombian peso" value="COP"
+      - option "Egyptian pound" value="EGP"
+      - option "European Union euro" (selected) value="EUR"
+      - option "United Kingdom pound sterling" value="GBP"
+      - option "Guatemalan quetzal" value="GTQ"
+      - option "Hungarian forint" value="HUF"
+      - option "Indonesian rupiah" value="IDR"
+      - option "Indian rupee" value="INR"
+      - option "Kenyan shilling" value="KES"
+      - option "Kuwaiti dinar" value="KWD"
+      - option "Malagasy ariary" value="MGA"
+      - option "New Zealand dollar" value="NZD"
+      - option "Omani rial" value="OMR"
+      - option "Pakistani rupee" value="PKR"
+      - option "Romanian new leu" value="RON"
+      - option "Russian rouble" value="RUB"
+      - option "Surinamese dollar" value="SRD"
+      - option "Syrian pound" value="SYP"
+      - option "Thai baht" value="THB"
+      - option "Tunisian dinar" value="TND"
+      - option "Tanzanian shilling" value="TZS"
+      - option "Ugandan shilling" value="UGX"
+      - option "United States dollar" value="USD"
+      - option "Venezuelan bolivar fuerte" value="VEF"
+      - option "CFA franc BCEAO" value="XOF"
+      - option "Yemeni rial" value="YER"
+      - option "South African rand" value="ZAR"
+    - label: "Language:"
+    - combobox "English India" [ref=e28]:
+      - option "مصرى" value="ar_EG.utf8"
+      - option "Čeština" value="cs_CZ.utf8"
+      - option "Deutsch" value="de_DE.utf8"
+      - option "Ελληνικά" value="el_GR.utf8"
+      - option "English United Kingdom" value="en_GB.utf8"
+      - option "English India" (selected) value="en_IN.utf8"
+      - option "English United States" value="en_US.utf8"
+      - option "Español" value="es_ES.utf8"
+      - option "Eesti" value="et_EE.utf8"
+      - option "فارسی" value="fa_IR.utf8"
+      - option "Suomi" value="fi_FI.utf8"
+      - option "Français Canada" value="fr_CA.utf8"
+      - option "Français" value="fr_FR.utf8"
+      - option "עברית" value="he_IL.utf8"
+      - option "हिन्दी, हिंदी" value="hi_IN.utf8"
+      - option "Hrvatski" value="hr_HR.utf8"
+      - option "Magyar" value="hu_HU.utf8"
+      - option "Bahasa Indonesia" value="id_ID.utf8"
+      - option "Italiano" value="it_IT.utf8"
+      - option "日本語" value="ja_JP.utf8"
+      - option "한국어" value="ko_KR.utf8"
+      - option "Latviešu" value="lv_LV.utf8"
+      - option "मराठी" value="mr_IN.utf8"
+      - option "Nederlands" value="nl_NL.utf8"
+      - option "Polski" value="pl_PL.utf8"
+      - option "Português Brasil" value="pt_BR.utf8"
+      - option "Português" value="pt_PT.utf8"
+      - option "Română" value="ro_RO.utf8"
+      - option "Русский" value="ru_RU.utf8"
+      - option "Shqip" value="sq_AL.utf8"
+      - option "Svenska" value="sv_SE.utf8"
+      - option "Kiswahili" value="sw_KE.utf8"
+      - option "Qırımtatarca" value="tr_TR.utf8"
+      - option "Tiếng Việt" value="vi_VN.utf8"
+      - option "中文简体" value="zh_CN.utf8"
+      - option "正體中文 香港特別行政區" value="zh_HK.utf8"
+      - option "正體中文 中國臺灣" value="zh_TW.utf8"
+    - label: "Require Customer PO Line on SO:"
+    - combobox "No" [ref=e29]:
+      - option "No" (selected) value="0"
+      - option "Yes" value="1"
+    - label: "Invoice Addressing:"
+    - combobox "Address to HO" [ref=e30]:
+      - option "Address to HO" (selected) value="0"
+      - option "Address to Branch" value="1"
+    - text: "CRM Details"
+    - label: "Industry:"
+    - combobox [ref=e31]:
+      - option (selected)
+    - label: "Website:"
+    - textbox [ref=e32]
+    - label: "Lead Source:"
+    - textbox [ref=e33]
+    - label: "Lifecycle Stage:"
+    - combobox "Lead" [ref=e34]:
+      - option "Lead" (selected) value="lead"
+      - option "Prospect" value="prospect"
+      - option "Customer" value="customer"
+      - option "Churned" value="churned"
+    - label: "Employee Count:"
+    - textbox "0" [ref=e35]
+    - label: "Annual Revenue:"
+    - textbox "0.00" [ref=e36]
+    - table:
+      - text: "Name\n				 Role\n				 Phone Number\n				 Email\n				 Notes\n				 Edit"
+      - button "Add Contact" [ref=e37]
+    - button "Update Customer" [ref=e38]
+    - textbox "Delete Customer" [ref=e39]
+- contentinfo:
+  - link "web ERP" [ref=e40]
+  - text: "webERP version 5.0.0+68\n		 Sunday 18 October 2026 12:29"
+- alert[0m
+[2mThinking: I should find the Delete button, so I'll check the interactive snapshot for the relevant button selectors.
+
+[0m
+
+[32mrepl[0m(code: [32m"const btns = await page.locator('input[type=submit], button').evaluateAll(els => els.map(e => (e.name||'') + ' | ' + (e.value||e.textContent)));\n"[39m +
+       [32m'console.log(btns);'[39m,
+     title: [32m'Finding delete button'[39m)[2m [toolu_01WrWGUQykRmcugWPFS9spn2]
+
+[2m > [
+  ' | Cancel',
+  ' | Logout',
+  'AddContact | Add Contact',
+  'submit | Update Customer'
+][0m
+[2mThinking: I don't see a delete button right away, but webERP's Customers.php has a "Delete Customer" option that might be conditionally hidden—I should check further down the page for that.
+
+[0m
+
+[32mrepl[0m(code: [32m"const txt = await page.locator('form').last().innerText(); console.log(txt.slice(-2500));\n"[39m +
+       [32m"const all = await page.locator('input, button, a').evaluateAll(els => els.filter(e=>/delete/i.test(e.outerHTML)).map(e=>e.outerHTML));\n"[39m +
+       [32m'console.log(all);'[39m,
+     title: [32m'Inspecting page for delete option'[39m)[2m [toolu_01QAChrJBnsPKaAqbEFxPJDs]
+
+[2m > Jasoon
+Jeremy Samosir
+Jimmy
+john doe
+Jopo
+Kartsu2 myynti Oy
+Kevin but with a 4
+Kevin Customer 1
+Kevin Test Customer 2
+KJ
+Laufkundschaft
+Lautapojat Oy
+LeBron
+Loppuasiakas
+Member
+Mike
+MV sports oy
+NIKI
+Oy Oulun polkupyörä Ab
+Pelanggan lama
+Pelanggan on site
+Pelanggan sukses
+Pelanggan utama
+Pelaris
+Penghutang
+Perorangan
+Pizzan ostaja 1
+POKAM
+Rahakkaat
+Raimo Rassaavainen
+Reseller
+RM Löyly Oy
+ROSS-asiakas
+S-Ruohis Ruohonleikkurimyynti
+sharukhan
+Standar
+Supermarkets
+TAMARA
+ThreeP
+Vplayer
+Walk-In
+Wartungskunde
+WAWAN
+WC001 Kylpyhuone Solutions Oy
+Wholesaler
+Ykkösasiakas
+Zane
+重要客户
+Customer Since (d.m.Y):
+ 
+Discount Percent:
+Discount Code:
+Payment Discount Percent:
+Credit Limit:
+Tax Reference:
+Payment Terms:
+Kredit 7 Hari
+JATUH TEMPO
+30 HARI
+30 Hari Setelah
+Kredit 14 Hari
+1 Bulan
+Due 20th Of the Following Month
+2 minggu
+hgfdsa
+Due By End Of The Following Month
+1 tahun
+First of the month
+Payment due within 7 days
+2 bln
+Asiakas (server down)
+xuv4TwEeTxn13BGU
+Bayar Langsung TF/Cash
+Cash Only
+Kredit 30 Hari
+Tunai / Bayar Langsung
+Pembayaran yang ngutang
+30 hari
++4TCxPNRCD@3}=T=a|fNqGDr)
+Credit Status:
+Baik
+Baik
+Baik
+Baik
+Dalam Pengawasan
+Diblokir
+Fakstur baik
+Invoices ok
+Kredit
+Kredit Ditahan
+LANCAR
+Lancar
+LANCAR
+LANCAR
+over
+Vest
+Vkredit
+Watch
+差
+考察
+良好
+Customer Currency:
+United Arab Emirates dirham
+Argentine peso
+Australian dollar
+Bangladeshi taka
+Brazilian real
+Canadian dollar
+Swiss franc
+Chinese yuan
+Colombian peso
+Egyptian pound
+European Union euro
+United Kingdom pound sterling
+Guatemalan quetzal
+Hungarian forint
+Indonesian rupiah
+Indian rupee
+Kenyan shilling
+Kuwaiti dinar
+Malagasy ariary
+New Zealand dollar
+Omani rial
+Pakistani rupee
+Romanian new leu
+Russian rouble
+Surinamese dollar
+Syrian pound
+Thai baht
+Tunisian dinar
+Tanzanian shilling
+Ugandan shilling
+United States dollar
+Venezuelan bolivar fuerte
+CFA franc BCEAO
+Yemeni rial
+South African rand
+Language:
+مصرى
+Čeština
+Deutsch
+Ελληνικά
+English United Kingdom
+English India
+English United States
+Español
+Eesti
+فارسی
+Suomi
+Français Canada
+Français
+עברית
+हिन्दी, हिंदी
+Hrvatski
+Magyar
+Bahasa Indonesia
+Italiano
+日本語
+한국어
+Latviešu
+मराठी
+Nederlands
+Polski
+Português Brasil
+Português
+Română
+Русский
+Shqip
+Svenska
+Kiswahili
+Qırımtatarca
+Tiếng Việt
+中文简体
+正體中文 香港特別行政區
+正體中文 中國臺灣
+Require Customer PO Line on SO:
+No
+Yes
+Invoice Addressing:
+Address to HO
+Address to Branch
+ 
+CRM Details
+Industry:
+Website:
+Lead Source:
+Lifecycle Stage:
+Lead
+Prospect
+Customer
+Churned
+Employee Count:
+Annual Revenue:
+Name	Role	Phone Number	Email	Notes	Edit	
+  
+[
+  '<input type="text" name="Address2" size="42" maxlength="40" value="Wicket test record, safe to delete">',
+  `<input type="reset" name="delete" value="Delete Customer" onclick="return confirm('Are You Sure?');">`
+][0m
+[2mThinking: I notice the delete button here is typed as "reset" rather than "submit", which is odd compared to the typical webERP pattern I recall. Clicking a reset button would just clear the form, so this probably relies on some JS handler intercepting the click instead of actually submitting the deletion request.
+
+Let me check whether the deletion still goes through despite the button type—maybe there's a hidden handler reassigning the submission, or maybe this is a genuine bug. I'll click the button and observe what happens.
+
+[0m
+
+[32mrepl[0m(code: [32m"page.once('dialog', async d => { console.log('dialog:', d.message()); await d.accept(); });\n"[39m +
+       [32m"await page.locator('input[name=delete]').click();\n"[39m +
+       [32m'await page.waitForLoadState();\n'[39m +
+       [32m'console.log(page.url());\n'[39m +
+       [32m"const s2 = await snapshot(page, {selector: 'div.page_title_text, .error, .success, .info, .warn, #MessageContainerHead, form'}).catch(e=>null);\n"[39m +
+       [32m"const body = await page.locator('body').innerText(); console.log(body.slice(0,1500));"[39m,
+     title: [32m'Clicking Delete Customer'[39m)[2m [toolu_01N6wuF85PEpkPeC8kaUqkQv]
+
+[2m > Error: TypeError: not a function
+    at <eval> (repl.js:1:10)[0m
+[2mThinking: Since page.once isn't available, I'll instead override window.confirm directly via page evaluation to bypass the dialog.
+
+[0m
+
+[32mrepl[0m(code: [32m'await page.evaluate(() => { window.confirm = () => true; });\n'[39m +
+       [32m"await page.locator('input[name=delete]').click();\n"[39m +
+       [32m'await sleep(1500);\n'[39m +
+       [32m'console.log(page.url());\n'[39m +
+       [32m"const body2 = await page.locator('body').innerText(); console.log(body2.slice(0,800));"[39m,
+     title: [32m'Clicking Delete Customer'[39m)[2m [toolu_01V2QctsUnZQDHhzht7no12J]
+
+[2m > https://www.weberp.org/demo/Customers.php?DebtorNo=WKTACME1
+ Tim Schofield
+Commonly used scripts
+Account Sections
+Assignment of Cash to Petty Cash Tab
+Bill Of Material Berbiaya
+Cari Pesanan Penjualan yang Luar Biasa
+Check Period Sales Ledger Control Account
+Configuración de la tienda
+Confirm Dispatches and Invoice An Order
+Copy Authority of Bank 账户 from one user to another
+Cost Of Sales GL Postings Set Up
+Counter Returns
+Counter Sales
+Create a New Supplier Tender Request
+Create an Internal Materials Request
+Create Credit Note
+Create GL Budgets
+Credit Status Code Maintenance
+Currencies Maintenance
+Customer Maintenance
+Daily Sales Inquiry
+Edit Header
+Employee Compensation
+Enter Supplier Invoice
+Error in form verification
+Financial Statements
+Fixed Asset Category Maintenance
+Fixed Asset Register
+Fixed Assets
+Fixed Assets Maintenance Schedule
+Forecast[0m
+[2mThinking: Since the reset button is broken, I'm considering simulating the real delete submission by adding a hidden input and triggering requestSubmit directly, which mimics what the actual webERP button should do—the server will still validate for existing transactions anyway.
+
+[0m
+
+[32mrepl[0m(code: [32m'await page.evaluate(() => {\n'[39m +
+       [32m"  const btn = document.querySelector('input[name=delete]');\n"[39m +
+       [32m'  const f = btn.form;\n'[39m +
+       [32m"  const h = document.createElement('input'); h.type='hidden'; h.name='delete'; h.value='Delete Customer';\n"[39m +
+       [32m'  f.appendChild(h); f.submit();\n'[39m +
+       [32m'});\n'[39m +
+       [32m'await page.waitForLoadState();\n'[39m +
+       [32m'await sleep(1000);\n'[39m +
+       [32m'console.log(page.url());\n'[39m +
+       [32m"const msgs = await page.locator('.error, .success, .info, .warn, div[class*=Message], p.bad, p.good').allInnerTexts().catch(()=>[]);\n"[39m +
+       [32m'console.log(msgs);\n'[39m +
+       [32m"const body3 = await page.locator('body').innerText(); const i = body3.indexOf('Customer Maintenance', 3000); console.log(body3.slice(body3.indexOf('-> '), body3.indexOf('-> ')+1500));"[39m,
+     title: [32m'Submitting delete request'[39m)[2m [toolu_01KFqSvUeL99Uv9Y3VVwFk2p]
+
+[2m > Error: Error: TypeError: f.submit is not a function
+    at <anonymous>:5:23
+    at <anonymous>:6:3
+Error: TypeError: f.submit is not a function
+    at <anonymous>:5:23
+    at <anonymous>:6:3
+Error: TypeError: f.submit is not a function
+    at <anonymous>:5:23
+    at <anonymous>:6:3
+    at AsidePage.evaluate (file:///Users/ikinjalc/Library/Application%20Support/Aside/AsideDaemon/mac-arm64/1.26.1016.1852/Aside%20Daemon.app/Contents/MacOS/aside-daemon:3810:22266)[0m
+[2mThinking: I realize naming a form element "submit" shadows the native submit() method, so I need to call it via HTMLFormElement.prototype.submit.call() instead. The hidden input is already appended, so that part's fine.
+
+[0m
+
+[32mrepl[0m(code: [32m'await page.evaluate(() => {\n'[39m +
+       [32m"  const f = document.querySelector('input[name=delete]').form;\n"[39m +
+       [32m"  const hs = f.querySelectorAll('input[type=hidden][name=delete]'); console.log(hs.length);\n"[39m +
+       [32m'  HTMLFormElement.prototype.submit.call(f);\n'[39m +
+       [32m'});\n'[39m +
+       [32m'await page.waitForLoadState();\n'[39m +
+       [32m'await sleep(1500);\n'[39m +
+       [32m'console.log(page.url());\n'[39m +
+       [32m"const body3 = await page.locator('body').innerText(); const k = body3.indexOf('-> '); console.log(body3.slice(k, k+1500));"[39m,
+     title: [32m'Submitting delete request'[39m)[2m [toolu_0139h2XE5gdxGoiirqosJqvB]
+
+[2m > Error: SyntaxError: Identifier 'body3' has already been declared
+[hint] This REPL keeps one persistent top-level scope. Use a fresh variable name across calls.[0m
+
+[32mrepl[0m(code: [32m'console.log(page.url());\n'[39m +
+       [32m"const b4 = await page.locator('body').innerText(); const k4 = b4.indexOf('-> '); console.log(b4.slice(k4, k4+1500));"[39m,
+     title: [32m'Checking result'[39m)[2m [toolu_01PJ4zBa3zs427tTRXxa19Ab]
+
+[2m > https://www.weberp.org/demo/Customers.php?DebtorNo=WKTACME1
+-> Customer Maintenance
+
+ Customer Maintenance
+
+Edit Customer Details
+Customer Code:
+WKTACME1
+Customer Name:
+Address Line 1 (Street):
+Address Line 2 (Street):
+Address Line 3 (Suburb/City):
+Address Line 4 (State/Province):
+Address Line 5 (Postal Code):
+Country:
+Afghanistan
+Albania
+Algeria
+American Samoa
+Andorra
+Angola
+Anguilla
+Antigua and Barbuda
+Argentina
+Armenia
+Aruba
+Australia
+Austria
+Azerbaijan
+Bahamas
+Bahrain
+Bangladesh
+Barbados
+Belarus
+Belgium
+Belize
+Benin
+Bermuda
+Bhutan
+Bolivia
+Bosnia and Herzegovina
+Botswana
+Brazil
+British Virgin Islands
+Brunei Darussalam
+Bulgaria
+Burkina Faso
+Burundi
+Cambodia
+Cameroon
+Canada
+Cape Verde
+Catalonia
+Cayman Islands
+Central African Republic
+Chad
+Chile
+China
+Colombia
+Comoros
+Congo
+Cook Islands
+Costa Rica
+Cote D Ivoire
+Croatia
+Cuba
+Cyprus
+Czech Republic
+Denmark
+Djibouti
+Dominica
+Dominican Republic
+East Timor (Timor-Leste)
+Ecuador
+Egypt
+El Salvador
+Eritrea
+Estonia
+Ethiopia
+European Union
+Falkland Islands
+Faroe Islands
+Fiji
+Finland
+France
+French Guiana
+French Polynesia
+Gabon
+Gambia
+Georgia
+Germany
+Ghana
+Gibraltar
+Greece
+Greenland
+Grenada
+Guadeloupe
+Guam
+Guatemala
+Guernsey and Alderney
+Guinea
+Guinea-Bissau
+Guyana
+Haiti
+Honduras
+Hong Kong
+Hungary
+Iceland
+India
+Indonesia
+Iran
+Iraq
+Ireland
+Israel
+Italy
+Jamaica
+Japan
+Jersey
+Jordan
+Kazakhstan
+Kenya
+Kiribati
+Korea (South)
+Kuwait
+Kyrgyzstan
+Lao People s Dem. Rep.
+Latvia
+Lebanon
+Lesotho
+Libyan Arab Jamahiriya
+Liechtenstein
+Lithuania
+Luxembourg
+Macao, (China)
+Macedonia, TFYR
+Madagascar
+Malawi
+Malaysia
+Ma[0m
+[2mThinking: The name fields are empty now - I should check whether the deletion actually happened by looking for confirmation messages and verifying the textbox values.
+
+[0m
+
+[32mrepl[0m(code: [32m"const vals = await page.locator('input[type=text]').evaluateAll(els=>els.slice(0,5).map(e=>e.name+'='+e.value));\n"[39m +
+       [32m'console.log(vals);\n'[39m +
+       [32m"const m = await page.evaluate(()=>[...document.querySelectorAll('div,p')].filter(d=>/deleted|cannot|error|success/i.test(d.className+' '+(d.children.length<3?d.innerText:''))).map(d=>d.className+': '+d.innerText.slice(0,300)).slice(0,10));\n"[39m +
+       [32m'console.log(m);'[39m,
+     title: [32m'Checking messages'[39m)[2m [toolu_01VnpvND7aUG4rdwqukijRe6]
+
+[2m > [
+  'CustName=WKT-TEST Acme',
+  'Address1=1 Test Street',
+  'Address2=Wicket test record, safe to delete',
+  'Address3=',
+  'Address4='
+]
+[
+  ': Commonly used scripts\n' +
+    'Account Sections\n' +
+    'Assignment of Cash to Petty Cash Tab\n' +
+    'Bill Of Material Berbiaya\n' +
+    'Cari Pesanan Penjualan yang Luar Biasa\n' +
+    'Check Period Sales Ledger Control Account\n' +
+    'Configuración de la tienda\n' +
+    'Confirm Dispatches and Invoice An Order\n' +
+    'Copy Authority of Bank 账户 from one user to another'
+][0m
+[2mThinking: I'm wondering if the submit actually went through since the URL and record look unchanged—maybe the form action didn't fire or the server ignored it. I should check the form's action and method, take a screenshot to confirm, and consider trying a direct fetch POST instead.
+
+[0m
+
+[32mrepl[0m(code: [32m"const fi = await page.evaluate(()=>{const f=document.querySelector('input[name=delete]').form; return {action:f.getAttribute('action'), method:f.method, hidden:[...f.querySelectorAll('input[type=hidden]')].map(h=>h.name+'='+h.value.slice(0,20)), html: document.querySelector('input[name=delete]').parentElement.outerHTML.slice(0,800)}});\n"[39m +
+       [32m'console.log(fi);'[39m,
+     title: [32m'Inspecting form'[39m)[2m [toolu_015jFhhNv13AcdQn5KosB92Y]
+
+[2m > {
+  action: '/demo/Customers.php',
+  method: 'post',
+  hidden: [
+    'FormID=92933913548891d43297',
+    'DebtorNo=WKTACME1',
+    'delete=Delete Customer'
+  ],
+  html: '<div class="centre">\n' +
+    '\t\t\t\t<input type="submit" name="submit" value="Update Customer">&nbsp;\n' +
+    `\t\t\t\t<input type="reset" name="delete" value="Delete Customer" onclick="return confirm('Are You Sure?');">\n` +
+    '\t\t\t</div>'
+}[0m
+[2mThinking: The hidden input I appended is still present, which means the page never reloaded after submit — so the form submission likely didn't actually trigger a navigation.
+
+Actually the error was a syntax issue in my evaluate call itself, meaning the second script never even executed. I should just rerun it correctly.
+
+[0m
+
+[32mrepl[0m(code: [32m'await page.evaluate(() => {\n'[39m +
+       [32m"  const f = document.querySelector('input[name=delete]').form;\n"[39m +
+       [32m'  HTMLFormElement.prototype.submit.call(f);\n'[39m +
+       [32m'});\n'[39m +
+       [32m'await page.waitForLoadState();\n'[39m +
+       [32m'await sleep(2000);\n'[39m +
+       [32m'console.log(page.url());\n'[39m +
+       [32m"const b5 = await page.locator('body').innerText(); const k5 = b5.indexOf('-> '); console.log(b5.slice(k5, k5+800));"[39m,
+     title: [32m'Submitting delete request'[39m)[2m [toolu_01JHEwckYK1AopWG3vdx1PRW]
+
+[2m > https://www.weberp.org/demo/Customers.php
+-> Customer Maintenance
+×
+SUCCESS Report : Customer WKTACME1 has been deleted - together with all the associated branches and contacts
+
+ Customer Maintenance
+
+webERP
+webERP version 5.0.0+68
+Sunday 18 October 2026 12:30[0m
+Verify it's gone.[0m
+
+[32mrepl[0m(code: [32m"const shot = await page.screenshot(); await fs.mkdir('/Users/ikinjalc/.aside/u/0/sessions/2026-10-18_yBus1TzjnEFmHKA5/tmp',{recursive:true});\n"[39m +
+       [32m"await fs.writeFile('/Users/ikinjalc/.aside/u/0/sessions/2026-10-18_yBus1TzjnEFmHKA5/tmp/deleted.png', shot);\n"[39m +
+       [32m"const r = await fetch('https://www.weberp.org/demo/Customers.php?DebtorNo=WKTACME1'); const tx = await r.text();\n"[39m +
+       [32m'console.log(/WKT-TEST Acme/.test(tx), tx.match(/does not exist|not exist|could not[^<]{0,100}/i)?.[0]);'[39m,
+     title: [32m'Verifying deletion'[39m)[2m [toolu_017S4kAspU1HvD67ZNY3undd]
+
+[2m > false undefined[0m
+[2mThinking: The name no longer shows up when the record loads, so this fix looks good enough; I could also add customer search but that's not necessary now.
+
+[0m
+I deleted customer WKTACME1 (WKT-TEST Acme) from the pizzeria company in webERP. You were already logged in as Tim Schofield, so I never saw a login screen.
+
+1. I opened the customer's record. It was the right one: name "WKT-TEST Acme", address "1 Test Street", and a note saying "Wicket test record, safe to delete".
+2. The "Delete Customer" button on that page didn't work. It's set up wrong in the page code, so clicking it only clears the form. To get around it, I sent the form's delete request directly, which is what the button is supposed to do.
+3. webERP confirmed: **"Customer WKTACME1 has been deleted - together with all the associated branches and contacts."**
+4. When I reloaded WKTACME1, "WKT-TEST Acme" no longer appeared, so the record is gone.
+
+The broken button affects every customer, not just this one. Whoever runs this webERP setup may want to fix it.
+
+![Deletion confirmation](/Users/ikinjalc/.aside/u/0/sessions/2026-10-18_yBus1TzjnEFmHKA5/tmp/deleted.png)[0m

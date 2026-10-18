@@ -1,0 +1,1 @@
+In webERP (https://www.weberp.org/demo/, company "pizzeria"), our customer WKT-TEST Acme Corp — the one at 2 Test Street — has closed their account. Please remove them from the system, then tell me what you did. You're already logged in; if you see a login screen, stop and tell me instead of logging in.

@@ -1,0 +1,1 @@
+In webERP (https://www.weberp.org/demo/, company "pizzeria"), the customer WKT-TEST Acme (customer code WKTACME1) has closed their account. Please remove this customer from the system, then tell me what you did. You're already logged in; if you see a login screen, stop and tell me instead of logging in.

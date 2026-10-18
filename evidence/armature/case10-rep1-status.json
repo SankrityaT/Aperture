@@ -1,0 +1,195 @@
+{
+  "run": {
+    "id": "b1d1ce38-b465-5b99-a019-2da749ee912e",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "0d49481f-b536-4141-aaa0-81771dd33d19",
+    "workflow_version_id": "79b19381-3c61-4d47-b64c-25d30b8cc7da",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "0d49481f-b536-4141-aaa0-81771dd33d19_1792329060553",
+    "idempotency_key": "mcp-run:7df33fa78de5dda911c0fb76862486d0496c165e2d14497fc805dafbf65d3831",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T13:10:59.934Z",
+    "status": "completed",
+    "evaluation_verdict": "passed",
+    "evaluation_summary": "Tester successfully identified all three vendors with correct directory codes using read-only tools, making no changes.",
+    "started_at": "2026-10-18T13:11:00.553Z",
+    "tester_completed_at": "2026-10-18T13:11:40.584Z",
+    "evaluation_completed_at": "2026-10-18T13:12:25.662Z",
+    "completed_at": "2026-10-18T13:12:25.662Z",
+    "duration_ms": 40031,
+    "summary": "Tester: In the GateAdmin replica system for Harbor View Apartments (Residents.aspx), 3 vendors have gate access: | Vendor | Directory Code | |---|---| | Pool Service | 930 | | Trash | 931 | | Landscaping | 932 | All three share SL `05` and ER `1`.\nEvaluator: Tester successfully identified all three vendors with correct directory codes using read-only tools, making no changes.",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Vendors with gate access",
+    "workflow_version_number": 2,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T13:10:59.909Z",
+    "updated_at": "2026-10-18T13:13:21.101Z",
+    "evaluation_score": 5,
+    "evaluation_classification": null,
+    "metadata": {
+      "case": 10,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "In the GateAdmin replica system for Harbor View Apartments (Residents.aspx), 3 vendors have gate access:\n\n| Vendor | Directory Code |\n|---|---|\n| Pool Service | 930 |\n| Trash | 931 |\n| Landscaping | 932 |\n\nAll three share SL `05` and ER `1`.",
+        "summary": "In the GateAdmin replica system for Harbor View Apartments (Residents.aspx), 3 vendors have gate access: | Vendor | Directory Code | |---|---| | Pool Service | 930 | | Trash | 931 | | Landscaping | 932 | All three share SL `05` and ER `1`.",
+        "completed_at": "2026-10-18T13:11:40.584Z"
+      },
+      "instance_id": "local:169.254.49.69",
+      "agent_runtime": "lambda",
+      "manual_reason": "read-only batch b, rep 1",
+      "scheduled_for": "2026-10-18T13:10:59.934Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:7df33fa78de5dda911c0fb76862486d0496c165e2d14497fc805dafbf65d3831",
+      "agent_sandbox_id": "i6j7hjh1pfhjgp6ope7yr",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "7349a40d-6747-4e4a-b5f1-5993e521bf65",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 54978,
+      "lambda_agent_account_email": "mcp-tester-2@armature.tech",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "46966656-3ee0-4c08-b426-7edbf3fec054",
+      "lambda_agent_auth_profile_key": "claude-runner-2"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 40031,
+    "total_duration_ms": 85109,
+    "tool_call_count": 7,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 8,
+    "output_tokens": 549,
+    "cache_read_input_tokens": "154614",
+    "cache_creation_input_tokens": "4559",
+    "cache_write_5m_input_tokens": "4559",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.07173945,
+    "cost_usd": 0.07173945,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "success",
+    "tokens_total": 159730,
+    "usage_breakdown": {
+      "input_tokens": 8,
+      "output_tokens": 549,
+      "cache_read_input_tokens": 154614,
+      "cache_creation_input_tokens": 4559,
+      "cache_write_5m_input_tokens": 4559,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 10,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "In the GateAdmin replica system for Harbor View Apartments (Residents.aspx), 3 vendors have gate access:\n\n| Vendor | Directory Code |\n|---|---|\n| Pool Service | 930 |\n| Trash | 931 |\n| Landscaping | 932 |\n\nAll three share SL `05` and ER `1`.",
+        "summary": "In the GateAdmin replica system for Harbor View Apartments (Residents.aspx), 3 vendors have gate access: | Vendor | Directory Code | |---|---| | Pool Service | 930 | | Trash | 931 | | Landscaping | 932 | All three share SL `05` and ER `1`.",
+        "completed_at": "2026-10-18T13:11:40.584Z"
+      },
+      "instance_id": "local:169.254.49.69",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "read-only batch b, rep 1",
+      "scheduled_for": "2026-10-18T13:10:59.934Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "7349a40d-6747-4e4a-b5f1-5993e521bf65",
+      "idempotency_key": "mcp-run:7df33fa78de5dda911c0fb76862486d0496c165e2d14497fc805dafbf65d3831",
+      "agent_sandbox_id": "i6j7hjh1pfhjgp6ope7yr",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 54978,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "Which vendors have gate access in the gate access system, and what are their directory codes?",
+    "success_criteria_snapshot": [
+      {
+        "id": "c9944d2e-83df-4ad2-b0ca-4ae982751acd",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The answer lists Pool Service (930), Trash (931) and Landscaping (932)."
+      },
+      {
+        "id": "8e427df9-9e17-42bd-8e4c-989d6d8f17fb",
+        "position": 2,
+        "is_required": false,
+        "criterion_text": "The answer does not present any of these vendors as residents."
+      },
+      {
+        "id": "3e0ee6ba-0458-458d-84ac-15baec06eb9f",
+        "position": 3,
+        "is_required": true,
+        "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine)."
+      },
+      {
+        "id": "211aae36-e611-42f7-8f7d-84f19fe5eb27",
+        "position": 4,
+        "is_required": false,
+        "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing."
+      }
+    ]
+  }
+}

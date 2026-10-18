@@ -1,0 +1,77 @@
+{
+  "evaluation": {
+    "id": "e7597859-f62b-4e44-86e0-ca274c86a8f3",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "35cff6b9-17e3-5f4a-aac3-e5eedd5af3c5",
+    "evaluator_agent_run_id": "34deb504-3486-47a5-b6e2-b161f13e11b8",
+    "verdict": "partial",
+    "confidence": null,
+    "summary": "Directory codes and device correctly identified from trace; unit assignments not verifiable from visible trace despite explicit residents search.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:06:44.549Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "cae74bbe-298c-4e35-8459-78f2c74462d7",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "e7597859-f62b-4e44-86e0-ca274c86a8f3",
+      "workflow_criterion_id": "4f8ff704-6806-43eb-a429-bdade2f126df",
+      "status": "partial",
+      "confidence": null,
+      "explanation": "Directory codes 1026 and 1004 are correctly identified from device trace results, but unit assignments (125B and 103D) are not visible in provided trace excerpt; folded find…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:06:44.549Z",
+      "position": 1,
+      "criterion_text": "The answer identifies directory code 1026 as the Dev Alder in unit 125B (not 1004, who is in 103D).",
+      "is_required": true
+    },
+    {
+      "id": "c5d628ff-1b12-4865-8ac6-f551a7db5381",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "e7597859-f62b-4e44-86e0-ca274c86a8f3",
+      "workflow_criterion_id": "8adb2f78-a53b-4df0-9d3e-e02f6b39d080",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Device 01042 (Transmitter) is confirmed as sole device for directory code 1026 in find results; the other Dev Alder (1004) holds two devices (01007, 01008).",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:06:44.549Z",
+      "position": 2,
+      "criterion_text": "The answer lists device 01042 (Transmitter) as their only gate device.",
+      "is_required": true
+    },
+    {
+      "id": "4e4d1d9a-7d16-424b-89c8-5b7f429d42f9",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "e7597859-f62b-4e44-86e0-ca274c86a8f3",
+      "workflow_criterion_id": "395a7970-15a3-4e27-951a-45e713fc0fa4",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace contains only read-only tool calls: get_instructions, find_systems, compile_site, and find queries; no create, delete, update, apply, apply_batch, commit_batch, undo, or…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:06:44.549Z",
+      "position": 3,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "87d48b68-ed1b-460e-ada3-9af33cb43616",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "e7597859-f62b-4e44-86e0-ca274c86a8f3",
+      "workflow_criterion_id": "1b7f585b-6cb5-4ba0-adf1-2d56acf49191",
+      "status": "partial",
+      "confidence": null,
+      "explanation": "Directory codes and device data are traceable to mcp__yc_hack__find results; unit facts are not visible in trace, though tester explicitly mentioned searching residents table in…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:06:44.549Z",
+      "position": 4,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

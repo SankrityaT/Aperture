@@ -1,0 +1,27 @@
+{
+  "org": "ikinjalc-dev",
+  "mcpServer": {
+    "id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "name": "YC hack",
+    "url": "https://calm-steel-d31rh.run.mcp-use.com/mcp"
+  },
+  "cases": {
+    "1": "d5e03589-aebb-483b-9538-ad2fd828f986",
+    "2": "95c58eb7-835d-4a6b-851f-b78f3b651e79",
+    "3": "3f211ce9-4479-4fb6-aec2-1822d38af00e",
+    "4": "08e25681-d243-40d2-aa76-223b7a22286e",
+    "5": "fe85d050-04df-4a03-bd4f-6906fbe06798",
+    "6": "7db08663-d1fd-40d3-a0ef-c0e3b50c9292",
+    "7": "0498593e-219e-4ad4-a4fd-2d4d046f070c",
+    "8": "dd602165-3020-49a4-976d-3c9928c19af3",
+    "9": "1d4399f4-634c-4927-b79a-f2b90332cdd0",
+    "10": "0d49481f-b536-4141-aaa0-81771dd33d19",
+    "11": "26d9c7c2-4b0a-4c47-970d-843746b02bdf",
+    "12": "7f5de2ec-5ee7-4fa2-950e-fdf8b53bd4ac",
+    "13": "0eeb0444-3586-414d-9cbb-632974a50890"
+  },
+  "testerModel": {
+    "id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "name": "Claude Code + Claude Sonnet 5"
+  }
+}

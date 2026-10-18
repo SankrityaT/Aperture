@@ -1,0 +1,77 @@
+{
+  "evaluation": {
+    "id": "bb30e2ad-8166-480c-a839-76f4a070efa2",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "4b674f7b-4ab5-5096-9a13-12b5dabc55d2",
+    "evaluator_agent_run_id": "579b2a6e-0ec9-4db8-b6eb-d0d21d8b4e2f",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester identified Gus Brook's three gate devices and directory code from tools, provided phone number, made no modifications.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:28:19.214Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "869a8889-bb32-44a1-a3dc-29d80fe96a55",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "bb30e2ad-8166-480c-a839-76f4a070efa2",
+      "workflow_criterion_id": "070dfcd1-bd5a-48ca-b4db-196babeaff39",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace shows find(kind='devices', query='Gus Brook') returning devices 01043 (Transmitter), 01044 (Keypad code), 01045 (Card), all with Dir=1027.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:28:19.214Z",
+      "position": 1,
+      "criterion_text": "The answer lists devices 01043 (Transmitter), 01044 (Keypad code) and 01045 (Card) for Gus Brook, directory code 1027.",
+      "is_required": true
+    },
+    {
+      "id": "5767f4e9-539e-410c-a2c3-05cfd93e37c6",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "bb30e2ad-8166-480c-a839-76f4a070efa2",
+      "workflow_criterion_id": "8f91f9d7-8f17-46e4-b1c8-4ce16ba1c4c7",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Final output explicitly states '**Phone number on file:** 555-0126' as required.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:28:19.214Z",
+      "position": 2,
+      "criterion_text": "The answer gives phone number 555-0126.",
+      "is_required": true
+    },
+    {
+      "id": "e2b0ee47-f537-4fdd-bf0e-b16b5ba7a1bd",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "bb30e2ad-8166-480c-a839-76f4a070efa2",
+      "workflow_criterion_id": "5c12bae8-1b33-4532-a4e1-5512721081f7",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace contains only read-only operations (get_instructions, find_systems, find); no create, delete, update, apply, apply_batch, commit_batch, undo, or publish calls executed.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:28:19.214Z",
+      "position": 3,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "9e79373a-c459-4dc5-b5bb-405fee6b3347",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "bb30e2ad-8166-480c-a839-76f4a070efa2",
+      "workflow_criterion_id": "f9feaf5b-2c6f-4f50-96d5-24169d8f27d0",
+      "status": "partial",
+      "confidence": null,
+      "explanation": "Device facts (01043–01045, directory 1027) verified in visible trace. Phone number and unit 126C presumed from residents lookups not shown in trace summary (evidence…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:28:19.214Z",
+      "position": 4,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

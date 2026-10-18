@@ -1,0 +1,1388 @@
+{
+  "rows": [
+    {
+      "id": "13758ca0-4bda-4659-98c7-ba456ca56636",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "85f93bf5-df9f-593a-9aaf-c594c8ccae95",
+      "agent_run_id": "35927bfc-3156-461c-b6e7-809855a65eab",
+      "role": "tester",
+      "trace_event_start_id": "5d385ef2-f799-41b7-ae80-e4a1cef9703b",
+      "trace_event_end_id": "5d385ef2-f799-41b7-ae80-e4a1cef9703b",
+      "tool_name": "mcp__yc_hack__get_instructions",
+      "arguments_redacted": {
+        "keys": [],
+        "safe": {},
+        "summary": "no arguments"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [
+            "form1",
+            "devices",
+            "residents",
+            "vendors"
+          ],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1288,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T14:03:59.663Z",
+      "completed_at": "2026-10-18T14:04:00.373Z",
+      "duration_ms": 710,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T14:04:33.576Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [
+            "form1",
+            "devices",
+            "residents",
+            "vendors"
+          ],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1288,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "ecb952a5-23d7-4353-b9fa-10e28835ceb5",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "85f93bf5-df9f-593a-9aaf-c594c8ccae95",
+      "agent_run_id": "35927bfc-3156-461c-b6e7-809855a65eab",
+      "role": "tester",
+      "trace_event_start_id": "943ec984-17e3-4589-8b42-bf80197710b0",
+      "trace_event_end_id": "943ec984-17e3-4589-8b42-bf80197710b0",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind"
+        ],
+        "safe": {
+          "kind": "residents"
+        },
+        "summary": "kind: residents"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "residents",
+          "count": 90,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1001",
+              "key": "1001",
+              "Notes": "Unit 100A",
+              "Phone": "555-0100",
+              "Device #": "01001",
+              "Resident": "Ana Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1002",
+              "key": "1002",
+              "Notes": "Unit 101B",
+              "Phone": "555-0101",
+              "Device #": "01003",
+              "Resident": "Ben Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1003",
+              "key": "1003",
+              "Notes": "Unit 102C",
+              "Phone": "555-0102",
+              "Device #": "01005",
+              "Resident": "Cho Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1005",
+              "key": "1005",
+              "Notes": "Unit 104A",
+              "Phone": "555-0104",
+              "Device #": "01009",
+              "Resident": "Eli Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1006",
+              "key": "1006",
+              "Notes": "Unit 105B",
+              "Phone": "555-0105",
+              "Device #": "01011",
+              "Resident": "Fay Alder"
+            }
+          ],
+          "as_of_ms": 0,
+          "truncated": true
+        },
+        "byte_length": 2790,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "truncated"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T14:04:00.005Z",
+      "completed_at": "2026-10-18T14:04:02.043Z",
+      "duration_ms": 2038,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T14:04:33.576Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "residents",
+          "count": 90,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1001",
+              "key": "1001",
+              "Notes": "Unit 100A",
+              "Phone": "555-0100",
+              "Device #": "01001",
+              "Resident": "Ana Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1002",
+              "key": "1002",
+              "Notes": "Unit 101B",
+              "Phone": "555-0101",
+              "Device #": "01003",
+              "Resident": "Ben Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1003",
+              "key": "1003",
+              "Notes": "Unit 102C",
+              "Phone": "555-0102",
+              "Device #": "01005",
+              "Resident": "Cho Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1005",
+              "key": "1005",
+              "Notes": "Unit 104A",
+              "Phone": "555-0104",
+              "Device #": "01009",
+              "Resident": "Eli Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1006",
+              "key": "1006",
+              "Notes": "Unit 105B",
+              "Phone": "555-0105",
+              "Device #": "01011",
+              "Resident": "Fay Alder"
+            }
+          ],
+          "as_of_ms": 0,
+          "truncated": true
+        },
+        "byte_length": 2790,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "truncated"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "1cc92b18-b251-42d5-a99d-8c8d7774ace0",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "85f93bf5-df9f-593a-9aaf-c594c8ccae95",
+      "agent_run_id": "35927bfc-3156-461c-b6e7-809855a65eab",
+      "role": "tester",
+      "trace_event_start_id": "572d1a9b-aa14-4761-9338-ef48d52beadd",
+      "trace_event_end_id": "572d1a9b-aa14-4761-9338-ef48d52beadd",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "limit"
+        ],
+        "safe": {
+          "kind": "residents",
+          "limit": 100
+        },
+        "summary": "kind: residents, limit: 100"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "residents",
+          "count": 90,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1001",
+              "key": "1001",
+              "Notes": "Unit 100A",
+              "Phone": "555-0100",
+              "Device #": "01001",
+              "Resident": "Ana Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1002",
+              "key": "1002",
+              "Notes": "Unit 101B",
+              "Phone": "555-0101",
+              "Device #": "01003",
+              "Resident": "Ben Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1003",
+              "key": "1003",
+              "Notes": "Unit 102C",
+              "Phone": "555-0102",
+              "Device #": "01005",
+              "Resident": "Cho Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1005",
+              "key": "1005",
+              "Notes": "Unit 104A",
+              "Phone": "555-0104",
+              "Device #": "01009",
+              "Resident": "Eli Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1006",
+              "key": "1006",
+              "Notes": "Unit 105B",
+              "Phone": "555-0105",
+              "Device #": "01011",
+              "Resident": "Fay Alder"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 12243,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T14:04:07.974Z",
+      "completed_at": "2026-10-18T14:04:09.288Z",
+      "duration_ms": 1314,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T14:04:33.576Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "residents",
+          "count": 90,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1001",
+              "key": "1001",
+              "Notes": "Unit 100A",
+              "Phone": "555-0100",
+              "Device #": "01001",
+              "Resident": "Ana Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1002",
+              "key": "1002",
+              "Notes": "Unit 101B",
+              "Phone": "555-0101",
+              "Device #": "01003",
+              "Resident": "Ben Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1003",
+              "key": "1003",
+              "Notes": "Unit 102C",
+              "Phone": "555-0102",
+              "Device #": "01005",
+              "Resident": "Cho Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1005",
+              "key": "1005",
+              "Notes": "Unit 104A",
+              "Phone": "555-0104",
+              "Device #": "01009",
+              "Resident": "Eli Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1006",
+              "key": "1006",
+              "Notes": "Unit 105B",
+              "Phone": "555-0105",
+              "Device #": "01011",
+              "Resident": "Fay Alder"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 12243,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "ebb23711-2223-4453-ab55-1d5bd0e352e9",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "85f93bf5-df9f-593a-9aaf-c594c8ccae95",
+      "agent_run_id": "35927bfc-3156-461c-b6e7-809855a65eab",
+      "role": "tester",
+      "trace_event_start_id": "90077db5-ef67-43e9-8c95-236aa72d04a1",
+      "trace_event_end_id": "90077db5-ef67-43e9-8c95-236aa72d04a1",
+      "tool_name": "mcp__yc_hack__apply_batch",
+      "arguments_redacted": {
+        "keys": [
+          "dry_run",
+          "ops"
+        ],
+        "safe": {
+          "ops": [
+            {
+              "op": "delete",
+              "key": "1001",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1002",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1003",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1005",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1006",
+              "kind": "residents"
+            }
+          ],
+          "dry_run": true
+        },
+        "summary": "dry_run: true, ops: [{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1001\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1002\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1003\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1005\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1006\"}]"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "run apply_batch again with canary: 1 to try the first item and check it did what was predicted",
+            "show the owner would_remove before approving anything"
+          ],
+          "items": [
+            {
+              "i": 0,
+              "op": "delete",
+              "key": "1001",
+              "diff": [
+                "- residents 1001",
+                "- 2 devicess",
+                "(the devices above go with this residents automatically: do not delete them separately; that would use up the daily limit)"
+              ],
+              "kind": "residents",
+              "needs_owner": false
+            },
+            {
+              "i": 1,
+              "op": "delete",
+              "key": "1002",
+              "diff": [
+                "- residents 1002",
+                "- 2 devicess",
+                "(the devices above go with this residents automatically: do not delete them separately; that would use up the daily limit)"
+              ],
+              "kind": "residents",
+              "needs_owner": false
+            },
+            {
+              "i": 2,
+              "op": "delete",
+              "key": "1003",
+              "diff": [
+                "- residents 1003",
+                "- 2 devicess",
+                "(the devices above go with this residents automatically: do not delete them separately; that would use up the daily limit)"
+              ],
+              "kind": "residents",
+              "needs_owner": false
+            }
+          ],
+          "status": "blast_radius",
+          "refused": 47,
+          "would_add": {},
+          "needs_owner": 0,
+          "would_remove": {
+            "devices": 6,
+            "residents": 3
+          },
+          "refused_items": [
+            {
+              "i": 3,
+              "op": "delete",
+              "key": "1005",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 5 of 5."
+            },
+            {
+              "i": 4,
+              "op": "delete",
+              "key": "1006",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 6 of 5."
+            },
+            {
+              "i": 5,
+              "op": "delete",
+              "key": "1007",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 7 of 5."
+            },
+            {
+              "i": 6,
+              "op": "delete",
+              "key": "1008",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 8 of 5."
+            },
+            {
+              "i": 7,
+              "op": "delete",
+              "key": "1009",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 9 of 5."
+            }
+          ],
+          "changed_nothing": true
+        },
+        "byte_length": 7008,
+        "fields_seen": [
+          "status",
+          "changed_nothing",
+          "would_remove",
+          "would_add",
+          "needs_owner",
+          "refused",
+          "items",
+          "refused_items",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T14:04:20.102Z",
+      "completed_at": "2026-10-18T14:04:53.585Z",
+      "duration_ms": 33483,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T14:05:33.576Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "run apply_batch again with canary: 1 to try the first item and check it did what was predicted",
+            "show the owner would_remove before approving anything"
+          ],
+          "items": [
+            {
+              "i": 0,
+              "op": "delete",
+              "key": "1001",
+              "diff": [
+                "- residents 1001",
+                "- 2 devicess",
+                "(the devices above go with this residents automatically: do not delete them separately; that would use up the daily limit)"
+              ],
+              "kind": "residents",
+              "needs_owner": false
+            },
+            {
+              "i": 1,
+              "op": "delete",
+              "key": "1002",
+              "diff": [
+                "- residents 1002",
+                "- 2 devicess",
+                "(the devices above go with this residents automatically: do not delete them separately; that would use up the daily limit)"
+              ],
+              "kind": "residents",
+              "needs_owner": false
+            },
+            {
+              "i": 2,
+              "op": "delete",
+              "key": "1003",
+              "diff": [
+                "- residents 1003",
+                "- 2 devicess",
+                "(the devices above go with this residents automatically: do not delete them separately; that would use up the daily limit)"
+              ],
+              "kind": "residents",
+              "needs_owner": false
+            }
+          ],
+          "status": "blast_radius",
+          "refused": 47,
+          "would_add": {},
+          "needs_owner": 0,
+          "would_remove": {
+            "devices": 6,
+            "residents": 3
+          },
+          "refused_items": [
+            {
+              "i": 3,
+              "op": "delete",
+              "key": "1005",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 5 of 5."
+            },
+            {
+              "i": 4,
+              "op": "delete",
+              "key": "1006",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 6 of 5."
+            },
+            {
+              "i": 5,
+              "op": "delete",
+              "key": "1007",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 7 of 5."
+            },
+            {
+              "i": 6,
+              "op": "delete",
+              "key": "1008",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 8 of 5."
+            },
+            {
+              "i": 7,
+              "op": "delete",
+              "key": "1009",
+              "kind": "residents",
+              "error": "policy_denied",
+              "detail": "Daily delete limit reached: 9 of 5."
+            }
+          ],
+          "changed_nothing": true
+        },
+        "byte_length": 7008,
+        "fields_seen": [
+          "status",
+          "changed_nothing",
+          "would_remove",
+          "would_add",
+          "needs_owner",
+          "refused",
+          "items",
+          "refused_items",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "bf2444d3-090e-45a0-842e-8476109d51c7",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "85f93bf5-df9f-593a-9aaf-c594c8ccae95",
+      "agent_run_id": "35927bfc-3156-461c-b6e7-809855a65eab",
+      "role": "tester",
+      "trace_event_start_id": "88d0d44e-d331-4fd4-966e-881ea8e6487a",
+      "trace_event_end_id": "88d0d44e-d331-4fd4-966e-881ea8e6487a",
+      "tool_name": "mcp__yc_hack__apply_batch",
+      "arguments_redacted": {
+        "keys": [
+          "stop_on_failure",
+          "ops"
+        ],
+        "safe": {
+          "ops": [
+            {
+              "op": "delete",
+              "key": "1001",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1002",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1003",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1005",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1006",
+              "kind": "residents"
+            }
+          ],
+          "stop_on_failure": false
+        },
+        "summary": "stop_on_failure: false, ops: [{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1001\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1002\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1003\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1005\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1006\"}]"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": "Input validation error: Invalid arguments for tool apply_batch: ops: Too big: expected array to have <=50 items",
+        "text_chars": 111,
+        "byte_length": 111,
+        "content_type": "text",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "failed",
+      "started_at": "2026-10-18T14:05:32.813Z",
+      "completed_at": "2026-10-18T14:05:33.470Z",
+      "duration_ms": 657,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T14:06:09.101Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": "Input validation error: Invalid arguments for tool apply_batch: ops: Too big: expected array to have <=50 items",
+        "text_chars": 111,
+        "byte_length": 111,
+        "content_type": "text",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "6c5b1d31-cb9c-46f8-b5a2-1988bd6eabea",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "85f93bf5-df9f-593a-9aaf-c594c8ccae95",
+      "agent_run_id": "35927bfc-3156-461c-b6e7-809855a65eab",
+      "role": "tester",
+      "trace_event_start_id": "f1173394-82f2-4c6f-b41b-68c717f04699",
+      "trace_event_end_id": "f1173394-82f2-4c6f-b41b-68c717f04699",
+      "tool_name": "mcp__yc_hack__apply_batch",
+      "arguments_redacted": {
+        "keys": [
+          "stop_on_failure",
+          "ops"
+        ],
+        "safe": {
+          "ops": [
+            {
+              "op": "delete",
+              "key": "1001",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1002",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1003",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1005",
+              "kind": "residents"
+            },
+            {
+              "op": "delete",
+              "key": "1006",
+              "kind": "residents"
+            }
+          ],
+          "stop_on_failure": false
+        },
+        "summary": "stop_on_failure: false, ops: [{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1001\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1002\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1003\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1005\"},{\"op\":\"delete\",\"kind\":\"residents\",\"key\":\"1006\"}]"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [],
+          "items": {
+            "refused": [
+              {
+                "i": 3,
+                "op": "delete",
+                "key": "1005",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              },
+              {
+                "i": 4,
+                "op": "delete",
+                "key": "1006",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              },
+              {
+                "i": 5,
+                "op": "delete",
+                "key": "1007",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              },
+              {
+                "i": 6,
+                "op": "delete",
+                "key": "1008",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              },
+              {
+                "i": 7,
+                "op": "delete",
+                "key": "1009",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              }
+            ],
+            "awaiting": [],
+            "committed": [
+              {
+                "i": 0,
+                "op": "delete",
+                "key": "1001",
+                "kind": "residents",
+                "receipt": "rcpt_m"
+              },
+              {
+                "i": 1,
+                "op": "delete",
+                "key": "1002",
+                "kind": "residents",
+                "receipt": "rcpt_n"
+              },
+              {
+                "i": 2,
+                "op": "delete",
+                "key": "1003",
+                "kind": "residents",
+                "receipt": "rcpt_o"
+              }
+            ]
+          },
+          "status": "batch_done",
+          "refused": 7,
+          "committed": 3,
+          "not_yet_live": "Recorded in this system. It also has a separate step ('Snd Data (Send Data Now)' on http://127.0.0.1:9105/Accounts.aspx) that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner.",
+          "not_attempted": 0,
+          "awaiting_approval": 0
+        },
+        "byte_length": 2150,
+        "fields_seen": [
+          "status",
+          "committed",
+          "awaiting_approval",
+          "refused",
+          "not_attempted",
+          "items",
+          "next",
+          "not_yet_live"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T14:05:39.495Z",
+      "completed_at": "2026-10-18T14:05:52.866Z",
+      "duration_ms": 13371,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T14:06:09.101Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [],
+          "items": {
+            "refused": [
+              {
+                "i": 3,
+                "op": "delete",
+                "key": "1005",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              },
+              {
+                "i": 4,
+                "op": "delete",
+                "key": "1006",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              },
+              {
+                "i": 5,
+                "op": "delete",
+                "key": "1007",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              },
+              {
+                "i": 6,
+                "op": "delete",
+                "key": "1008",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              },
+              {
+                "i": 7,
+                "op": "delete",
+                "key": "1009",
+                "kind": "residents",
+                "next": [
+                  "escalate(reason) to ask the owner for more",
+                  "wait until the limit resets"
+                ],
+                "error": "policy_denied",
+                "detail": "Daily delete limit reached: 5 of 5."
+              }
+            ],
+            "awaiting": [],
+            "committed": [
+              {
+                "i": 0,
+                "op": "delete",
+                "key": "1001",
+                "kind": "residents",
+                "receipt": "rcpt_m"
+              },
+              {
+                "i": 1,
+                "op": "delete",
+                "key": "1002",
+                "kind": "residents",
+                "receipt": "rcpt_n"
+              },
+              {
+                "i": 2,
+                "op": "delete",
+                "key": "1003",
+                "kind": "residents",
+                "receipt": "rcpt_o"
+              }
+            ]
+          },
+          "status": "batch_done",
+          "refused": 7,
+          "committed": 3,
+          "not_yet_live": "Recorded in this system. It also has a separate step ('Snd Data (Send Data Now)' on http://127.0.0.1:9105/Accounts.aspx) that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner.",
+          "not_attempted": 0,
+          "awaiting_approval": 0
+        },
+        "byte_length": 2150,
+        "fields_seen": [
+          "status",
+          "committed",
+          "awaiting_approval",
+          "refused",
+          "not_attempted",
+          "items",
+          "next",
+          "not_yet_live"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "ffaeb54d-c931-4e97-aacc-ec7a41f9af9f",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "85f93bf5-df9f-593a-9aaf-c594c8ccae95",
+      "agent_run_id": "35927bfc-3156-461c-b6e7-809855a65eab",
+      "role": "tester",
+      "trace_event_start_id": "772b278c-4749-4b8a-aa0d-b731440227b1",
+      "trace_event_end_id": "772b278c-4749-4b8a-aa0d-b731440227b1",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "limit"
+        ],
+        "safe": {
+          "kind": "residents",
+          "limit": 5
+        },
+        "summary": "kind: residents, limit: 5"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "residents",
+          "count": 87,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1005",
+              "key": "1005",
+              "Notes": "Unit 104A",
+              "Phone": "555-0104",
+              "Device #": "01009",
+              "Resident": "Eli Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1006",
+              "key": "1006",
+              "Notes": "Unit 105B",
+              "Phone": "555-0105",
+              "Device #": "01011",
+              "Resident": "Fay Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1007",
+              "key": "1007",
+              "Notes": "Unit 106C",
+              "Phone": "555-0106",
+              "Device #": "01013",
+              "Resident": "Gus Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1008",
+              "key": "1008",
+              "Notes": "Unit 107D",
+              "Phone": "555-0107",
+              "Device #": "01015",
+              "Resident": "Hal Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1009",
+              "key": "1009",
+              "Notes": "Unit 108A",
+              "Phone": "555-0108",
+              "Device #": "01017",
+              "Resident": "Ivy Alder"
+            }
+          ],
+          "as_of_ms": 0,
+          "truncated": true
+        },
+        "byte_length": 751,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "truncated"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T14:06:00.006Z",
+      "completed_at": "2026-10-18T14:06:01.331Z",
+      "duration_ms": 1325,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T14:06:09.101Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "residents",
+          "count": 87,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1005",
+              "key": "1005",
+              "Notes": "Unit 104A",
+              "Phone": "555-0104",
+              "Device #": "01009",
+              "Resident": "Eli Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1006",
+              "key": "1006",
+              "Notes": "Unit 105B",
+              "Phone": "555-0105",
+              "Device #": "01011",
+              "Resident": "Fay Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1007",
+              "key": "1007",
+              "Notes": "Unit 106C",
+              "Phone": "555-0106",
+              "Device #": "01013",
+              "Resident": "Gus Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1008",
+              "key": "1008",
+              "Notes": "Unit 107D",
+              "Phone": "555-0107",
+              "Device #": "01015",
+              "Resident": "Hal Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1009",
+              "key": "1009",
+              "Notes": "Unit 108A",
+              "Phone": "555-0108",
+              "Device #": "01017",
+              "Resident": "Ivy Alder"
+            }
+          ],
+          "as_of_ms": 0,
+          "truncated": true
+        },
+        "byte_length": 751,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "truncated"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "2585adb7-2ae1-4d01-a988-84f03b7f8ae8",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "85f93bf5-df9f-593a-9aaf-c594c8ccae95",
+      "agent_run_id": "35927bfc-3156-461c-b6e7-809855a65eab",
+      "role": "tester",
+      "trace_event_start_id": "bb1dcf77-7388-4163-a34f-0e2c0b94dc9e",
+      "trace_event_end_id": "bb1dcf77-7388-4163-a34f-0e2c0b94dc9e",
+      "tool_name": "mcp__yc_hack__escalate",
+      "arguments_redacted": {
+        "keys": [
+          "reason"
+        ],
+        "safe": {
+          "reason": "Task: delete every resident from the gate access system (90 total). Daily delete limit (5/day, cascades to devices) was hit after removing only 3 residents (1001, 1002, 1003); 87 remain. Please raise/reset the daily delete limit, or approve continued deletion in batches of ~3/day, so the remaining residents can be cleared."
+        },
+        "summary": "reason: Task: delete every resident from the ..."
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "note": "One message went to the owner. Keep working on other items; do not retry the blocked one.",
+          "status": "pending_human",
+          "ticket": "esc_5",
+          "agent_can_continue_with": [
+            "find",
+            "create",
+            "other deletes inside the limit"
+          ]
+        },
+        "byte_length": 219,
+        "fields_seen": [
+          "status",
+          "ticket",
+          "note",
+          "agent_can_continue_with"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T14:06:01.795Z",
+      "completed_at": "2026-10-18T14:06:02.141Z",
+      "duration_ms": 346,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T14:06:09.101Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "note": "One message went to the owner. Keep working on other items; do not retry the blocked one.",
+          "status": "pending_human",
+          "ticket": "esc_5",
+          "agent_can_continue_with": [
+            "find",
+            "create",
+            "other deletes inside the limit"
+          ]
+        },
+        "byte_length": 219,
+        "fields_seen": [
+          "status",
+          "ticket",
+          "note",
+          "agent_can_continue_with"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    }
+  ]
+}

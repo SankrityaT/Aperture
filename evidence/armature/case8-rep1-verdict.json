@@ -1,0 +1,77 @@
+{
+  "evaluation": {
+    "id": "9cc081c5-73ca-477a-895f-0e700f194f7f",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "d7b6b03d-ea6f-5862-8698-3747b9eef503",
+    "evaluator_agent_run_id": "941afc87-d942-47a6-adcb-46da1664bd8b",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester correctly identified Kai Alder at Dir 1061 (unit 120A) and listed exactly devices 01106 (Transmitter) and 01167 (Card) via read-only tool queries.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:05:47.316Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "ab6bb7c6-e230-4a81-9e90-5d90ec3f101a",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "9cc081c5-73ca-477a-895f-0e700f194f7f",
+      "workflow_criterion_id": "580d3f6d-37d1-4b9f-8fc8-378b1c49b5f6",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Tester retrieved residents matching 'Kai Alder' via find(), identified Dir 1061 as 'Unit 120A' and explicitly distinguished it from Dir 1011 'Unit 110C' in the final answer.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:05:47.316Z",
+      "position": 1,
+      "criterion_text": "The answer is about directory code 1061 (Kai Alder, unit 120A), not 1011 (Kai Alder, unit 110C).",
+      "is_required": true
+    },
+    {
+      "id": "f7bb4ab2-6fd1-4809-82fb-4c4b3075dc2c",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "9cc081c5-73ca-477a-895f-0e700f194f7f",
+      "workflow_criterion_id": "034741b7-4cfa-4c99-8a54-50944bffbd7b",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Tester's find(devices) retrieved all four Kai Alder devices; final output correctly lists only the two with Dir 1061: 01106 (Transmitter) and 01167 (Card).",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:05:47.316Z",
+      "position": 2,
+      "criterion_text": "The answer lists exactly devices 01106 (Transmitter) and 01167 (Card).",
+      "is_required": true
+    },
+    {
+      "id": "d5fcfe95-266f-4eb3-a496-42ba097c7759",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "9cc081c5-73ca-477a-895f-0e700f194f7f",
+      "workflow_criterion_id": "68dbbaf6-ec6a-40d7-821f-de28b310cf6d",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace contains only read operations: find_systems, get_instructions, compile_site, and two find() calls; no create, delete, update, apply, apply_batch, commit_batch, undo, or…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:05:47.316Z",
+      "position": 3,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "e3ebae51-53ed-40a1-8c5d-92262e58f792",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "9cc081c5-73ca-477a-895f-0e700f194f7f",
+      "workflow_criterion_id": "dad1f424-0575-435f-853b-51cf15f0e7fa",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "All facts derive from tool results: Dir 1061/Unit 120A from residents find(), devices 01106/01167 and types from devices find(); identifying 01106 as the 'remote' is reasonable…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:05:47.316Z",
+      "position": 4,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

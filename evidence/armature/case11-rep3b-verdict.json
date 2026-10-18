@@ -1,0 +1,77 @@
+{
+  "evaluation": {
+    "id": "eb2e43c9-010c-4f28-997e-4661c31a2fc7",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "c8c7444f-2a95-5bea-b9c6-bae8618efc5a",
+    "evaluator_agent_run_id": "69dd68f2-6318-482c-9c74-418aeb8c640a",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester correctly identified Kai Brook (1031, 130C) as the device 01052 holder from database queries without making changes.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:58:26.021Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "d3ab29a2-28a5-4555-90e4-af344b28b0b7",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "eb2e43c9-010c-4f28-997e-4661c31a2fc7",
+      "workflow_criterion_id": "cd796853-6712-4b94-a91d-05df3baf692e",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Final output names \"Kai Brook (directory code 1031), Unit 130C\"; trace shows device 01052 record (span 7968eb42) lists Resident=Kai Brook, Dir=1031, and residents query (span…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:26.021Z",
+      "position": 1,
+      "criterion_text": "The answer names Kai Brook, directory code 1031, unit 130C.",
+      "is_required": true
+    },
+    {
+      "id": "a9215236-e7fa-40bd-9ccc-a80b33573253",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "eb2e43c9-010c-4f28-997e-4661c31a2fc7",
+      "workflow_criterion_id": "f964b98a-619f-4d57-aafc-9724abd9c7af",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Final output states device 01052 is \"a second card/credential\"; device record (span 7968eb42) explicitly shows Type=Card for device 01052.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:26.021Z",
+      "position": 2,
+      "criterion_text": "The answer says device 01052 is a Card.",
+      "is_required": false
+    },
+    {
+      "id": "c78d5c93-6754-4095-b4eb-a5bce039e951",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "eb2e43c9-010c-4f28-997e-4661c31a2fc7",
+      "workflow_criterion_id": "273841f5-18ef-498a-8501-73903d88e507",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace shows only find_systems (read), compile_site (read), and find calls (reads); no create/delete/update/apply/publish/undo operations present.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:26.021Z",
+      "position": 3,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "2c22cbbc-2cfd-4f91-a6f8-ff33a280b9fc",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "eb2e43c9-010c-4f28-997e-4661c31a2fc7",
+      "workflow_criterion_id": "7019e8fa-7531-4670-b5a0-6374b62e3be5",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "All three facts (Kai Brook, dir 1031, unit 130C) traced to specific tool read results from devices and residents tables; no inference or guessing beyond data.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:26.021Z",
+      "position": 4,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

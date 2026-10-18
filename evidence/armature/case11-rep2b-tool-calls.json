@@ -1,0 +1,448 @@
+{
+  "rows": [
+    {
+      "id": "30085606-65e7-4750-82eb-af7f544a26ca",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "a49c946f-9f25-5425-bc8c-59d089fe9800",
+      "agent_run_id": "329d7e58-27a4-4654-82d0-0edece6f2fcb",
+      "role": "tester",
+      "trace_event_start_id": "6ce4fc8f-52fc-42e8-ba5a-1294d43f1879",
+      "trace_event_end_id": "6ce4fc8f-52fc-42e8-ba5a-1294d43f1879",
+      "tool_name": "mcp__yc_hack__get_instructions",
+      "arguments_redacted": {
+        "keys": [],
+        "safe": {},
+        "summary": "no arguments"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [
+            "form1",
+            "residents",
+            "vendors",
+            "devices"
+          ],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1288,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:26:33.532Z",
+      "completed_at": "2026-10-18T13:26:33.994Z",
+      "duration_ms": 462,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:26:45.127Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [
+            "form1",
+            "residents",
+            "vendors",
+            "devices"
+          ],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1288,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "ab86e30d-8243-4d93-9ddb-517032fe2296",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "a49c946f-9f25-5425-bc8c-59d089fe9800",
+      "agent_run_id": "329d7e58-27a4-4654-82d0-0edece6f2fcb",
+      "role": "tester",
+      "trace_event_start_id": "1f71d587-eeca-4764-ad99-3159034f5e60",
+      "trace_event_end_id": "1f71d587-eeca-4764-ad99-3159034f5e60",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "devices",
+          "query": "01052"
+        },
+        "summary": "kind: devices, query: 01052"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "devices",
+          "count": 1,
+          "items": [
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1031",
+              "key": "01052",
+              "Type": "Card",
+              "Device #": "01052",
+              "Resident": "Kai Brook"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 154,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:26:35.454Z",
+      "completed_at": "2026-10-18T13:26:36.433Z",
+      "duration_ms": 979,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:26:45.127Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "kind": "devices",
+          "count": 1,
+          "items": [
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1031",
+              "key": "01052",
+              "Type": "Card",
+              "Device #": "01052",
+              "Resident": "Kai Brook"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 154,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "c067cc4e-5ff4-4f6d-b2b3-254204dcdec4",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "a49c946f-9f25-5425-bc8c-59d089fe9800",
+      "agent_run_id": "329d7e58-27a4-4654-82d0-0edece6f2fcb",
+      "role": "tester",
+      "trace_event_start_id": "fcf6d4fc-4e36-4af3-abc1-454ccf8af0bb",
+      "trace_event_end_id": "fcf6d4fc-4e36-4af3-abc1-454ccf8af0bb",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "residents",
+          "query": "1031"
+        },
+        "summary": "kind: residents, query: 1031"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 2,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1020",
+              "key": "1020",
+              "Notes": "Unit 119D",
+              "Phone": "555-0119",
+              "Device #": "01031",
+              "Resident": "Tia Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1031",
+              "key": "1031",
+              "Notes": "Unit 130C",
+              "Phone": "555-0130",
+              "Device #": "01051",
+              "Resident": "Kai Brook"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 386,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:26:38.241Z",
+      "completed_at": "2026-10-18T13:26:39.228Z",
+      "duration_ms": 987,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:26:45.127Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 2,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1020",
+              "key": "1020",
+              "Notes": "Unit 119D",
+              "Phone": "555-0119",
+              "Device #": "01031",
+              "Resident": "Tia Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1031",
+              "key": "1031",
+              "Notes": "Unit 130C",
+              "Phone": "555-0130",
+              "Device #": "01051",
+              "Resident": "Kai Brook"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 386,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "3ffe04ad-5c58-46cc-a0b7-70301c6cf585",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "a49c946f-9f25-5425-bc8c-59d089fe9800",
+      "agent_run_id": "329d7e58-27a4-4654-82d0-0edece6f2fcb",
+      "role": "tester",
+      "trace_event_start_id": "2e9a0030-d8b6-4b46-ac7a-f35cad6555aa",
+      "trace_event_end_id": "2e9a0030-d8b6-4b46-ac7a-f35cad6555aa",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "devices",
+          "query": "01052"
+        },
+        "summary": "kind: devices, query: 01052"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "devices",
+          "count": 1,
+          "items": [
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1031",
+              "key": "01052",
+              "Type": "Card",
+              "Device #": "01052",
+              "Resident": "Kai Brook"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 154,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:27:54.280Z",
+      "completed_at": "2026-10-18T13:27:55.273Z",
+      "duration_ms": 993,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:28:00.878Z",
+      "raw_result_body": "{\"kind\":\"devices\",\"count\":1,\"items\":[{\"key\":\"01052\",\"T\":\"C\",\"Device #\":\"01052\",\"Dir\":\"1031\",\"Resident\":\"Kai Brook\",\"Type\":\"Card\",\"SL\":\"02\"}],\"as_of_ms\":0}",
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "1ea339fa-0c21-4a9e-b1bc-7da093bbeae2",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "a49c946f-9f25-5425-bc8c-59d089fe9800",
+      "agent_run_id": "329d7e58-27a4-4654-82d0-0edece6f2fcb",
+      "role": "tester",
+      "trace_event_start_id": "65de337b-854d-4941-8e8d-f227487aa0db",
+      "trace_event_end_id": "65de337b-854d-4941-8e8d-f227487aa0db",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "residents",
+          "query": "1031"
+        },
+        "summary": "kind: residents, query: 1031"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 2,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1020",
+              "key": "1020",
+              "Notes": "Unit 119D",
+              "Phone": "555-0119",
+              "Device #": "01031",
+              "Resident": "Tia Alder"
+            },
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1031",
+              "key": "1031",
+              "Notes": "Unit 130C",
+              "Phone": "555-0130",
+              "Device #": "01051",
+              "Resident": "Kai Brook"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 386,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:27:54.633Z",
+      "completed_at": "2026-10-18T13:27:55.765Z",
+      "duration_ms": 1132,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:28:00.878Z",
+      "raw_result_body": "{\"kind\":\"residents\",\"count\":2,\"items\":[{\"key\":\"1020\",\"Resident\":\"Tia Alder\",\"Phone\":\"555-0119\",\"Dir\":\"1020\",\"SL\":\"02\",\"T\":\"T\",\"Device #\":\"01031\",\"ER\":\"1\",\"Notes\":\"Unit 119D\"},{\"key\":\"1031\",\"Resident\":\"Kai Brook\",\"Phone\":\"555-0130\",\"Dir\":\"1031\",\"SL\":\"02\",\"T\":\"T\",\"Device #\":\"01051\",\"ER\":\"1\",\"Notes\":\"Unit 130C\"}],\"as_of_ms\":0,\"note\":\"Several matches. Names are not unique, use the key.\"}",
+      "agent_role": "tester",
+      "provider_run_id": null
+    }
+  ]
+}

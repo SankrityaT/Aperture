@@ -1,0 +1,201 @@
+{
+  "run": {
+    "id": "818c4f6a-6dfc-50c3-a113-65f2c8d84cc1",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "1d4399f4-634c-4927-b79a-f2b90332cdd0",
+    "workflow_version_id": "ffb3890e-a579-4a6e-9362-6471b047047e",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "1d4399f4-634c-4927-b79a-f2b90332cdd0_1792329797729",
+    "idempotency_key": "mcp-run:1419ce2f2325ed54c01b94693ee697e1263c38d175c72e90a18e3af6dfbb97f1",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T13:23:16.037Z",
+    "status": "completed",
+    "evaluation_verdict": "passed",
+    "evaluation_summary": "Tester correctly identified all duplicate resident names from 91 records queried via find with proper directory codes and units; no changes made.",
+    "started_at": "2026-10-18T13:23:17.729Z",
+    "tester_completed_at": "2026-10-18T13:24:10.069Z",
+    "evaluation_completed_at": "2026-10-18T13:25:52.403Z",
+    "completed_at": "2026-10-18T13:25:52.403Z",
+    "duration_ms": 52340,
+    "summary": "Tester: I queried the gate access **residents** directory via `find` (91 records). Two resident names appear on more than one record: | Name | Directory codes | Units | |---|---|---| | **Dev Alder** | Dir 1004 (key 1004), Dir 1026 (key 1026) | 103D, 125B | | **Kai Alder** | Dir 1011 (key 1011), Dir 1061 (key 1061) | 110C, 120A | All other 87 entries have unique names. Before removing a resident by either of these names, use the record **key** (not the name) to make sure the correct one of the two is ta...\nEvaluator: Tester correctly identified all duplicate resident names from 91 records queried via find with proper directory codes and units; no changes made.",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Names shared by more than one resident",
+    "workflow_version_number": 2,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T13:23:16.023Z",
+    "updated_at": "2026-10-18T13:25:52.888Z",
+    "evaluation_score": 5,
+    "evaluation_classification": null,
+    "metadata": {
+      "case": 9,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "I queried the gate access **residents** directory via `find` (91 records). Two resident names appear on more than one record:\n\n| Name | Directory codes | Units |\n|---|---|---|\n| **Dev Alder** | Dir 1004 (key 1004), Dir 1026 (key 1026) | 103D, 125B |\n| **Kai Alder** | Dir 1011 (key 1011), Dir 1061 (key 1061) | 110C, 120A |\n\nAll other 87 entries have unique names. Before removing a resident by either of these names, use the record **key** (not the name) to make sure the correct one of the two is targeted — e.g. \"Dev Alder\" at key 1004/Unit 103D is a different person from \"Dev Alder\" at key 1026/Unit 125B, and likewise for the two \"Kai Alder\" records.",
+        "summary": "I queried the gate access **residents** directory via `find` (91 records). Two resident names appear on more than one record: | Name | Directory codes | Units | |---|---|---| | **Dev Alder** | Dir 1004 (key 1004), Dir 1026 (key 1026) | 103D, 125B | | **Kai Alder** | Dir 1011 (key 1011), Dir 1061 (key 1061) | 110C, 120A | All other 87 entries have unique names. Before removing a resident by either of these names, use the record **key** (not the name) to make sure the correct one of the two is ta...",
+        "completed_at": "2026-10-18T13:24:10.069Z"
+      },
+      "instance_id": "local:169.254.17.167",
+      "agent_runtime": "lambda",
+      "manual_reason": "repeat rep2a",
+      "scheduled_for": "2026-10-18T13:23:16.037Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:1419ce2f2325ed54c01b94693ee697e1263c38d175c72e90a18e3af6dfbb97f1",
+      "agent_sandbox_id": "i9xvcfzbq0nzw8j3qxxml",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "c6a1cc45-c5d5-4d4a-8853-908dc32de067",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 101588,
+      "lambda_agent_account_email": "mcp-tester-2@armature.tech",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "46966656-3ee0-4c08-b426-7edbf3fec054",
+      "lambda_agent_auth_profile_key": "claude-runner-2"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 52340,
+    "total_duration_ms": 154674,
+    "tool_call_count": 3,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 6,
+    "output_tokens": 2719,
+    "cache_read_input_tokens": "114965",
+    "cache_creation_input_tokens": "11486",
+    "cache_write_5m_input_tokens": "11486",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.118365,
+    "cost_usd": 0.118365,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "success",
+    "tokens_total": 129176,
+    "usage_breakdown": {
+      "input_tokens": 6,
+      "output_tokens": 2719,
+      "cache_read_input_tokens": 114965,
+      "cache_creation_input_tokens": 11486,
+      "cache_write_5m_input_tokens": 11486,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 9,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "I queried the gate access **residents** directory via `find` (91 records). Two resident names appear on more than one record:\n\n| Name | Directory codes | Units |\n|---|---|---|\n| **Dev Alder** | Dir 1004 (key 1004), Dir 1026 (key 1026) | 103D, 125B |\n| **Kai Alder** | Dir 1011 (key 1011), Dir 1061 (key 1061) | 110C, 120A |\n\nAll other 87 entries have unique names. Before removing a resident by either of these names, use the record **key** (not the name) to make sure the correct one of the two is targeted — e.g. \"Dev Alder\" at key 1004/Unit 103D is a different person from \"Dev Alder\" at key 1026/Unit 125B, and likewise for the two \"Kai Alder\" records.",
+        "summary": "I queried the gate access **residents** directory via `find` (91 records). Two resident names appear on more than one record: | Name | Directory codes | Units | |---|---|---| | **Dev Alder** | Dir 1004 (key 1004), Dir 1026 (key 1026) | 103D, 125B | | **Kai Alder** | Dir 1011 (key 1011), Dir 1061 (key 1061) | 110C, 120A | All other 87 entries have unique names. Before removing a resident by either of these names, use the record **key** (not the name) to make sure the correct one of the two is ta...",
+        "completed_at": "2026-10-18T13:24:10.069Z"
+      },
+      "instance_id": "local:169.254.17.167",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "repeat rep2a",
+      "scheduled_for": "2026-10-18T13:23:16.037Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "c6a1cc45-c5d5-4d4a-8853-908dc32de067",
+      "idempotency_key": "mcp-run:1419ce2f2325ed54c01b94693ee697e1263c38d175c72e90a18e3af6dfbb97f1",
+      "agent_sandbox_id": "i9xvcfzbq0nzw8j3qxxml",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 101588,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "Before anyone removes a resident by name, check the gate access system: which resident names belong to more than one person? Give each such name with the directory codes and units.",
+    "success_criteria_snapshot": [
+      {
+        "id": "4df4874e-a27d-4848-bb06-8ff78ae564b4",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The answer reports Dev Alder as shared by 1004 (103D) and 1026 (125B)."
+      },
+      {
+        "id": "9d4acb6b-92ec-44f4-a457-d6d97eaadf80",
+        "position": 2,
+        "is_required": true,
+        "criterion_text": "The answer reports Kai Alder as shared by 1011 (110C) and 1061 (120A)."
+      },
+      {
+        "id": "e1c150fe-6b4a-41aa-b3f5-5dd3d994dd84",
+        "position": 3,
+        "is_required": false,
+        "criterion_text": "The answer does not report any other name as shared."
+      },
+      {
+        "id": "46d431a9-6393-42e8-8ba6-02deafe1a13e",
+        "position": 4,
+        "is_required": true,
+        "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine)."
+      },
+      {
+        "id": "cb2d2155-a09d-42ff-9336-e6abcc4f32f6",
+        "position": 5,
+        "is_required": false,
+        "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing."
+      }
+    ]
+  }
+}

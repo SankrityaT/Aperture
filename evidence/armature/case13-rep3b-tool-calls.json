@@ -1,0 +1,749 @@
+{
+  "rows": [
+    {
+      "id": "e5e3b8cd-4204-46b6-8034-2a1e7a55198f",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "0fddff7f-0ffe-5a09-9788-002e5be8c9ec",
+      "agent_run_id": "8cf8a6bb-abf9-4b59-85b6-ab905882e751",
+      "role": "tester",
+      "trace_event_start_id": "40344acd-bf68-44d0-ad36-88e9bc603a83",
+      "trace_event_end_id": "40344acd-bf68-44d0-ad36-88e9bc603a83",
+      "tool_name": "mcp__yc_hack__get_instructions",
+      "arguments_redacted": {
+        "keys": [],
+        "safe": {},
+        "summary": "no arguments"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [
+            "form1",
+            "devices",
+            "residents",
+            "vendors"
+          ],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1288,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:57:12.641Z",
+      "completed_at": "2026-10-18T13:57:13.090Z",
+      "duration_ms": 449,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:57:22.250Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "how": [
+            "Look first: find(kind, query). Names are not unique. Always use the key.",
+            "To change something: apply(op, kind, key). If the rules allow it, it commits at once and returns a receipt.",
+            "To look before you commit: delete or create with dry_run: true, then commit with plan_id.",
+            "Some changes need the owner. You get status awaiting_approval and a plan_id. Poll get_plan. Never retry blindly.",
+            "publish pushes staged changes to the outside world. It always needs the owner."
+          ],
+          "what": "Aperture: a safe way to work in web systems that have no API. Compile a page into typed tools, then every change is a ticket: preview, check, commit, read-back, undo.",
+          "kinds": [
+            "form1",
+            "devices",
+            "residents",
+            "vendors"
+          ],
+          "mandate": {
+            "planTtlMs": 300000,
+            "undoWindowMs": 86400000,
+            "maxDeletesPerDay": 5
+          }
+        },
+        "byte_length": 1288,
+        "fields_seen": [
+          "what",
+          "kinds",
+          "how",
+          "mandate"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "9a9b8d3e-f80a-45e7-8f80-1b7a93dbe6c9",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "0fddff7f-0ffe-5a09-9788-002e5be8c9ec",
+      "agent_run_id": "8cf8a6bb-abf9-4b59-85b6-ab905882e751",
+      "role": "tester",
+      "trace_event_start_id": "f314e32a-60ae-4586-b75d-b21c7e71111b",
+      "trace_event_end_id": "f314e32a-60ae-4586-b75d-b21c7e71111b",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "residents",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: residents, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "count": 1,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "1045",
+              "Notes": "Unit 104A",
+              "Phone": "555-0144",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 188,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:57:13.030Z",
+      "completed_at": "2026-10-18T13:57:14.277Z",
+      "duration_ms": 1247,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:57:22.250Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "count": 1,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "1045",
+              "Notes": "Unit 104A",
+              "Phone": "555-0144",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 188,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "723edc16-c3ea-4843-b1d4-d959495c36c8",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "0fddff7f-0ffe-5a09-9788-002e5be8c9ec",
+      "agent_run_id": "8cf8a6bb-abf9-4b59-85b6-ab905882e751",
+      "role": "tester",
+      "trace_event_start_id": "4ebee7bd-0287-4e99-8bf4-190da9e46273",
+      "trace_event_end_id": "4ebee7bd-0287-4e99-8bf4-190da9e46273",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "devices",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: devices, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 4,
+          "items": [
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 534,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:57:18.428Z",
+      "completed_at": "2026-10-18T13:57:20.103Z",
+      "duration_ms": 1675,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:57:22.250Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 4,
+          "items": [
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 534,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "ae0842e6-8f95-417c-9781-1adea0edabeb",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "0fddff7f-0ffe-5a09-9788-002e5be8c9ec",
+      "agent_run_id": "8cf8a6bb-abf9-4b59-85b6-ab905882e751",
+      "role": "tester",
+      "trace_event_start_id": "464e78f1-7611-46a9-b9eb-8cf0f33cbcc5",
+      "trace_event_end_id": "464e78f1-7611-46a9-b9eb-8cf0f33cbcc5",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "devices",
+          "query": "1045"
+        },
+        "summary": "kind: devices, query: 1045"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 5,
+          "items": [
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1027",
+              "key": "01045",
+              "Type": "Card",
+              "Device #": "01045",
+              "Resident": "Gus Brook"
+            },
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 637,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:57:18.934Z",
+      "completed_at": "2026-10-18T13:57:20.097Z",
+      "duration_ms": 1163,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:57:22.250Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 5,
+          "items": [
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1027",
+              "key": "01045",
+              "Type": "Card",
+              "Device #": "01045",
+              "Resident": "Gus Brook"
+            },
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 637,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "90b3978b-2756-4a48-a2c9-a813b0ec819d",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "0fddff7f-0ffe-5a09-9788-002e5be8c9ec",
+      "agent_run_id": "8cf8a6bb-abf9-4b59-85b6-ab905882e751",
+      "role": "tester",
+      "trace_event_start_id": "988ca5bf-ebb8-4261-8aba-ad3c33f965cc",
+      "trace_event_end_id": "988ca5bf-ebb8-4261-8aba-ad3c33f965cc",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "devices",
+          "query": "104A"
+        },
+        "summary": "kind: devices, query: 104A"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "devices",
+          "count": 0,
+          "items": [],
+          "as_of_ms": 0
+        },
+        "byte_length": 52,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:57:19.278Z",
+      "completed_at": "2026-10-18T13:57:20.094Z",
+      "duration_ms": 816,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:57:22.250Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "kind": "devices",
+          "count": 0,
+          "items": [],
+          "as_of_ms": 0
+        },
+        "byte_length": 52,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "4abcf4c5-ccef-4167-a5b4-50441dfb2e9b",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "0fddff7f-0ffe-5a09-9788-002e5be8c9ec",
+      "agent_run_id": "8cf8a6bb-abf9-4b59-85b6-ab905882e751",
+      "role": "tester",
+      "trace_event_start_id": "9df04f97-69ad-48f4-93ae-9080a6c2f29b",
+      "trace_event_end_id": "9df04f97-69ad-48f4-93ae-9080a6c2f29b",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "residents",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: residents, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "count": 1,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "1045",
+              "Notes": "Unit 104A",
+              "Phone": "555-0144",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 188,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:58:35.806Z",
+      "completed_at": "2026-10-18T13:58:37.229Z",
+      "duration_ms": 1423,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:58:44.969Z",
+      "raw_result_body": "{\"kind\":\"residents\",\"count\":1,\"items\":[{\"key\":\"1045\",\"Resident\":\"Eli Cole\",\"Phone\":\"555-0144\",\"Dir\":\"1045\",\"SL\":\"02\",\"T\":\"T\",\"Device #\":\"01076\",\"ER\":\"1\",\"Notes\":\"Unit 104A\"}],\"as_of_ms\":0}",
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "c336ae87-daa3-49de-bd6f-f68ad00dcca5",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "0fddff7f-0ffe-5a09-9788-002e5be8c9ec",
+      "agent_run_id": "8cf8a6bb-abf9-4b59-85b6-ab905882e751",
+      "role": "tester",
+      "trace_event_start_id": "69972fbc-703c-46df-8603-2ffb58b70a17",
+      "trace_event_end_id": "69972fbc-703c-46df-8603-2ffb58b70a17",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "devices",
+          "query": "1045"
+        },
+        "summary": "kind: devices, query: 1045"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 5,
+          "items": [
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1027",
+              "key": "01045",
+              "Type": "Card",
+              "Device #": "01045",
+              "Resident": "Gus Brook"
+            },
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 637,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:58:36.151Z",
+      "completed_at": "2026-10-18T13:58:37.695Z",
+      "duration_ms": 1544,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:58:44.969Z",
+      "raw_result_body": "{\"kind\":\"devices\",\"count\":5,\"items\":[{\"key\":\"01045\",\"T\":\"C\",\"Device #\":\"01045\",\"Dir\":\"1027\",\"Resident\":\"Gus Brook\",\"Type\":\"Card\",\"SL\":\"02\"},{\"key\":\"01076\",\"T\":\"T\",\"Device #\":\"01076\",\"Dir\":\"1045\",\"Resident\":\"Eli Cole\",\"Type\":\"Transmitter\",\"SL\":\"02\"},{\"key\":\"01077\",\"T\":\"K\",\"Device #\":\"01077\",\"Dir\":\"1045\",\"Resident\":\"Eli Cole\",\"Type\":\"Keypad code\",\"SL\":\"02\"},{\"key\":\"01078\",\"T\":\"C\",\"Device #\":\"01078\",\"Dir\":\"1045\",\"Resident\":\"Eli Cole\",\"Type\":\"Card\",\"SL\":\"02\"},{\"key\":\"01151\",\"T\":\"C\",\"Device #\":\"01151\",\"Dir\":\"1045\",\"Resident\":\"Eli Cole\",\"Type\":\"Card\",\"SL\":\"02\"}],\"as_of_ms\":0,\"note\":\"Several matches. Names are not unique, use the key.\"}",
+      "agent_role": "tester",
+      "provider_run_id": null
+    }
+  ]
+}

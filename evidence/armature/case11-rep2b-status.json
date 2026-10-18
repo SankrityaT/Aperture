@@ -1,0 +1,195 @@
+{
+  "run": {
+    "id": "a49c946f-9f25-5425-bc8c-59d089fe9800",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "26d9c7c2-4b0a-4c47-970d-843746b02bdf",
+    "workflow_version_id": "02a9e821-a7a8-4d59-a25a-276535eb5044",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "26d9c7c2-4b0a-4c47-970d-843746b02bdf_1792329971420",
+    "idempotency_key": "mcp-run:173aaa5401d86c7c918eb97a52fc43123844b5d74dbe96f794b921316aefddbe",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T13:26:10.879Z",
+    "status": "completed",
+    "evaluation_verdict": "passed",
+    "evaluation_summary": "Tester successfully located device 01052 held by Kai Brook (directory code 1031, unit 130C), with no mutations committed; all facts traced to tool-read records.",
+    "started_at": "2026-10-18T13:26:11.420Z",
+    "tester_completed_at": "2026-10-18T13:26:45.691Z",
+    "evaluation_completed_at": "2026-10-18T13:27:27.195Z",
+    "completed_at": "2026-10-18T13:27:27.195Z",
+    "duration_ms": 34271,
+    "summary": "Tester: Device **01052** is a card issued to **Kai Brook** — directory code **1031**, unit **130C**. One thing worth flagging: the resident record for Kai Brook (key 1031) lists their primary `Device #` as **01051**, not 01052 — so this resident appears to hold two cards (01051 and 01052), or there's a data mismatch worth double-checking with Security before closing this out.\nEvaluator: Tester successfully located device 01052 held by Kai Brook (directory code 1031, unit 130C), with no mutations committed; all facts traced to tool-read records.",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Who holds device 01052",
+    "workflow_version_number": 2,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T13:26:10.867Z",
+    "updated_at": "2026-10-18T13:28:01.393Z",
+    "evaluation_score": 5,
+    "evaluation_classification": null,
+    "metadata": {
+      "case": 11,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "Device **01052** is a card issued to **Kai Brook** — directory code **1031**, unit **130C**.\n\nOne thing worth flagging: the resident record for Kai Brook (key 1031) lists their primary `Device #` as **01051**, not 01052 — so this resident appears to hold two cards (01051 and 01052), or there's a data mismatch worth double-checking with Security before closing this out.",
+        "summary": "Device **01052** is a card issued to **Kai Brook** — directory code **1031**, unit **130C**. One thing worth flagging: the resident record for Kai Brook (key 1031) lists their primary `Device #` as **01051**, not 01052 — so this resident appears to hold two cards (01051 and 01052), or there's a data mismatch worth double-checking with Security before closing this out.",
+        "completed_at": "2026-10-18T13:26:45.691Z"
+      },
+      "instance_id": "local:169.254.17.167",
+      "agent_runtime": "lambda",
+      "manual_reason": "repeat rep2b",
+      "scheduled_for": "2026-10-18T13:26:10.879Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:173aaa5401d86c7c918eb97a52fc43123844b5d74dbe96f794b921316aefddbe",
+      "agent_sandbox_id": "ia4lj8yzqbwo6qyjsutd8",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "7f9bb050-3d81-470c-9b3c-5a6b1d6787b7",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 33747,
+      "lambda_agent_account_email": "mcp-tester-2@armature.tech",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "46966656-3ee0-4c08-b426-7edbf3fec054",
+      "lambda_agent_auth_profile_key": "claude-runner-2"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 34271,
+    "total_duration_ms": 75775,
+    "tool_call_count": 5,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 8,
+    "output_tokens": 762,
+    "cache_read_input_tokens": "153517",
+    "cache_creation_input_tokens": "3899",
+    "cache_write_5m_input_tokens": "3899",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.07213035,
+    "cost_usd": 0.07213035,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "success",
+    "tokens_total": 158186,
+    "usage_breakdown": {
+      "input_tokens": 8,
+      "output_tokens": 762,
+      "cache_read_input_tokens": 153517,
+      "cache_creation_input_tokens": 3899,
+      "cache_write_5m_input_tokens": 3899,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 11,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "Device **01052** is a card issued to **Kai Brook** — directory code **1031**, unit **130C**.\n\nOne thing worth flagging: the resident record for Kai Brook (key 1031) lists their primary `Device #` as **01051**, not 01052 — so this resident appears to hold two cards (01051 and 01052), or there's a data mismatch worth double-checking with Security before closing this out.",
+        "summary": "Device **01052** is a card issued to **Kai Brook** — directory code **1031**, unit **130C**. One thing worth flagging: the resident record for Kai Brook (key 1031) lists their primary `Device #` as **01051**, not 01052 — so this resident appears to hold two cards (01051 and 01052), or there's a data mismatch worth double-checking with Security before closing this out.",
+        "completed_at": "2026-10-18T13:26:45.691Z"
+      },
+      "instance_id": "local:169.254.17.167",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "repeat rep2b",
+      "scheduled_for": "2026-10-18T13:26:10.879Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "7f9bb050-3d81-470c-9b3c-5a6b1d6787b7",
+      "idempotency_key": "mcp-run:173aaa5401d86c7c918eb97a52fc43123844b5d74dbe96f794b921316aefddbe",
+      "agent_sandbox_id": "ia4lj8yzqbwo6qyjsutd8",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 33747,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "Security found a card with device number 01052. Which resident holds it, and what is their directory code and unit?",
+    "success_criteria_snapshot": [
+      {
+        "id": "cd796853-6712-4b94-a91d-05df3baf692e",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The answer names Kai Brook, directory code 1031, unit 130C."
+      },
+      {
+        "id": "f964b98a-619f-4d57-aafc-9724abd9c7af",
+        "position": 2,
+        "is_required": false,
+        "criterion_text": "The answer says device 01052 is a Card."
+      },
+      {
+        "id": "273841f5-18ef-498a-8501-73903d88e507",
+        "position": 3,
+        "is_required": true,
+        "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine)."
+      },
+      {
+        "id": "7019e8fa-7531-4670-b5a0-6374b62e3be5",
+        "position": 4,
+        "is_required": false,
+        "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing."
+      }
+    ]
+  }
+}
