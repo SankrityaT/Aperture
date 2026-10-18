@@ -62,6 +62,16 @@ const thisPageTables = (all: TableModel[], pageUrl: string) => {
   const others = all.filter((x) => !here.includes(x)).map((x) => x.id);
   return { tables: here.map(tableView), ...(others.length ? { also_compiled_and_still_live: others } : {}) };
 };
+/** Some systems record a change in one place and only make it live when a separate step is pressed ("Send Data", "Sync"). We never press it for the agent, so a receipt must not read as "live". */
+const sendStep = async (): Promise<string | null> => {
+  try { const s = await forms.summary(); return s.forms.map((f) => f.submit).filter((x): x is string => !!x).find((x) => /\b(send|sync|upload|push|transmit)\b/i.test(x)) ?? null; } catch { return null; }
+};
+const replyWrite = async (obj: Record<string, unknown>) => {
+  const wrote = typeof obj.receipt === "string" || (typeof obj.committed === "number" && obj.committed > 0);
+  if (!wrote) return reply(obj);
+  const step = await sendStep();
+  return reply(step ? { ...obj, not_yet_live: `Recorded in this system. It also has a separate step ('${step}') that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner.` } : obj);
+};
 const reply = (obj: Record<string, unknown>) => ({
   content: [{ type: "text" as const, text: JSON.stringify(obj) }],
   structuredContent: obj,
@@ -96,7 +106,7 @@ server.tool(
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, key, dry_run, plan_id }) => {
-    if (plan_id) return reply(wicket.present(await wicket.commit(plan_id)));
+    if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "delete", kind, key });
     return reply(wicket.present(plan));
   },
@@ -110,7 +120,7 @@ server.tool(
     annotations: { destructiveHint: false, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, record, plan_id }) => {
-    if (plan_id) return reply(wicket.present(await wicket.commit(plan_id)));
+    if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "create", kind, record: record as Op["record"] });
     return reply(wicket.present(plan));
   },
@@ -207,7 +217,7 @@ server.tool(
     inputSchema: opSchema,
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async (args) => reply(await wicket.apply(args as Op)),
+  async (args) => replyWrite((await wicket.apply(args as Op)) as Record<string, unknown>),
 );
 
 server.tool(
@@ -217,7 +227,7 @@ server.tool(
     inputSchema: z.object({ ops: z.array(opSchema).min(1).max(50), stop_on_failure: z.boolean().optional(), dry_run: z.boolean().optional().describe("Change nothing. Returns the total blast radius: everything that would be removed, dependents included."), canary: z.number().int().min(1).max(10).optional().describe("Commit only the first N, check they did exactly what was predicted, and halt the rest if any surprised or failed.") }),
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async ({ ops, stop_on_failure, dry_run, canary }) => reply(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary })),
+  async ({ ops, stop_on_failure, dry_run, canary }) => replyWrite(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary })),
 );
 
 server.tool(
@@ -227,7 +237,7 @@ server.tool(
     inputSchema: z.object({ plan_ids: z.array(z.string()).min(1).max(50), canary: z.number().int().min(1).max(10).optional() }),
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async ({ plan_ids, canary }) => reply(await wicket.commitBatch(plan_ids, canary ?? 1)),
+  async ({ plan_ids, canary }) => replyWrite(await wicket.commitBatch(plan_ids, canary ?? 1)),
 );
 
 // ---- shared profiles: what one agent learned about a system, for the next agent ----

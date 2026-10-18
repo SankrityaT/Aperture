@@ -71,7 +71,7 @@ await own("/owner/demo", { action: "reset" });
 await own("/owner/dependency", { kind: "residents", cascade_kind: "devices", by: "Dir" });
 await own("/owner/delegate", { kinds: ["residents", "devices"], ops: ["delete"], limit: 3, hours: 1 });
 const sys = await tool("find_systems", { need: "remove a resident and their gate devices" });
-check("discovery finds both gate-portal pages", (sys.data.matches ?? []).filter((m: any) => String(m.address).includes(":9104")).length >= 2);
+check("discovery finds both GateAdmin pages and says how to sign in", (sys.data.matches ?? []).filter((m: any) => String(m.address).includes(":9105") && /REPLICA/.test(String(m.sign_in ?? ""))).length >= 2);
 const cr = await tool("compile_site", { url: "http://127.0.0.1:9104/Residents.aspx" });
 const cd = await tool("compile_site", { url: "http://127.0.0.1:9104/Devices.aspx" });
 const bothKinds = [cr.data.tables?.[0]?.id, cd.data.tables?.[0]?.id];
