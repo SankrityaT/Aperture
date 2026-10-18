@@ -275,8 +275,10 @@ export class Wicket {
       return this.r(refuse("policy_denied", "Daily delete limit reached.", ["escalate(reason) to ask the owner for more"]));
     }
 
-    const before = await this.adapter.counts(op.kind);
-    const fullBefore = plan.confirmed || op.op === "publish" ? null : await this.adapter.exportAll(op.kind);
+    // A canary looks at every compiled table, so a cascade into another table is seen. Ordinary commits look only at their own.
+    const scope = this.careful ? undefined : op.kind;
+    const before = await this.adapter.counts(scope);
+    const fullBefore = (plan.confirmed && !this.careful) || op.op === "publish" ? null : await this.adapter.exportAll(scope);
     const snapshot: Snapshotted[] = op.op === "delete" && plan.subject && op.kind ? [{ kind: op.kind, record: plan.subject }, ...plan.dependents] : [];
     if (op.op === "update" && op.kind && op.key && op.patch && plan.subject) {
       // Only the fields we are about to change need saving.
@@ -296,7 +298,7 @@ export class Wicket {
     this.invalidate();
 
     // Read back and compare with the prediction.
-    const after = await this.adapter.counts(op.kind);
+    const after = await this.adapter.counts(scope);
     const actual: Delta = {};
     for (const k of Object.keys(after)) if ((after[k] ?? 0) !== (before[k] ?? 0)) actual[k] = (after[k] ?? 0) - (before[k] ?? 0);
     const predicted = Object.fromEntries(Object.entries(plan.expectedDelta).filter(([, n]) => n !== 0));
@@ -326,7 +328,7 @@ export class Wicket {
 
     // A surprise becomes a rule, and everything it removed is saved so undo can restore it.
     if (surprises.length && fullBefore && op.kind && op.key && op.op === "delete") {
-      const fullAfter = await this.adapter.exportAll(op.kind);
+      const fullAfter = await this.adapter.exportAll(scope);
       for (const s of surprises) {
         if (s.delta >= 0) continue;
         const gone = (fullBefore[s.kind] ?? []).filter((r) => !(fullAfter[s.kind] ?? []).some((x) => x.key === r.key));
@@ -338,6 +340,7 @@ export class Wicket {
       }
       this.metrics.surprises++;
     } else if (surprises.length) {
+      verified.restorable = false;
       this.metrics.surprises++;
       if (op.kind && op.op !== "publish") this.rules.learn(op.kind, op.op, { kind: surprises[0]!.kind, by: "unknown" });
     }
@@ -369,30 +372,75 @@ export class Wicket {
     return this.present(res);
   }
 
-  async applyBatch(ops: Op[], stopOnFailure = true): Promise<Record<string, unknown>> {
+  /**
+   * Many changes, safely. Two optional modes:
+   *  - dryRun: change nothing; return the total blast radius (everything that would go, dependents included).
+   *  - canary: commit only the first N, check each did exactly what was predicted, and halt the rest if any surprised or failed.
+   */
+  /**
+   * Commit plans the owner already approved, in order. The first `canary` run carefully (every compiled table is compared);
+   * if any of them does not do exactly what was predicted, the rest are not touched.
+   */
+  async commitBatch(planIds: string[], canary = 1): Promise<Record<string, unknown>> {
     this.metrics.calls++;
+    const committed: unknown[] = []; const refused: unknown[] = [];
+    let halted: Record<string, unknown> | null = null; let notAttempted = 0;
+    for (let i = 0; i < planIds.length; i++) {
+      if (halted) { notAttempted++; continue; }
+      this.careful = i < canary;
+      const rc = await this.commit(planIds[i]!).finally(() => { this.careful = false; });
+      if (isRefusal(rc)) { refused.push({ i, plan_id: planIds[i], error: rc.error, detail: rc.detail, next: rc.next }); if (i < canary) halted = { at: i, why: `The canary could not run: ${rc.error}.` }; continue; }
+      const out = this.present(rc as Receipt);
+      committed.push({ i, ...out });
+      if (i < canary && out.status !== "done") halted = { at: i, receipt: out.receipt, status: out.status, surprise: out.surprise ?? null, why: "A canary item did not do exactly what was predicted, so the rest was not attempted. Undo it with the receipt, or approve the surprise and run the rest." };
+    }
+    return { status: halted ? "halted_by_canary" : "batch_done", committed: committed.length, refused: refused.length, not_attempted: notAttempted, ...(halted ? { canary_halt: halted } : {}), items: { committed, refused } };
+  }
+
+  /** True while a canary item runs: take the full copy even when the rule is confirmed, so any surprise can be undone. */
+  private careful = false;
+
+  async applyBatch(ops: Op[], stopOnFailure = true, opts: { canary?: number; dryRun?: boolean } = {}): Promise<Record<string, unknown>> {
+    this.metrics.calls++;
+    if (opts.dryRun) {
+      const total: Delta = {}; const items: unknown[] = []; const refused: unknown[] = []; let needOwner = 0;
+      for (let i = 0; i < ops.length; i++) {
+        const op = ops[i]!;
+        const plan = await this.preview(op, i);
+        if (isRefusal(plan)) { refused.push({ i, op: op.op, kind: op.kind, key: op.key, error: plan.error, detail: plan.detail }); continue; }
+        for (const [k, n] of Object.entries(plan.expectedDelta)) addDelta(total, k, n);
+        if (plan.needsApproval) needOwner++;
+        items.push({ i, op: op.op, kind: op.kind, key: op.key, diff: plan.diff, needs_owner: plan.needsApproval, ...(plan.reasons.length ? { why: plan.reasons } : {}) });
+      }
+      const removed = Object.fromEntries(Object.entries(total).filter(([, n]) => n < 0).map(([k, n]) => [k, -n]));
+      return { status: "blast_radius", changed_nothing: true, would_remove: removed, would_add: Object.fromEntries(Object.entries(total).filter(([, n]) => n > 0)), needs_owner: needOwner, refused: refused.length, items, refused_items: refused, next: ["run apply_batch again with canary: 1 to try the first item and check it did what was predicted", "show the owner would_remove before approving anything"] };
+    }
+    const canary = opts.canary && opts.canary > 0 ? Math.min(opts.canary, ops.length) : 0;
+    let canaryTried = 0, halted: Record<string, unknown> | null = null;
     const committed: unknown[] = [], awaiting: unknown[] = [], refused: unknown[] = [];
     let notAttempted = 0;
     let stop = false;
     let batchDeletes = 0;
     for (let i = 0; i < ops.length; i++) {
       const op = ops[i]!;
-      if (stop) { notAttempted++; continue; }
-      const out = await this.apply(op, batchDeletes);
+      if (stop || halted) { notAttempted++; continue; }
+      this.careful = canary > 0 && canaryTried < canary;
+      const out = await this.apply(op, batchDeletes).finally(() => { this.careful = false; });
       const tag = { i, op: op.op, kind: op.kind, key: op.key ?? op.record?.key };
       if (isRefusal(out)) { refused.push({ ...tag, error: out.error, detail: out.detail, next: out.next }); continue; }
       if (out.status === "awaiting_approval") { awaiting.push({ ...tag, plan_id: out.plan_id, why: out.reasons }); continue; }
-      if (out.status === "failed" || out.status === "done_with_surprise") { committed.push({ ...tag, receipt: out.receipt, status: out.status }); if (stopOnFailure && out.status === "failed") stop = true; if (op.op === "delete") batchDeletes += 0; continue; }
+      if (out.status === "failed" || out.status === "done_with_surprise") { committed.push({ ...tag, receipt: out.receipt, status: out.status }); if (stopOnFailure && out.status === "failed") stop = true; if (canary && canaryTried < canary) halted = { at: i, receipt: out.receipt, status: out.status, surprise: out.surprise ?? null, why: "A canary item did not do exactly what was predicted, so the rest was not attempted. Undo it with the receipt, or approve the surprise and run the rest." }; canaryTried++; continue; }
       committed.push({ ...tag, receipt: out.receipt });
+      if (canary) canaryTried++;
     }
-    return { status: "batch_done", committed: committed.length, awaiting_approval: awaiting.length, refused: refused.length, not_attempted: notAttempted, items: { committed, awaiting, refused }, next: awaiting.length ? ["ask the owner about awaiting items; they are listed with plan_id"] : [] };
+    return { status: halted ? "halted_by_canary" : "batch_done", committed: committed.length, awaiting_approval: awaiting.length, refused: refused.length, not_attempted: notAttempted, ...(halted ? { canary_halt: halted } : {}), items: { committed, awaiting, refused }, next: awaiting.length ? ["ask the owner about awaiting items; they are listed with plan_id"] : [] };
   }
 
   /** Short, agent-friendly view of a receipt. */
   present(x: Receipt | Refusal | Plan): Record<string, unknown> {
     if (isRefusal(x)) return x;
     if ("planId" in x) {
-      return { status: x.status, receipt: x.id, verified: x.verified, undo_until: new Date(x.undoUntil).toISOString(), ...(x.surprise ? { surprise: x.surprise, note: "The system did more than predicted. The rule was learned and everything removed is saved, so undo restores it." } : {}), ...(x.op.op === "publish" ? { note: "Published. This cannot be recalled." } : {}) };
+      return { status: x.status, receipt: x.id, verified: x.verified, undo_until: new Date(x.undoUntil).toISOString(), ...(x.surprise ? { surprise: x.surprise, note: x.verified?.restorable === false ? "The system did more than predicted and the extra items were NOT saved, so undo restores only the item you named. The rule was learned: the next one takes a full copy first. Use canary on batches." : "The system did more than predicted. The rule was learned and everything removed is saved, so undo restores it." } : {}), ...(x.op.op === "publish" ? { note: "Published. This cannot be recalled." } : {}) };
     }
     return { status: x.status, plan_id: x.id, diff: x.diff };
   }

@@ -29,7 +29,7 @@ seedRules();
 // Where the browser lives. With WICKET_WORKER_URL set, it runs on another machine (an InstaBox desktop) and this
 // server just calls it. Without it, the browser is in this process, which is how local development and the tests run.
 interface FormsApi extends Adapter { compile(url: string): Promise<CompileSummary>; signIn(url: string, secret: string): Promise<{ signedIn: boolean; detail: string }>; open(url: string): Promise<void>; refresh(): Promise<CompileSummary>; summary(): CompileSummary | Promise<CompileSummary> }
-interface TablesApi extends Adapter { attach(): Promise<TableModel[]> }
+interface TablesApi extends Adapter { attach(): Promise<TableModel[]>; summary(): TableModel[] | Promise<TableModel[]> }
 let forms: FormsApi;
 let tables: TablesApi;
 let worker: RemoteWorker | null = null;
@@ -196,11 +196,63 @@ server.tool(
   {
     name: "apply_batch",
     description: "Apply many changes in one call. Everything inside the rules commits. Items that need the owner are listed with plan_ids. Refusals are listed with next moves. Stops at the first failed commit. Returns one summary, so you do not need many round trips.",
-    inputSchema: z.object({ ops: z.array(opSchema).min(1).max(50), stop_on_failure: z.boolean().optional() }),
+    inputSchema: z.object({ ops: z.array(opSchema).min(1).max(50), stop_on_failure: z.boolean().optional(), dry_run: z.boolean().optional().describe("Change nothing. Returns the total blast radius: everything that would be removed, dependents included."), canary: z.number().int().min(1).max(10).optional().describe("Commit only the first N, check they did exactly what was predicted, and halt the rest if any surprised or failed.") }),
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async ({ ops, stop_on_failure }) => reply(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true)),
+  async ({ ops, stop_on_failure, dry_run, canary }) => reply(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary })),
 );
+
+server.tool(
+  {
+    name: "commit_batch",
+    description: "Commit several plans the owner has approved, in order. The first `canary` ones run carefully and are checked against the prediction; if any surprises, the rest are not touched and you get the receipt to undo.",
+    inputSchema: z.object({ plan_ids: z.array(z.string()).min(1).max(50), canary: z.number().int().min(1).max(10).optional() }),
+    annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
+  },
+  async ({ plan_ids, canary }) => reply(await wicket.commitBatch(plan_ids, canary ?? 1)),
+);
+
+// ---- shared profiles: what one agent learned about a system, for the next agent ----
+// Structure and learned rules only. Never records, never credentials. Held in memory: a restart empties it.
+
+interface Profile { site: string; shared_at: string; tables: ReturnType<typeof tableView>[]; rules: { kind: string; op: string; cascades: { kind: string; by: string }[]; vouched: boolean }[] }
+const registry = new Map<string, Profile>();
+const siteKey = (s: string) => { try { return new URL(s.includes("://") ? s : `http://${s}`).host.toLowerCase(); } catch { return s.toLowerCase(); } };
+
+server.tool(
+  {
+    name: "share_profile",
+    description: "Publish what you learned about the system you compiled, for other agents: its tables, keys, and the dependents you saw when deletes did more than predicted. Structure and rules only; no records, no logins. Other agents load it with use_profile.",
+    inputSchema: z.object({ site: z.string().describe("The site's host, like crm.example.com. It is the profile's name.") }),
+    annotations: { destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  async ({ site }) => {
+    const t = await tables.summary();
+    if (!t.length) return reply({ status: "refused", error: "nothing_compiled", detail: "No tables are compiled yet, so there is nothing to share.", next: ["compile_site first"] });
+    const kinds = new Set(t.map((x) => x.id));
+    const rules = wicket.rules.exportRules().filter((r) => kinds.has(r.kind) && (r.cascades.length || r.vouched));
+    const profile: Profile = { site: siteKey(site), shared_at: new Date().toISOString(), tables: t.map(tableView), rules };
+    registry.set(profile.site, profile);
+    return reply({ status: "shared", site: profile.site, tables: profile.tables.length, rules: rules.length, next: ["another agent can call use_profile with this site", "open /registry to see all shared profiles"] });
+  },
+);
+
+server.tool(
+  {
+    name: "use_profile",
+    description: "Load what another agent learned about a system. You still compile the page yourself (that takes a second). What you gain is the dependents it saw: your previews and dry runs now predict them. Nothing is trusted blindly: your first real delete still asks the owner and takes a full copy, then confirms the rule itself.",
+    inputSchema: z.object({ site: z.string() }),
+    annotations: { readOnlyHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  async ({ site }) => {
+    const p = registry.get(siteKey(site));
+    if (!p) return reply({ status: "refused", error: "no_profile", detail: `Nobody has shared a profile for ${siteKey(site)}.`, known_sites: [...registry.keys()], next: ["compile_site yourself, then share_profile so the next agent has it"] });
+    const learned = wicket.rules.importRules(p.rules.map((r) => ({ kind: r.kind, op: r.op as "delete" | "create" | "update", cascades: r.cascades })));
+    return reply({ status: "loaded", site: p.site, shared_at: p.shared_at, dependents_learned: learned, tables_described: p.tables.map((x) => x.id), trust: "Your first delete here still asks the owner and takes a full copy. Rules become confirmed only by your own matching run." });
+  },
+);
+
+server.get("/registry", (c) => c.json({ note: "Shared profiles: structure and learned rules only. In memory; a restart empties it.", profiles: [...registry.values()] }));
 
 server.tool(
   {

@@ -54,6 +54,30 @@ export class RuleBook {
     this.confirmed.delete(id);
   }
 
+  /** What a second agent can learn from this one: the dependents we saw, and whether a real run ever matched the prediction. */
+  exportRules(): { kind: Kind; op: OpKey; cascades: Cascade[]; vouched: boolean }[] {
+    const ids = new Set([...this.cascades.keys(), ...this.confirmed]);
+    return [...ids].sort().map((id) => {
+      const [kind, op] = id.split(":") as [Kind, OpKey];
+      return { kind, op, cascades: this.cascades.get(id) ?? [], vouched: this.confirmed.has(id) };
+    });
+  }
+
+  /**
+   * Take another agent's rules. The dependents are believed (so previews and dry runs predict them), but nothing becomes
+   * confirmed here: the first real run on this side still asks the owner and takes a full copy, then confirms it itself.
+   */
+  importRules(rules: { kind: Kind; op: OpKey; cascades: Cascade[] }[]): number {
+    let n = 0;
+    for (const r of rules) {
+      const id = RuleBook.id(r.kind, r.op);
+      const list = this.cascades.get(id) ?? [];
+      for (const c of r.cascades) if (!list.some((x) => x.kind === c.kind && x.by === c.by)) { list.push(c); n++; }
+      this.cascades.set(id, list);
+    }
+    return n;
+  }
+
   describe(): { rule: string; cascades: string[]; confirmed: boolean }[] {
     const ids = new Set([...this.cascades.keys(), ...this.confirmed]);
     return [...ids].sort().map((id) => ({

@@ -150,3 +150,58 @@ test("preview is fast when it can use the cache", async () => {
   await w.find("student", "S01");
   assert.ok(performance.now() - t < 20, "second find should come from the cache");
 });
+
+test("dry run shows the total blast radius and changes nothing", async () => {
+  const { w, adapter } = make();
+  const before = await adapter.counts();
+  const r = (await w.applyBatch([{ op: "delete", kind: "student", key: "S001" }, { op: "delete", kind: "student", key: "S002" }], true, { dryRun: true })) as { status: string; changed_nothing: boolean; would_remove: Record<string, number>; items: unknown[] };
+  assert.equal(r.status, "blast_radius");
+  assert.equal(r.changed_nothing, true);
+  assert.equal(r.would_remove.student, 2);
+  assert.equal(r.items.length, 2);
+  assert.deepEqual(await adapter.counts(), before);
+});
+
+test("a canary that does exactly what was predicted lets the rest of the batch run", async () => {
+  const { w, adapter } = make();
+  const before = (await adapter.counts()).student!;
+  const r = (await w.applyBatch([{ op: "delete", kind: "student", key: "S001" }, { op: "delete", kind: "student", key: "S002" }, { op: "delete", kind: "student", key: "S003" }], true, { canary: 1 })) as { status: string; committed: number; not_attempted: number };
+  assert.equal(r.status, "batch_done");
+  assert.equal(r.committed, 3);
+  assert.equal((await adapter.counts()).student, before - 3);
+});
+
+test("a canary that surprises halts the rest, and one undo restores it", async () => {
+  const { w, adapter } = make();
+  w.rules.set("class", "delete", [], true); // confirmed, but wrongly: it has a hidden dependent
+  const before = await adapter.counts();
+  const r = (await w.applyBatch([{ op: "delete", kind: "class", key: "C101" }, { op: "delete", kind: "student", key: "S001" }, { op: "delete", kind: "student", key: "S002" }], true, { canary: 1 })) as { status: string; committed: number; not_attempted: number; canary_halt?: { receipt: string } };
+  assert.equal(r.status, "halted_by_canary");
+  assert.equal(r.not_attempted, 2);
+  assert.equal((await adapter.counts()).student, before.student);
+  const u = (await w.undo(r.canary_halt!.receipt)) as { status: string };
+  assert.equal(u.status, "undone");
+  assert.deepEqual(await adapter.counts(), before);
+});
+
+test("a second agent loads what the first learned: its dry run predicts the hidden dependent, and still asks the owner", async () => {
+  // Agent A starts with no rule for classes, deletes one, and is surprised by the timetable rows.
+  const a = new Wicket(new FakeSchool(), { rules: new RuleBook() });
+  const first = (await a.apply({ op: "delete", kind: "class", key: "C101" })) as { plan_id: string };
+  a.approve(first.plan_id);
+  await a.commit(first.plan_id);
+  const shared = a.rules.exportRules().filter((r) => r.kind === "class");
+  assert.ok(shared.some((r) => r.cascades.some((c) => c.kind === "timetable")));
+
+  // Agent B is brand new. Before loading: it predicts only the class.
+  const b = new Wicket(new FakeSchool(), { rules: new RuleBook() });
+  const blind = (await b.applyBatch([{ op: "delete", kind: "class", key: "C102" }], true, { dryRun: true })) as { would_remove: Record<string, number> };
+  assert.equal(blind.would_remove.timetable, undefined);
+
+  // After loading: the dry run sees the timetable rows, but nothing is trusted yet.
+  assert.ok(b.rules.importRules(shared) > 0);
+  const seen = (await b.applyBatch([{ op: "delete", kind: "class", key: "C102" }], true, { dryRun: true })) as { would_remove: Record<string, number>; needs_owner: number };
+  assert.ok((seen.would_remove.timetable ?? 0) > 0);
+  assert.equal(seen.needs_owner, 1);
+  assert.equal(b.rules.isConfirmed("class", "delete"), false);
+});

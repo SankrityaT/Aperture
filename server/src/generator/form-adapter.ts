@@ -148,6 +148,17 @@ export class FormAdapter implements Adapter {
     if (this.page) return this.page;
     let chromium;
     try { ({ chromium } = await import("playwright-core")); } catch { throw new NoBrowser("No browser library is available on this server."); }
+    if (process.env.WICKET_CDP_URL) {
+      // Attach to a browser a person already signed in to (MFA and all). Wicket never sees the password; it reuses the session.
+      try {
+        this.browser = await chromium.connectOverCDP(process.env.WICKET_CDP_URL);
+        const ctx = this.browser.contexts()[0] ?? (await this.browser.newContext());
+        this.page = ctx.pages().find((p) => !p.url().startsWith("chrome://")) ?? (await ctx.newPage());
+        return this.page;
+      } catch (e) {
+        throw new NoBrowser(`Could not attach to the signed-in browser (${String((e as Error).message).split("\n")[0]}).`);
+      }
+    }
     try {
       // WICKET_HEADED=1 opens a visible window and WICKET_SLOWMO=<ms> slows every action, so a person can watch what it does.
       this.browser = await chromium.launch({ headless: process.env.WICKET_HEADED !== "1", slowMo: Number(process.env.WICKET_SLOWMO ?? 0), ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
