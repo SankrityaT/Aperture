@@ -26,6 +26,17 @@ Say what is real and what is not. The live system is a real open-source app we h
 The real DoorKing job was done earlier with a plain browser agent, before Wicket existed. Never claim otherwise.
 Never put real names, resident data, or credentials in the repo, the demo, or any public page.
 
+## Decisions (Oct 17, after mentor feedback)
+- Mentor feedback: loved legacy-to-MCP. Worried the preview step is slow. Sold if the tool queue is fast.
+- No throwaway sandbox copies in v1. Everything is on demand. Compile = a quick read-only exploration in one
+  logged-in session, cached per system.
+- Preview is computed from a cache plus learned rules, in milliseconds, once per action. The commit re-reads the
+  record and compares. Writes go through a per-system queue, one at a time. Reads skip the queue.
+- Predicted versus actual on every commit. A surprise becomes a learned rule and the next similar action asks first.
+- Throwaway copies and vendor test environments are an optional later tier, not v1 and not in the demo.
+- Latency budget (targets, to be measured): find and dry-run under 300 ms from cache, queue ack under 100 ms.
+- Prefer direct form posts over browser clicks where the system allows it (spike on Gibbon).
+
 ## Split
 - Kinjal: the system under test. Gibbon on an InstaBox machine, seeded with fake data, resettable.
 - Sanki: the product. Manufact MCP server, ticket engine, rules, owner page.
