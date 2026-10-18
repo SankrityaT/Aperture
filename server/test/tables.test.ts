@@ -196,3 +196,26 @@ test("agents call tools in parallel: simultaneous reads and deletes on one page 
     assert.equal(g.state.residents.length, 90);
   } finally { await fa2.close(); await g.close(); }
 });
+
+test("a WordPress-shaped list: hidden rows are not records, row menus are not part of the key, and an off-screen Delete still works", async () => {
+  const { createServer } = await import("node:http");
+  let users = ["ann", "bob", "cy", "dee", "eli"];
+  const page = () => `<!doctype html><title>Users</title><style>.row-actions{position:absolute;left:-9999em}.screen-reader-text{position:absolute;clip:rect(1px,1px,1px,1px)}</style>
+<table class="wp-list-table"><thead><tr><td><input type="checkbox"></td><th>Username</th><th>Email</th></tr></thead><tbody>
+${users.map((u, i) => `<tr><th><input type="checkbox"></th><td><strong><a href="/edit?user=${i}">${u}</a></strong><br><div class="row-actions"><span><a href="/edit?user=${i}">Edit</a> | </span><span><a href="/del?user=${i}&n=${u}">Delete</a></span></div><button class="toggle-row"><span class="screen-reader-text">Show more details</span></button></td><td>${u}@x.test</td></tr>`).join("")}
+<tr id="inline-edit" style="display:none"><td colspan="3"><input type="text" name="u"></td></tr></tbody>
+<tfoot><tr><td><input type="checkbox"></td><th>Username</th><th>Email</th></tr></tfoot></table>`;
+  const srv = createServer((req, res) => { const u = new URL(req.url!, "http://x"); if (u.pathname === "/del") users = users.filter((x) => x !== u.searchParams.get("n")); res.setHeader("content-type", "text/html"); res.end(page()); });
+  await new Promise<void>((r) => srv.listen(0, "127.0.0.1", r));
+  const fa3 = new FormAdapter();
+  try {
+    await fa3.compile(`http://127.0.0.1:${(srv.address() as { port: number }).port}/`);
+    const t = new TableAdapter(() => fa3.currentPage());
+    const [m] = await t.attach();
+    const recs = await t.list(m!.id);
+    assert.equal(recs.length, 5, `hidden inline-edit row must not count: ${recs.length}`);
+    assert.ok(recs.some((r) => r.key === "cy"), `the key is the username alone, not '${recs[2]?.key}'`);
+    await t.delete(m!.id, "cy");
+    assert.deepEqual(users, ["ann", "bob", "dee", "eli"], "the off-screen Delete was pressed");
+  } finally { await fa3.close(); srv.close(); }
+});

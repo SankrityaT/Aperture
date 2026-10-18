@@ -12,6 +12,10 @@ const db = (sql: string) => execSync(`docker exec wp-db mariadb -N -uwp -pwp wp 
 const out: { step: string; ok: boolean; detail: string }[] = [];
 const rec = (step: string, ok: boolean, detail: string) => { out.push({ step, ok, detail }); console.log(`${ok ? "PASS" : "FAIL"}  ${step}  ${detail}`); };
 
+const wp = (args: string) => execSync(`docker run --rm --network wicket-wp --volumes-from wp-web -e WORDPRESS_DB_HOST=wp-db -e WORDPRESS_DB_NAME=wp -e WORDPRESS_DB_USER=wp -e WORDPRESS_DB_PASSWORD=wp --user 33:33 wordpress:cli wp ${args}`, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+// Put the test data back first, so this test can be run again: user tester5 present, 'Test post 3' published.
+try { wp("user get tester5 --field=ID"); } catch { wp('user create tester5 tester5@example.test --role=subscriber --user_pass=pw-5-test --first_name=Test5 --last_name=User'); }
+execSync(`docker exec wp-db mariadb -uwp -pwp wp -e "update wp_posts set post_status='publish' where post_title='Test post 3' and post_type='post'"`, { stdio: "ignore" });
 const fa = new FormAdapter();
 try {
   const si = await fa.signIn(`${BASE}/wp-login.php`, "WP");
@@ -44,7 +48,7 @@ try {
     const u = (await w.undo(c.receipt ?? c.id)) as any;
     const back = db("select count(*) from wp_users where user_login='tester5'") === "1";
     const idAfter = db("select ID from wp_users where user_login='tester5'");
-    rec("undo: the user is back in the database", u.status === "undone" && back, `undo=${u.status ?? u.error} id ${idBefore} -> ${idAfter || "none"} not_restored=${JSON.stringify(u.verified?.fields_not_restored ?? [])} recovery=${JSON.stringify(c.recovery ?? null)}`);
+    rec("undo: the user is back in the database", u.status === "undone" && back, `undo=${u.status ?? u.error} ${u.detail ?? ""} ${JSON.stringify(u.next ?? "")} id ${idBefore} -> ${idAfter || "none"} not_restored=${JSON.stringify(u.verified?.fields_not_restored ?? [])} recovery=${JSON.stringify(c.recovery ?? null)}`);
   }
 
   // ---- Posts (WordPress has a native Trash)

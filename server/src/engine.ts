@@ -712,13 +712,29 @@ export class Wicket {
       const rc = this.receipts.get(receiptId);
       if (!rc) return this.r(refuse("unknown_receipt", `No receipt '${receiptId}'.`, ["check the receipt id from the commit result"]));
       if (rc.status === "undone") return this.r(refuse("already_undone", "Already undone.", []));
+      if (rc.status === "partially_undone") return this.r(refuse("already_partially_undone", "This was already partly undone; the rest could not be put back automatically.", ["see the earlier undo answer for what is missing"]));
+      // A change that failed changed nothing, so there is nothing to put back. Saying "undone" would be a false report.
+      if (rc.status === "failed") return this.r(refuse("nothing_to_undo", "That change failed and did not happen, so there is nothing to undo.", ["check the record with find", "make a new change if it is still wanted"]));
       if (rc.op.op === "publish") return this.r(refuse("not_undoable", "Published changes went to the outside world and cannot be recalled.", ["send a correction as a new change"]));
       if (this.now() > rc.undoUntil) return this.r(refuse("undo_window_closed", "The undo window has closed.", ["make a new change that fixes it"]));
       const before = await this.adapter.counts(rc.op.kind);
       try {
         if (rc.op.op === "delete") {
+          // Restore each saved record on its own. One that cannot come back (the app may offer no way to add it) does not stop the others,
+          // and the answer says exactly which came back and which did not.
+          const restoredItems: { kind: Kind; key: string }[] = [];
+          const notRestoredItems: { kind: Kind; key: string; why: string; saved: Rec }[] = [];
           for (const s of rc.snapshot) {
-            if (!(await this.adapter.read(s.kind, s.record.key))) await this.adapter.create(s.kind, s.record);
+            try {
+              if (!(await this.adapter.read(s.kind, s.record.key))) await this.adapter.create(s.kind, s.record);
+              restoredItems.push({ kind: s.kind, key: s.record.key });
+            } catch (err) { notRestoredItems.push({ kind: s.kind, key: s.record.key, why: String((err as Error).message).split("\n")[0] ?? "error", saved: s.record }); }
+          }
+          if (notRestoredItems.length) {
+            this.invalidate();
+            if (!restoredItems.length) throw new Error(notRestoredItems[0]!.why);
+            rc.status = "partially_undone"; this.persist();
+            return this.r(refuse("undo_partial", `Only part of this change could be undone: ${restoredItems.length} record(s) are back, ${notRestoredItems.length} could not be put back through this system's pages.`, ["re-create the records listed under not_restored by hand, using the saved values", "tell the owner", "do not report this change as undone"], { restored: restoredItems, not_restored: notRestoredItems }));
           }
           if (this.deletesToday > 0) this.deletesToday--;
         } else if (rc.op.op === "create" && rc.op.kind && rc.op.record) {
@@ -823,7 +839,9 @@ export class Wicket {
   async resetDemo(): Promise<void> {
     await this.adapter.reset();
     this.plans.clear(); this.receipts.clear(); this.escalations.length = 0; this.invalidate();
-    this.deletesToday = 0;
+    // A reset is a clean slate: standing authority, compiled-capability state and what undo learned go too, so nothing granted for one run lingers into the next.
+    this.delegations.clear(); this.contracts.clear(); this.lessons.clear();
+    this.deletesToday = 0; this.persist();
     this.metrics = { calls: 0, previews: 0, commits: 0, refusals: 0, undos: 0, humanDecisions: 0, escalations: 0, surprises: 0, previewMs: [], commitMs: [] };
   }
 }

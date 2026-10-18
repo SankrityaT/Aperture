@@ -62,6 +62,16 @@ const thisPageTables = (all: TableModel[], pageUrl: string) => {
   const others = all.filter((x) => !here.includes(x)).map((x) => x.id);
   return { tables: here.map(tableView), ...(others.length ? { also_compiled_and_still_live: others } : {}) };
 };
+/** Some systems record a change in one place and only make it live when a separate step is pressed ("Send Data", "Sync"). We never press it for the agent, so a receipt must not read as "live". */
+const sendStep = async (): Promise<string | null> => {
+  try { const s = await forms.summary(); return s.forms.map((f) => f.submit).filter((x): x is string => !!x).find((x) => /\b(send|sync|upload|push|transmit)\b/i.test(x)) ?? null; } catch { return null; }
+};
+const replyWrite = async (obj: Record<string, unknown>) => {
+  const wrote = typeof obj.receipt === "string" || (typeof obj.committed === "number" && obj.committed > 0);
+  if (!wrote) return reply(obj);
+  const step = await sendStep();
+  return reply(step ? { ...obj, not_yet_live: `Recorded in this system. It also has a separate step ('${step}') that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner.` } : obj);
+};
 const reply = (obj: Record<string, unknown>) => ({
   content: [{ type: "text" as const, text: JSON.stringify(obj) }],
   structuredContent: obj,
@@ -96,7 +106,7 @@ server.tool(
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, key, dry_run, plan_id }) => {
-    if (plan_id) return reply(wicket.present(await wicket.commit(plan_id)));
+    if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "delete", kind, key });
     return reply(wicket.present(plan));
   },
@@ -110,7 +120,7 @@ server.tool(
     annotations: { destructiveHint: false, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, record, plan_id }) => {
-    if (plan_id) return reply(wicket.present(await wicket.commit(plan_id)));
+    if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "create", kind, record: record as Op["record"] });
     return reply(wicket.present(plan));
   },
@@ -207,7 +217,7 @@ server.tool(
     inputSchema: opSchema,
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async (args) => reply(await wicket.apply(args as Op)),
+  async (args) => replyWrite((await wicket.apply(args as Op)) as Record<string, unknown>),
 );
 
 server.tool(
@@ -217,7 +227,7 @@ server.tool(
     inputSchema: z.object({ ops: z.array(opSchema).min(1).max(50), stop_on_failure: z.boolean().optional(), dry_run: z.boolean().optional().describe("Change nothing. Returns the total blast radius: everything that would be removed, dependents included."), canary: z.number().int().min(1).max(10).optional().describe("Commit only the first N, check they did exactly what was predicted, and halt the rest if any surprised or failed.") }),
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async ({ ops, stop_on_failure, dry_run, canary }) => reply(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary })),
+  async ({ ops, stop_on_failure, dry_run, canary }) => replyWrite(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary })),
 );
 
 server.tool(
@@ -227,7 +237,7 @@ server.tool(
     inputSchema: z.object({ plan_ids: z.array(z.string()).min(1).max(50), canary: z.number().int().min(1).max(10).optional() }),
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async ({ plan_ids, canary }) => reply(await wicket.commitBatch(plan_ids, canary ?? 1)),
+  async ({ plan_ids, canary }) => replyWrite(await wicket.commitBatch(plan_ids, canary ?? 1)),
 );
 
 // ---- shared profiles: what one agent learned about a system, for the next agent ----
@@ -241,7 +251,7 @@ const siteKey = (s: string) => { try { return new URL(s.includes("://") ? s : `h
 // WICKET_SYSTEMS is a JSON list on the server: [{"name","url","about"}]. An agent can only be pointed at systems on it
 // (the worker's host allowlist still decides what it may actually open).
 
-interface SystemEntry { name: string; url: string; about: string }
+interface SystemEntry { name: string; url: string; about: string; login?: string; sign_in_url?: string }
 const systems: SystemEntry[] = (() => { try { const v = JSON.parse(process.env.WICKET_SYSTEMS ?? "[]"); return Array.isArray(v) ? v.filter((x) => x?.name && x?.url) : []; } catch { return []; } })();
 const words = (t: string) => new Set(t.toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter((w) => w.length > 2).map((w) => w.replace(/(ies|es|s)$/, "")));
 
@@ -264,7 +274,7 @@ server.tool(
     }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
     if (!systems.length) return reply({ status: "refused", error: "no_systems_registered", detail: "The operator has not listed any systems for agents to work in.", next: ["ask the operator to set WICKET_SYSTEMS", "or call compile_site with an address they gave you"] });
     if (!scored.length) return reply({ status: "none_found", detail: "Nothing the operator registered matches that description.", registered: systems.map((x) => x.name), next: ["describe it with different words", "ask the operator to register the system you need"] });
-    return reply({ status: "found", matches: scored.map((x) => ({ name: x.sy.name, address: x.sy.url, about: x.sy.about, matched_on: x.hits, shared_profile: x.prof ? { dependents_known: x.prof.rules.filter((r) => r.cascades.length).length, shared_at: x.prof.shared_at } : null })), next: ["compile_site with the address of the best match", "if it has a shared profile, call use_profile with its host before changing anything"] });
+    return reply({ status: "found", matches: scored.map((x) => ({ name: x.sy.name, address: x.sy.url, about: x.sy.about, ...(x.sy.login ? { sign_in: `needs the operator's stored login '${x.sy.login}': compile_site with login '${x.sy.login}', url '${x.sy.sign_in_url ?? x.sy.url}', then '${x.sy.url}'. You never see or type the password.` } : {}), matched_on: x.hits, shared_profile: x.prof ? { dependents_known: x.prof.rules.filter((r) => r.cascades.length).length, shared_at: x.prof.shared_at } : null })), next: ["compile_site with the address of the best match", "if it has a shared profile, call use_profile with its host before changing anything"] });
   },
 );
 

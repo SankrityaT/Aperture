@@ -86,7 +86,7 @@ export interface Refusal {
   [extra: string]: unknown;
 }
 
-export type ReceiptStatus = "done" | "done_with_surprise" | "failed" | "undone";
+export type ReceiptStatus = "done" | "done_with_surprise" | "failed" | "undone" | "partially_undone";
 
 export interface Receipt {
   id: string;
