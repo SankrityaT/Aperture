@@ -14,6 +14,8 @@ export interface CompileSummary {
   url: string;
   title: string;
   warnings: string[];
+  /** Controls on this page that send changes elsewhere. Aperture never presses them; publish does, with the owner. */
+  send_steps?: string[];
   forms: {
     id: string;
     title: string;
@@ -130,7 +132,7 @@ export class FormAdapter implements Adapter {
     const m = this.model;
     if (!m) throw new NoBrowser("Nothing compiled yet. Call compile_site first.");
     return {
-      url: m.url, title: m.title, warnings: m.warnings,
+      url: m.url, title: m.title, warnings: m.warnings, ...(m.sendControls?.length ? { send_steps: m.sendControls } : {}),
       forms: m.forms.map((f) => ({
         id: f.id, title: f.title, submit: f.submit?.label ?? null,
         fields: f.fields.map((x) => ({

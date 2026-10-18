@@ -63,14 +63,22 @@ const thisPageTables = (all: TableModel[], pageUrl: string) => {
   return { tables: here.map(tableView), ...(others.length ? { also_compiled_and_still_live: others } : {}) };
 };
 /** Some systems record a change in one place and only make it live when a separate step is pressed ("Send Data", "Sync"). We never press it for the agent, so a receipt must not read as "live". */
+// Send steps seen on ANY page compiled in this server's life, with the page they live on: Send often sits on a different page from the records.
+// Kept per system (host and port), so a send step on one system never shows up on another system's receipts.
+const seenSendSteps = new Map<string, { label: string; url: string }>();
+const hostOf = (u: string) => { try { return new URL(u).host; } catch { return u; } };
+const rememberSendSteps = (s: { url: string; send_steps?: string[] }) => { const l = s.send_steps?.[0]; if (l && !seenSendSteps.has(hostOf(s.url))) seenSendSteps.set(hostOf(s.url), { label: l, url: s.url }); };
 const sendStep = async (): Promise<string | null> => {
-  try { const s = await forms.summary(); return s.forms.map((f) => f.submit).filter((x): x is string => !!x).find((x) => /\b(send|sync|upload|push|transmit)\b/i.test(x)) ?? null; } catch { return null; }
+  let here = "";
+  try { const s = await forms.summary(); rememberSendSteps(s); here = hostOf(s.url); } catch { return null; }
+  const found = seenSendSteps.get(here);
+  return found ? `${found.label}' on ${found.url}` : null;
 };
 const replyWrite = async (obj: Record<string, unknown>) => {
   const wrote = typeof obj.receipt === "string" || (typeof obj.committed === "number" && obj.committed > 0);
   if (!wrote) return reply(obj);
   const step = await sendStep();
-  return reply(step ? { ...obj, not_yet_live: `Recorded in this system. It also has a separate step ('${step}') that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner.` } : obj);
+  return reply(step ? { ...obj, not_yet_live: `Recorded in this system. It also has a separate step ('${step}) that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner.` } : obj);
 };
 const reply = (obj: Record<string, unknown>) => ({
   content: [{ type: "text" as const, text: JSON.stringify(obj) }],
@@ -172,6 +180,7 @@ server.tool(
       }
       const s = login ? await forms.refresh() : await forms.compile(url);
       for (const f of s.forms) rules.set(f.id, "update", [], true); // filling fields is a reversible draft
+      rememberSendSteps(s);
       const t = await tables.attach();
       wicket.flush();
       return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
@@ -190,6 +199,7 @@ server.tool(
     try {
       const s = await forms.refresh();
       for (const f of s.forms) rules.set(f.id, "update", [], true);
+      rememberSendSteps(s);
       const t = await tables.attach();
       wicket.flush();
       return reply({ status: "refreshed", ...s, ...(t.length ? thisPageTables(t, s.url) : {}) });

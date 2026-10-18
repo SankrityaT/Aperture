@@ -42,6 +42,8 @@ export interface PageModel {
   title: string;
   forms: FormModel[];
   warnings: string[];
+  /** Controls that send changes somewhere else (Send Data, Sync, Upload), by visible text OR tooltip/accessible name. Seen, never pressed. */
+  sendControls?: string[];
 }
 
 const EXPLORE_SCRIPT = `(() => {
@@ -153,7 +155,12 @@ const EXPLORE_SCRIPT = `(() => {
     forms.push({ id: id, selector: selector, title: title, action: form.getAttribute("action") || "", method: (form.getAttribute("method") || "get").toLowerCase(), fields: fields, hiddenFields: hiddenFields, submit: submit });
   });
 
-  return { url: location.href, title: document.title, forms: forms, warnings: warnings };
+  var sendControls = [];
+  Array.prototype.slice.call(document.querySelectorAll('input[type=submit], input[type=button], button, a[href], [role=button]')).forEach(function (e) {
+    var vis = clean(e.value || e.innerText || ""), tip = clean(e.getAttribute("title") || e.getAttribute("aria-label") || "");
+    if (/\b(send|sync|upload|push|transmit)\b/i.test(vis + " " + tip)) { var n = vis && tip && vis !== tip ? vis + " (" + tip + ")" : vis || tip; if (sendControls.indexOf(n) < 0) sendControls.push(n); }
+  });
+  return { url: location.href, title: document.title, forms: forms, warnings: warnings, sendControls: sendControls.slice(0, 5) };
 })()`;
 
 export async function explorePage(page: Page): Promise<PageModel> {
