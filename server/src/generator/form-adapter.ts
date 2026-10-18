@@ -149,11 +149,12 @@ export class FormAdapter implements Adapter {
     let chromium;
     try { ({ chromium } = await import("playwright-core")); } catch { throw new NoBrowser("No browser library is available on this server."); }
     try {
-      this.browser = await chromium.launch({ headless: true, ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
+      // WICKET_HEADED=1 opens a visible window and WICKET_SLOWMO=<ms> slows every action, so a person can watch what it does.
+      this.browser = await chromium.launch({ headless: process.env.WICKET_HEADED !== "1", slowMo: Number(process.env.WICKET_SLOWMO ?? 0), ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
     } catch (e) {
       throw new NoBrowser(`No browser could be started here (${String((e as Error).message).split("\n")[0]}). Run the worker on a machine with a browser.`);
     }
-    this.page = await this.browser.newPage();
+    this.page = await this.browser.newPage({ viewport: process.env.WICKET_HEADED === "1" ? { width: 1280, height: 800 } : undefined });
     return this.page;
   }
 

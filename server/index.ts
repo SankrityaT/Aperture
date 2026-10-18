@@ -4,8 +4,10 @@ import { Wicket } from "./src/engine.js";
 import { RuleBook } from "./src/rules.js";
 import { FakeSchool, startingRules } from "./src/adapters/fake-school.js";
 import { CompositeAdapter } from "./src/adapters/composite.js";
-import { FormAdapter, HumanRequired, NoBrowser, NoSecret, NotAuthorized } from "./src/generator/form-adapter.js";
+import { FormAdapter, HumanRequired, NoBrowser, NoSecret, NotAuthorized, type CompileSummary } from "./src/generator/form-adapter.js";
 import { TableAdapter, type TableModel } from "./src/generator/tables.js";
+import { RemoteWorker } from "./src/worker/remote.js";
+import type { Adapter } from "./src/types.js";
 import { OWNER_PAGE } from "./src/owner-page.js";
 import type { Op } from "./src/types.js";
 
@@ -24,8 +26,19 @@ const server = new MCPServer({
 const rules = new RuleBook();
 const seedRules = () => { rules.clear(); for (const r of startingRules()) rules.set(r.kind, r.op, r.cascades, r.confirmed); };
 seedRules();
-const forms = new FormAdapter();
-const tables = new TableAdapter(() => forms.currentPage());
+// Where the browser lives. With WICKET_WORKER_URL set, it runs on another machine (an InstaBox desktop) and this
+// server just calls it. Without it, the browser is in this process, which is how local development and the tests run.
+interface FormsApi extends Adapter { compile(url: string): Promise<CompileSummary>; signIn(url: string, secret: string): Promise<{ signedIn: boolean; detail: string }>; open(url: string): Promise<void>; refresh(): Promise<CompileSummary>; summary(): CompileSummary | Promise<CompileSummary> }
+interface TablesApi extends Adapter { attach(): Promise<TableModel[]> }
+let forms: FormsApi;
+let tables: TablesApi;
+if (process.env.WICKET_WORKER_URL) {
+  const worker = new RemoteWorker(process.env.WICKET_WORKER_URL, process.env.WICKET_WORKER_TOKEN ?? "");
+  forms = worker.forms; tables = worker.tables;
+} else {
+  const local = new FormAdapter();
+  forms = local; tables = new TableAdapter(() => local.currentPage());
+}
 const wicket = new Wicket(new CompositeAdapter([new FakeSchool(), forms, tables]), { rules });
 
 /** Small on purpose: an agent pays for every token of this. */
@@ -139,7 +152,7 @@ server.tool(
 
 server.tool(
   { name: "describe_forms", description: "List the compiled forms again: ids, fields, types, allowed values, hints. Use it when you are unsure what a field accepts.", inputSchema: z.object({}), annotations: { readOnlyHint: true, openWorldHint: false } },
-  async () => { try { return reply({ status: "ok", ...forms.summary() }); } catch (e) { return compileFail(e); } },
+  async () => { try { return reply({ status: "ok", ...(await forms.summary()) }); } catch (e) { return compileFail(e); } },
 );
 
 server.tool(

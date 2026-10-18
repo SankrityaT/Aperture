@@ -13,6 +13,7 @@ const BASE = "http://localhost:8081";
 const fa = new FormAdapter();
 try {
   console.log("sign in:", (await fa.signIn(`${BASE}/`, "dolibarr")).detail);
+if (process.env.WICKET_HEADED === "1") await new Promise((r) => setTimeout(r, 2500));
   await fa.open(`${BASE}/societe/list.php?mainmenu=companies&leftmenu=thirdparties`);
   await fa.refresh();
   const ta = new TableAdapter(() => fa.currentPage());
