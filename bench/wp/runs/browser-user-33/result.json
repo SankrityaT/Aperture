@@ -1,0 +1,1 @@
+{"run": "browser-user-33", "arm": "browser", "task": "user", "model": "haiku", "used": "browser", "aperture_calls": 0, "browser_calls": 14, "correct": true, "seconds": 47, "cost": 0.01}

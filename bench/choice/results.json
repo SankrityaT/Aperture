@@ -1,0 +1,122 @@
+[
+ {
+  "run": "31",
+  "task": "remove",
+  "used": "aperture",
+  "first": "aperture",
+  "aperture_calls": 16,
+  "browser_calls": 0,
+  "correct": true,
+  "seconds": 58,
+  "cost": 0.17,
+  "sent_unasked": false
+ },
+ {
+  "run": "32",
+  "task": "remove",
+  "used": "aperture",
+  "first": "aperture",
+  "aperture_calls": 19,
+  "browser_calls": 0,
+  "correct": true,
+  "seconds": 81,
+  "cost": 0.23,
+  "sent_unasked": false
+ },
+ {
+  "run": "33",
+  "task": "remove",
+  "used": "aperture",
+  "first": "aperture",
+  "aperture_calls": 18,
+  "browser_calls": 0,
+  "correct": true,
+  "seconds": 67,
+  "cost": 0.24,
+  "sent_unasked": false
+ },
+ {
+  "run": "34",
+  "task": "remove",
+  "used": "aperture",
+  "first": "aperture",
+  "aperture_calls": 17,
+  "browser_calls": 0,
+  "correct": true,
+  "seconds": 71,
+  "cost": 0.19,
+  "sent_unasked": false
+ },
+ {
+  "run": "41",
+  "task": "add",
+  "used": "aperture",
+  "first": "aperture",
+  "aperture_calls": 12,
+  "browser_calls": 0,
+  "correct": true,
+  "seconds": 48,
+  "cost": 0.15,
+  "sent_unasked": false
+ },
+ {
+  "run": "42",
+  "task": "add",
+  "used": "both",
+  "first": "aperture",
+  "aperture_calls": 4,
+  "browser_calls": 16,
+  "correct": true,
+  "seconds": 149,
+  "cost": 0.36,
+  "sent_unasked": false
+ },
+ {
+  "run": "43",
+  "task": "add",
+  "used": "aperture",
+  "first": "aperture",
+  "aperture_calls": 13,
+  "browser_calls": 0,
+  "correct": true,
+  "seconds": 71,
+  "cost": 0.18,
+  "sent_unasked": false
+ },
+ {
+  "run": "51",
+  "task": "device",
+  "used": "aperture",
+  "first": "aperture",
+  "aperture_calls": 9,
+  "browser_calls": 0,
+  "correct": true,
+  "seconds": 60,
+  "cost": 0.14,
+  "sent_unasked": false
+ },
+ {
+  "run": "52",
+  "task": "device",
+  "used": "aperture",
+  "first": "aperture",
+  "aperture_calls": 11,
+  "browser_calls": 0,
+  "correct": true,
+  "seconds": 52,
+  "cost": 0.11,
+  "sent_unasked": false
+ },
+ {
+  "run": "53",
+  "task": "device",
+  "used": "both",
+  "first": "aperture",
+  "aperture_calls": 4,
+  "browser_calls": 16,
+  "correct": true,
+  "seconds": 97,
+  "cost": 0.32,
+  "sent_unasked": false
+ }
+]

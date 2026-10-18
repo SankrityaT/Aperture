@@ -3,7 +3,7 @@
 
 import type { Adapter, Kind, Rec } from "../types.js";
 import type { CompileSummary } from "../generator/form-adapter.js";
-import { HumanRequired, NoBrowser, NoSecret, NotAuthorized } from "../generator/form-adapter.js";
+import { HumanRequired, NoBrowser, NoSecret, NotAuthorized, WorkerBusy } from "../generator/form-adapter.js";
 import type { TableModel } from "../generator/tables.js";
 
 type Kinds = { forms: string[]; tables: string[] };
@@ -35,7 +35,10 @@ export class RemoteWorker {
       throw new NoBrowser(`The browser worker could not be reached (${String((e as Error).message).split("\n")[0]}). The operator needs to start it.`);
     }
     if (res.status === 401) throw new NoBrowser("The browser worker refused the token. The operator needs to check WICKET_WORKER_TOKEN.");
-    const body = (await res.json()) as { ok: boolean; result?: T; error?: { name: string; message: string }; kinds?: Kinds };
+    // Anything but our JSON (a proxy's error page, a cut-off) means the worker did not answer this call.
+    const text = await res.text();
+    let body: { ok: boolean; result?: T; error?: { name: string; message: string }; kinds?: Kinds };
+    try { body = JSON.parse(text); } catch { throw new WorkerBusy(`The browser worker did not answer this call (HTTP ${res.status}: ${text.slice(0, 60).replace(/\s+/g, " ")}).`); }
     if (body.kinds) this.kinds = body.kinds;
     if (body.ok) return body.result as T;
     const { name, message } = body.error ?? { name: "Error", message: "worker error" };
@@ -44,6 +47,7 @@ export class RemoteWorker {
     if (name === "NoBrowser") throw new NoBrowser(message);
     if (name === "NoSecret") throw new NoSecret(message);
     if (name === "HumanRequired") throw new HumanRequired(message);
+    if (name === "WorkerBusy") throw new WorkerBusy(message);
     throw new Error(message);
   }
 

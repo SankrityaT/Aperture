@@ -1,0 +1,370 @@
+- generic [ref=f4e2]:
+  - navigation "Main menu":
+    - link "Skip to main content" [ref=f4e3] [cursor=pointer]:
+      - /url: "#wpbody-content"
+    - link "Skip to toolbar" [ref=f4e4] [cursor=pointer]:
+      - /url: "#wp-toolbar"
+    - list [ref=f4e7]:
+      - listitem [ref=f4e8]:
+        - link "Dashboard" [ref=f4e9] [cursor=pointer]:
+          - /url: index.php
+          - generic [aria-hidden] [ref=f4e10]: 
+        - list [ref=f4e12]:
+          - listitem [ref=f4e13]:
+            - link "Home" [ref=f4e14] [cursor=pointer]:
+              - /url: index.php
+          - listitem [ref=f4e15]:
+            - link "Updates" [ref=f4e16] [cursor=pointer]:
+              - /url: update-core.php
+      - listitem [aria-hidden] [ref=f4e17]
+      - listitem [ref=f4e19]:
+        - link "Posts" [ref=f4e20] [cursor=pointer]:
+          - /url: edit.php
+          - generic [aria-hidden] [ref=f4e21]: 
+        - list [ref=f4e23]:
+          - listitem [ref=f4e24]:
+            - link "All Posts" [ref=f4e25] [cursor=pointer]:
+              - /url: edit.php
+          - listitem [ref=f4e26]:
+            - link "Add Post" [ref=f4e27] [cursor=pointer]:
+              - /url: post-new.php
+          - listitem [ref=f4e28]:
+            - link "Categories" [ref=f4e29] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=category
+          - listitem [ref=f4e30]:
+            - link "Tags" [ref=f4e31] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=post_tag
+      - listitem [ref=f4e32]:
+        - link "Media" [ref=f4e33] [cursor=pointer]:
+          - /url: upload.php
+          - generic [aria-hidden] [ref=f4e34]: 
+        - list [ref=f4e36]:
+          - listitem [ref=f4e37]:
+            - link "Library" [ref=f4e38] [cursor=pointer]:
+              - /url: upload.php
+          - listitem [ref=f4e39]:
+            - link "Add Media File" [ref=f4e40] [cursor=pointer]:
+              - /url: media-new.php
+      - listitem [ref=f4e41]:
+        - link "Pages" [ref=f4e42] [cursor=pointer]:
+          - /url: edit.php?post_type=page
+          - generic [aria-hidden] [ref=f4e43]: 
+        - list [ref=f4e45]:
+          - listitem [ref=f4e46]:
+            - link "All Pages" [ref=f4e47] [cursor=pointer]:
+              - /url: edit.php?post_type=page
+          - listitem [ref=f4e48]:
+            - link "Add Page" [ref=f4e49] [cursor=pointer]:
+              - /url: post-new.php?post_type=page
+      - listitem [ref=f4e50]:
+        - link "Comments" [ref=f4e51] [cursor=pointer]:
+          - /url: edit-comments.php
+          - generic [aria-hidden] [ref=f4e52]: 
+      - listitem [aria-hidden] [ref=f4e54]
+      - listitem [ref=f4e56]:
+        - link "Appearance" [ref=f4e57] [cursor=pointer]:
+          - /url: themes.php
+          - generic [aria-hidden] [ref=f4e58]: 
+        - list [ref=f4e60]:
+          - listitem [ref=f4e61]:
+            - link "Themes" [ref=f4e62] [cursor=pointer]:
+              - /url: themes.php
+          - listitem [ref=f4e63]:
+            - link "Editor" [ref=f4e64] [cursor=pointer]:
+              - /url: site-editor.php
+          - listitem [ref=f4e65]:
+            - link "Fonts" [ref=f4e66] [cursor=pointer]:
+              - /url: font-library.php
+      - listitem [ref=f4e67]:
+        - link "Plugins" [ref=f4e68] [cursor=pointer]:
+          - /url: plugins.php
+          - generic [aria-hidden] [ref=f4e69]: 
+        - list [ref=f4e71]:
+          - listitem [ref=f4e72]:
+            - link "Installed Plugins" [ref=f4e73] [cursor=pointer]:
+              - /url: plugins.php
+          - listitem [ref=f4e74]:
+            - link "Add Plugin" [ref=f4e75] [cursor=pointer]:
+              - /url: plugin-install.php
+      - listitem [ref=f4e76]:
+        - link "Users" [ref=f4e77] [cursor=pointer]:
+          - /url: users.php
+          - generic [aria-hidden] [ref=f4e78]: 
+        - list [ref=f4e80]:
+          - listitem [ref=f4e81]:
+            - link "All Users" [ref=f4e82] [cursor=pointer]:
+              - /url: users.php
+          - listitem [ref=f4e83]:
+            - link "Add User" [ref=f4e84] [cursor=pointer]:
+              - /url: user-new.php
+          - listitem [ref=f4e85]:
+            - link "Profile" [ref=f4e86] [cursor=pointer]:
+              - /url: profile.php
+      - listitem [ref=f4e87]:
+        - link "Tools" [ref=f4e88] [cursor=pointer]:
+          - /url: tools.php
+          - generic [aria-hidden] [ref=f4e89]: 
+        - list [ref=f4e91]:
+          - listitem [ref=f4e92]:
+            - link "Available Tools" [ref=f4e93] [cursor=pointer]:
+              - /url: tools.php
+          - listitem [ref=f4e94]:
+            - link "Import" [ref=f4e95] [cursor=pointer]:
+              - /url: import.php
+          - listitem [ref=f4e96]:
+            - link "Export" [ref=f4e97] [cursor=pointer]:
+              - /url: export.php
+          - listitem [ref=f4e98]:
+            - link "Site Health" [ref=f4e99] [cursor=pointer]:
+              - /url: site-health.php
+          - listitem [ref=f4e100]:
+            - link "Export Personal Data" [ref=f4e101] [cursor=pointer]:
+              - /url: export-personal-data.php
+          - listitem [ref=f4e102]:
+            - link "Erase Personal Data" [ref=f4e103] [cursor=pointer]:
+              - /url: erase-personal-data.php
+          - listitem [ref=f4e104]:
+            - link "Theme File Editor" [ref=f4e105] [cursor=pointer]:
+              - /url: theme-editor.php
+          - listitem [ref=f4e106]:
+            - link "Plugin File Editor" [ref=f4e107] [cursor=pointer]:
+              - /url: plugin-editor.php
+      - listitem [ref=f4e108]:
+        - link "Settings" [ref=f4e109] [cursor=pointer]:
+          - /url: options-general.php
+          - generic [aria-hidden] [ref=f4e110]: 
+        - list [ref=f4e112]:
+          - listitem [ref=f4e113]:
+            - link "General" [ref=f4e114] [cursor=pointer]:
+              - /url: options-general.php
+          - listitem [ref=f4e115]:
+            - link "Connectors" [ref=f4e116] [cursor=pointer]:
+              - /url: options-connectors.php
+          - listitem [ref=f4e117]:
+            - link "Writing" [ref=f4e118] [cursor=pointer]:
+              - /url: options-writing.php
+          - listitem [ref=f4e119]:
+            - link "Reading" [ref=f4e120] [cursor=pointer]:
+              - /url: options-reading.php
+          - listitem [ref=f4e121]:
+            - link "Discussion" [ref=f4e122] [cursor=pointer]:
+              - /url: options-discussion.php
+          - listitem [ref=f4e123]:
+            - link "Media" [ref=f4e124] [cursor=pointer]:
+              - /url: options-media.php
+          - listitem [ref=f4e125]:
+            - link "Permalinks" [ref=f4e126] [cursor=pointer]:
+              - /url: options-permalink.php
+          - listitem [ref=f4e127]:
+            - link "Privacy" [ref=f4e128] [cursor=pointer]:
+              - /url: options-privacy.php
+      - listitem [ref=f4e129]:
+        - button "Collapse Main menu" [expanded] [ref=f4e130] [cursor=pointer]:
+          - generic [ref=f4e132]: Collapse Menu
+  - generic [ref=f4e133]:
+    - generic [ref=f4e134]:
+      - navigation "Toolbar":
+        - menu:
+          - group [ref=f4e135]:
+            - menuitem "About WordPress" [ref=f4e136] [cursor=pointer]
+          - group [ref=f4e139]:
+            - menuitem "Test Site" [ref=f4e140] [cursor=pointer]
+          - group [ref=f4e141]:
+            - menuitem "⌘K Open command palette" [ref=f4e142] [cursor=pointer]:
+              - generic [ref=f4e144]:
+                - text: ⌘K
+                - generic [ref=f4e145]: Open command palette
+          - group [ref=f4e146]:
+            - menuitem "0 Comments in moderation" [ref=f4e147] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f4e149]: "0"
+          - group [ref=f4e151]:
+            - menuitem "New" [ref=f4e152] [cursor=pointer]
+        - menu [ref=f4e155]:
+          - group [ref=f4e156]:
+            - menuitem "Howdy, admin" [ref=f4e157] [cursor=pointer]
+    - main [ref=f4e158]:
+      - generic [ref=f4e159]:
+        - text: 
+        - generic [ref=f4e160]:
+          - button "Screen Options" [ref=f4e162] [cursor=pointer]
+          - button "Help" [ref=f4e164] [cursor=pointer]
+        - generic [ref=f4e165]:
+          - heading "Posts" [level=1] [ref=f4e166]
+          - link "Add Post" [ref=f4e167] [cursor=pointer]:
+            - /url: http://localhost:8082/wp-admin/post-new.php
+          - heading "Filter posts list" [level=2] [ref=f4e168]
+          - list [ref=f4e169]:
+            - listitem [ref=f4e170]:
+              - link "All (10)" [ref=f4e171] [cursor=pointer]:
+                - /url: edit.php?post_type=post&all_posts=1
+              - text: "|"
+            - listitem [ref=f4e172]:
+              - link "Mine (1)" [ref=f4e173] [cursor=pointer]:
+                - /url: edit.php?post_type=post&author=1
+              - text: "|"
+            - listitem [ref=f4e174]:
+              - link "Published (10)" [ref=f4e175] [cursor=pointer]:
+                - /url: edit.php?post_status=publish&post_type=post
+              - text: "|"
+            - listitem [ref=f4e176]:
+              - link "Trash (3)" [ref=f4e177] [cursor=pointer]:
+                - /url: edit.php?post_status=trash&post_type=post
+          - generic [ref=f4e178]:
+            - paragraph [ref=f4e179]:
+              - generic [ref=f4e180]: "Search Posts:"
+              - searchbox "Search Posts:" [ref=f4e181]
+              - button "Search Posts" [ref=f4e182] [cursor=pointer]
+            - generic [ref=f4e183]:
+              - generic [ref=f4e184]:
+                - generic [ref=f4e185]: Select bulk action
+                - combobox "Select bulk action" [ref=f4e186] [cursor=pointer]:
+                  - option "Bulk actions" [selected]
+                  - option "Restore"
+                  - option "Delete permanently"
+                - button "Apply" [ref=f4e187] [cursor=pointer]
+              - generic [ref=f4e188]:
+                - generic [ref=f4e189]: Filter by date
+                - combobox "Filter by date" [ref=f4e190] [cursor=pointer]:
+                  - option "All dates" [selected]
+                  - option "October 2026"
+                - generic [ref=f4e191]: Filter by category
+                - combobox "Filter by category" [ref=f4e192] [cursor=pointer]:
+                  - option "All Categories" [selected]
+                  - option "Uncategorized"
+                - button "Filter" [ref=f4e193] [cursor=pointer]
+                - button "Empty Trash" [ref=f4e194] [cursor=pointer]
+              - generic [ref=f4e195]: 3 items
+            - heading "Posts list" [level=2] [ref=f4e197]
+            - table [ref=f4e198]:
+              - caption [ref=f4e199]: Table ordered by Date. Descending.
+              - rowgroup [ref=f4e200]:
+                - row [ref=f4e201]:
+                  - cell "Select All" [ref=f4e202]:
+                    - checkbox "Select All" [ref=f4e203] [cursor=pointer]
+                  - columnheader [ref=f4e206]:
+                    - link "Title Sort ascending." [ref=f4e207] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_status=trash&post_type=post&orderby=title&order=asc
+                      - generic [ref=f4e208]: Title
+                      - generic [ref=f4e212]: Sort ascending.
+                  - columnheader "Author" [ref=f4e213]
+                  - columnheader "Categories" [ref=f4e214]
+                  - columnheader "Tags" [ref=f4e215]
+                  - columnheader [ref=f4e216]:
+                    - link "Comments Sort ascending." [ref=f4e217] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_status=trash&post_type=post&orderby=comment_count&order=asc
+                      - generic [ref=f4e218]: Comments
+                      - generic [ref=f4e224]: Sort ascending.
+                  - columnheader [ref=f4e225]:
+                    - link "Date" [ref=f4e226] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_status=trash&post_type=post&orderby=date&order=asc
+              - rowgroup [ref=f4e231]:
+                - row [ref=f4e232]:
+                  - cell "Select Test post 5" [ref=f4e233]:
+                    - checkbox "Select Test post 5" [ref=f4e234] [cursor=pointer]
+                  - rowheader "Test post 5" [ref=f4e237]:
+                    - strong [ref=f4e238]: Test post 5
+                    - generic [ref=f4e239]:
+                      - generic [ref=f4e240]:
+                        - link "Restore “Test post 5” from the Trash" [ref=f4e241] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=8&action=untrash&_wpnonce=d3c6e1ca83
+                          - text: Restore
+                        - text: "|"
+                      - link "Delete “Test post 5” permanently" [ref=f4e243] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=8&action=delete&_wpnonce=18d69f6716
+                        - text: Delete Permanently
+                  - cell "(no author)" [ref=f4e244]: —
+                  - cell [ref=f4e246]:
+                    - link "Uncategorized" [ref=f4e247] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f4e248]: —
+                  - cell "No comments" [ref=f4e250]:
+                    - generic [ref=f4e251]:
+                      - text: —
+                      - generic [ref=f4e252]: No comments
+                  - cell "Last Modified 2026/10/18 at 10:58 am" [ref=f4e253]: Last Modified2026/10/18 at 10:58 am
+                - row [ref=f4e254]:
+                  - cell "Select Test post 4" [ref=f4e255]:
+                    - checkbox "Select Test post 4" [ref=f4e256] [cursor=pointer]
+                  - rowheader "Test post 4" [ref=f4e259]:
+                    - strong [ref=f4e260]: Test post 4
+                    - generic [ref=f4e261]:
+                      - generic [ref=f4e262]:
+                        - link "Restore “Test post 4” from the Trash" [ref=f4e263] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=7&action=untrash&_wpnonce=ac9dbf3ced
+                          - text: Restore
+                        - text: "|"
+                      - link "Delete “Test post 4” permanently" [ref=f4e265] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=7&action=delete&_wpnonce=fb60d6f65a
+                        - text: Delete Permanently
+                  - cell "(no author)" [ref=f4e266]: —
+                  - cell [ref=f4e268]:
+                    - link "Uncategorized" [ref=f4e269] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f4e270]: —
+                  - cell "No comments" [ref=f4e272]:
+                    - generic [ref=f4e273]:
+                      - text: —
+                      - generic [ref=f4e274]: No comments
+                  - cell "Last Modified 2026/10/18 at 10:58 am" [ref=f4e275]: Last Modified2026/10/18 at 10:58 am
+                - row [ref=f4e276]:
+                  - cell "Select Test post 3" [ref=f4e277]:
+                    - checkbox "Select Test post 3" [ref=f4e278] [cursor=pointer]
+                  - rowheader "Test post 3" [ref=f4e281]:
+                    - strong [ref=f4e282]: Test post 3
+                    - generic [ref=f4e283]:
+                      - generic [ref=f4e284]:
+                        - link "Restore “Test post 3” from the Trash" [ref=f4e285] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/post.php?post=6&action=untrash&_wpnonce=d7476d75d4
+                          - text: Restore
+                        - text: "|"
+                      - link "Delete “Test post 3” permanently" [ref=f4e287] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/post.php?post=6&action=delete&_wpnonce=8392b4efd1
+                        - text: Delete Permanently
+                  - cell "(no author)" [ref=f4e288]: —
+                  - cell [ref=f4e290]:
+                    - link "Uncategorized" [ref=f4e291] [cursor=pointer]:
+                      - /url: edit.php?category_name=uncategorized
+                  - cell "No tags" [ref=f4e292]: —
+                  - cell "No comments" [ref=f4e294]:
+                    - generic [ref=f4e295]:
+                      - text: —
+                      - generic [ref=f4e296]: No comments
+                  - cell "Last Modified 2026/10/18 at 10:58 am" [ref=f4e297]: Last Modified2026/10/18 at 10:58 am
+              - rowgroup [ref=f4e298]:
+                - row [ref=f4e299]:
+                  - cell "Select All" [ref=f4e300]:
+                    - checkbox "Select All" [ref=f4e301] [cursor=pointer]
+                  - columnheader [ref=f4e304]:
+                    - link "Title Sort ascending." [ref=f4e305] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_status=trash&post_type=post&orderby=title&order=asc
+                      - generic [ref=f4e306]: Title
+                      - generic [ref=f4e310]: Sort ascending.
+                  - columnheader "Author" [ref=f4e311]
+                  - columnheader "Categories" [ref=f4e312]
+                  - columnheader "Tags" [ref=f4e313]
+                  - columnheader [ref=f4e314]:
+                    - link "Comments Sort ascending." [ref=f4e315] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_status=trash&post_type=post&orderby=comment_count&order=asc
+                      - generic [ref=f4e316]: Comments
+                      - generic [ref=f4e322]: Sort ascending.
+                  - columnheader [ref=f4e323]:
+                    - link "Date" [ref=f4e324] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/edit.php?post_status=trash&post_type=post&orderby=date&order=asc
+            - generic [ref=f4e329]:
+              - generic [ref=f4e330]:
+                - generic [ref=f4e331]: Select bulk action
+                - combobox "Select bulk action" [ref=f4e332] [cursor=pointer]:
+                  - option "Bulk actions" [selected]
+                  - option "Restore"
+                  - option "Delete permanently"
+                - button "Apply" [ref=f4e333] [cursor=pointer]
+              - button "Empty Trash" [ref=f4e335] [cursor=pointer]
+              - generic [ref=f4e336]: 3 items
+  - contentinfo [ref=f4e338]:
+    - paragraph [ref=f4e339]:
+      - generic [ref=f4e340]:
+        - text: Thank you for creating with
+        - link "WordPress" [ref=f4e341] [cursor=pointer]:
+          - /url: https://wordpress.org/
+        - text: .
+    - paragraph [ref=f4e342]: Version 7.1.3

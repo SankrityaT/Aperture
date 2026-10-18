@@ -1,0 +1,1 @@
+{"run": "aperture-post-26", "arm": "aperture", "task": "post", "model": "sonnet", "used": "aperture", "aperture_calls": 11, "browser_calls": 0, "correct": true, "seconds": 47, "cost": 0.07}

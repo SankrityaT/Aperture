@@ -177,12 +177,21 @@ export class Wicket {
     if (!this.adapter.kinds().includes(kind)) return this.r(refuse("unknown_kind", `No kind '${kind}'.`, [`find with one of: ${this.adapter.kinds().join(", ")}`]));
     const blocked = this.gate(kind); if (blocked) return blocked;
     let loaded: { data: Rec[]; ageMs: number };
-    try { loaded = await this.cached(`list:${kind}`, () => this.adapter.list(kind)); } catch (e) { if (isDrift(e)) return this.onDrift(kind, e); return this.unexpected(e); }
+    let repairedNote: Record<string, unknown> | null = null;
+    try { loaded = await this.cached(`list:${kind}`, () => this.adapter.list(kind)); }
+    catch (e) {
+      if (!isDrift(e)) return this.unexpected(e);
+      const refused = this.onDrift(kind, e);
+      const rep = await this.autoRepair(kind);
+      if (!rep) return refused;
+      repairedNote = rep;
+      try { loaded = await this.cached(`list:${kind}`, () => this.adapter.list(kind)); } catch (e2) { return isDrift(e2) ? this.onDrift(kind, e2) : this.unexpected(e2); }
+    }
     const { data, ageMs } = loaded;
     const q = query?.toLowerCase().trim();
     const hits = q ? data.filter((r) => Object.values(r).some((v) => typeof v === "string" && v.toLowerCase().includes(q))) : data;
     const note = hits.length > 1 && q ? "Several matches. Names are not unique, use the key." : undefined;
-    return { kind, count: hits.length, items: hits.slice(0, limit), as_of_ms: ageMs, ...(hits.length > limit ? { truncated: true } : {}), ...(note ? { note } : {}) };
+    return { kind, count: hits.length, items: hits.slice(0, limit), as_of_ms: ageMs, ...(repairedNote ? { page_changed_and_relearned: repairedNote } : {}), ...(hits.length > limit ? { truncated: true } : {}), ...(note ? { note } : {}) };
   }
 
   // ---------- preview ----------
@@ -193,7 +202,14 @@ export class Wicket {
     const t0 = performance.now();
     const blocked = this.gate(op.kind); if (blocked) return blocked;
     let out: Plan | Refusal;
-    try { out = await this.previewInner(op, batchDeletes); } catch (e) { if (isDrift(e) && op.kind) return this.onDrift(op.kind, e); return this.unexpected(e); }
+    try { out = await this.previewInner(op, batchDeletes); }
+    catch (e) {
+      if (!isDrift(e) || !op.kind) return this.unexpected(e);
+      const refused = this.onDrift(op.kind, e);
+      // A read can safely re-learn a changed page (tested, read-only) and try once more. A write never retries.
+      if (!(await this.autoRepair(op.kind))) return refused;
+      try { out = await this.previewInner(op, batchDeletes); } catch (e2) { return isDrift(e2) ? this.onDrift(op.kind, e2) : this.unexpected(e2); }
+    }
     if (!isRefusal(out)) { this.metrics.previews++; this.metrics.previewMs.push(performance.now() - t0); }
     return out;
   }
@@ -309,12 +325,12 @@ export class Wicket {
       const blocked = this.gate(k); if (blocked) return blocked;
       try { return await this.commitInner(planId); }
       catch (e) {
-        if (!isDrift(e) || !k) { const plan = this.plans.get(planId); if (plan?.status === "executing") { plan.status = "unknown"; plan.reasons = ["The server hit an error while this was running. Whether it happened is not known."]; this.persist(); return this.r(refuse("outcome_unknown", "An error happened while this change was running, so it is not known whether it happened.", ["call reconcile with this plan_id", "never commit it again"], { plan_id: planId })); } return this.unexpected(e); }
+        if (!isDrift(e) || !k) { const plan = this.plans.get(planId); if (plan?.status === "executing") { plan.status = "unknown"; plan.reasons = ["The server hit an error while this was running. Whether it happened is not known."]; this.persist(); return this.r(refuse("outcome_unknown", "An error happened while this change was running, so it is not known whether it happened.", ["call get_plan with this plan_id: it reads the system and says what happened", "never commit it again"], { plan_id: planId })); } return this.unexpected(e); }
         // If the change had already started, we no longer know whether it happened: say so, never retry.
         const plan = this.plans.get(planId);
         if (plan?.status === "executing") { plan.status = "unknown"; plan.reasons = ["The page changed while this was running. Whether it happened is not known."]; this.persist(); }
         const r = this.onDrift(k, e);
-        return plan?.status === "unknown" ? this.r(refuse("outcome_unknown", "The page changed while this change was running, so it is not known whether it happened.", ["call reconcile with this plan_id", "never commit it again"], { plan_id: planId })) : r;
+        return plan?.status === "unknown" ? this.r(refuse("outcome_unknown", "The page changed while this change was running, so it is not known whether it happened.", ["call get_plan with this plan_id: it reads the system and says what happened", "never commit it again"], { plan_id: planId })) : r;
       }
     });
   }
@@ -327,7 +343,7 @@ export class Wicket {
     if (plan.status === "rejected") return this.r(refuse("rejected", "The owner rejected this plan.", ["do not retry", "escalate(reason) if it is important"]));
     if (this.now() > plan.expiresAt) { plan.status = "expired"; return this.r(refuse("expired", "The plan expired.", ["run a new dry_run"])); }
     if (plan.status === "executing") return this.r(refuse("in_progress", "This change is running right now.", ["poll get_plan", "do not commit again"], { plan_id: plan.id }));
-    if (plan.status === "unknown") return this.r(refuse("outcome_unknown", "The server stopped while this change was running, so it is not known whether it happened. It will not be retried blindly.", ["call reconcile with this plan_id: it reads the system and says what is true", "never re-commit a plan in this state"], { plan_id: plan.id }));
+    if (plan.status === "unknown") return this.r(refuse("outcome_unknown", "The server stopped while this change was running, so it is not known whether it happened. It will not be retried blindly.", ["call get_plan with this plan_id: it reads the system and says what is true", "never re-commit a plan in this state"], { plan_id: plan.id }));
     if (plan.status === "stale") return this.r(refuse("changed_since_preview", "The record changed since the preview.", ["run a new dry_run"]));
     if (plan.needsApproval && plan.status !== "approved") {
       return this.r(refuse("awaiting_approval", plan.reasons.join("; ") || "needs the owner", ["poll get_plan until status is approved", "do not retry commit in a loop"], { plan_id: plan.id, diff: plan.diff }));
@@ -425,6 +441,14 @@ export class Wicket {
     }
     if (appError) verified.app_error = `The app reported an error (${appError}) but the change did happen. It was confirmed by reading the system back.`;
     verified.counts_after = after;
+    // Say how far the check went. Only tables Aperture has compiled can be compared; anything else the app changed is not seen.
+    const depKinds = [...new Set(plan.dependents.map((d) => d.kind))];
+    verified.scope = {
+      action: op.op === "publish" ? "not checkable (it leaves this system)" : verified.subject_present === (op.op !== "delete") ? "verified" : "not as intended",
+      known_dependencies: depKinds.length ? `checked: ${depKinds.join(", ")}` : (this.rules.cascadesFor(op.kind ?? "", "delete").length ? "declared, none found for this record" : "none known"),
+      tables_compared: Object.keys(after),
+      other_effects: "unknown: tables Aperture has not compiled are not checked",
+    };
     verified.matches_prediction = surprises.length === 0;
     const okSubject = op.op === "delete" ? verified.subject_present === false : op.op === "create" ? verified.subject_present === true : op.op === "update" ? verified.fields_match === true : verified.still_pending === 0;
     verified.ok = okSubject && surprises.length === 0;
@@ -533,6 +557,7 @@ export class Wicket {
   private unexpected(e: unknown): Refusal {
     const msg = String((e as Error)?.message ?? e).split("\n")[0] ?? "error";
     const m = /unknown kind (\S+)/.exec(msg);
+    if ((e as Error)?.name === "WorkerBusy") return this.r(refuse("worker_busy", msg, ["wait a few seconds, then try this read again", "if this was a change: call get_plan with its plan_id (it reads the system); never commit it again"]));
     if (m) return this.r(refuse("unknown_kind", `No kind '${m[1]}' is compiled.`, [`compile_site the page that holds '${m[1]}' (find_systems lists the systems)`, `compiled now: ${this.adapter.kinds().join(", ") || "nothing"}`]));
     return this.r(refuse("internal_error", `Something failed inside Wicket: ${msg}`, ["nothing is known to have changed by this call unless a receipt says so", "try again once; if it repeats, escalate with this message"], { detail_for_owner: msg }));
   }
@@ -567,7 +592,7 @@ export class Wicket {
     if (!kind) return null;
     const c = this.contracts.get(kind);
     if (!c || c.status !== "disabled") return null;
-    return this.r(refuse("capability_disabled", `The page for '${kind}' changed since it was compiled, so Wicket stopped using it.`, ["check_capability to see what changed", "repair_capability to re-learn it; it is only re-enabled if the repair passes its tests", "do not retry the change until then"], { kind, version: c.version, drift: c.lastDrift }));
+    return this.r(refuse("capability_disabled", `The page for '${kind}' changed since it was compiled, so Wicket stopped using it.`, ["Aperture tried to re-learn the page and could not prove the result; the owner has been told", "do not retry the change", "a person should look at the page"], { kind, version: c.version, drift: c.lastDrift }));
   }
 
   private onDrift(kind: Kind, e: { klass: string; drifts: unknown; message: string }): Refusal {
@@ -576,7 +601,16 @@ export class Wicket {
     if (e.klass === "ui_changed") c.status = "disabled";
     this.persist();
     if (e.klass === "auth") return this.r(refuse("signed_out", "The system is asking for a sign-in again.", ["ask the operator to sign in again, then retry", "nothing was changed"], { kind }));
-    return this.r(refuse("capability_changed", e.message, ["check_capability to see exactly what changed", "repair_capability to re-learn it", "nothing was changed by this call"], { kind, drift: e.drifts }));
+    return this.r(refuse("capability_changed", e.message, ["nothing was changed by this call", "call find again: Aperture re-learns a changed page by itself when it can prove the result"], { kind, drift: e.drifts }));
+  }
+
+  /** After a page change: re-learn it (read-only, tested). Returns what was proven, or null if it stays disabled. Never used on a write. */
+  private async autoRepair(kind: Kind): Promise<Record<string, unknown> | null> {
+    const c = this.contracts.get(kind);
+    if (!c || c.status !== "disabled" || !this.adapter.repair) return null;
+    const r = await this.repairCapability(kind);
+    if (isRefusal(r) || r.status !== "repaired") return null;
+    return { version: r.version, tests: r.tests, note: "The page changed. Aperture re-learned it and checked the new version against records seen before; nothing was changed." };
   }
 
   /** Read-only: does the page still match what was compiled? */
@@ -590,7 +624,7 @@ export class Wicket {
       if (r.ok) { c.lastOkAt = this.now(); if (c.status === "disabled") { c.status = "active"; c.lastDrift = null; } this.persist(); return { kind, status: c.status, version: c.version, matches_contract: true, notes: r.drifts.filter((d) => !d.blocking), last_ok_at: c.lastOkAt }; }
       if (r.klass === "ui_changed") { c.status = "disabled"; c.lastDrift = { klass: r.klass, drifts: r.drifts, at: this.now() }; }
       this.persist();
-      const next = r.klass === "ui_changed" ? ["repair_capability to re-learn it; changes stay refused until it passes"] : r.klass === "auth" ? ["ask the operator to sign in again"] : ["try again; this is not a change to the page"];
+      const next = r.klass === "ui_changed" ? ["call find again: Aperture re-learns the page by itself and only re-enables it if the result passes its tests"] : r.klass === "auth" ? ["ask the operator to sign in again"] : ["try again; this is not a change to the page"];
       return { kind, status: c.status, version: c.version, matches_contract: false, class: r.klass, drifts: r.drifts, ...(r.note ? { note: r.note } : {}), next };
     });
   }
@@ -599,9 +633,9 @@ export class Wicket {
   async repairCapability(kind: Kind): Promise<Record<string, unknown> | Refusal> {
     this.metrics.calls++;
     const c = this.contracts.get(kind);
-    if (!c || c.status !== "disabled") return this.r(refuse("not_broken", `'${kind}' is not disabled, so there is nothing to repair.`, ["check_capability to look for page changes"]));
+    if (!c || c.status !== "disabled") return this.r(refuse("not_broken", `'${kind}' is not disabled, so there is nothing to repair.`, ["nothing to do"]));
     if (!this.adapter.repair) return this.r(refuse("unsupported", "This system cannot be repaired automatically.", ["ask the operator"]));
-    if (this.repairing.has(kind)) return this.r(refuse("repair_in_progress", "A repair of this capability is already running.", ["wait and call check_capability"]));
+    if (this.repairing.has(kind)) return this.r(refuse("repair_in_progress", "A repair of this capability is already running.", ["wait a moment and try again"]));
     this.repairing.add(kind);
     try {
       return await this.queue.run(async () => {

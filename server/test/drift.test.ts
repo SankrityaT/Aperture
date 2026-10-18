@@ -37,23 +37,15 @@ test("a renamed ordinary column is noticed but does not stop work", async () => 
   assert.notEqual(cap()?.status, "disabled");
 });
 
-test("a renamed KEY column disables the capability, refuses writes, and a repair proven against earlier records re-enables it", async () => {
+test("a renamed KEY column: the next read re-learns the page by itself, proven against earlier records, and work continues on the right record", async () => {
   await fresh(); g.setDrift("rename_key");
-  const f = await w.find(kind);
-  assert.ok(isRefusal(f) && f.error === "capability_changed", JSON.stringify(f).slice(0, 200));
-  assert.equal(cap()?.status, "disabled");
-  const del = await w.preview({ op: "delete", kind, key: "1002" });
-  assert.ok(isRefusal(del) && del.error === "capability_disabled");
-  assert.equal(g.state.residents.length, 91, "nothing was touched");
-
-  const rep = (await w.repairCapability(kind)) as { status: string; version: number; tests: { pass: boolean; name: string }[] };
-  assert.equal(rep.status, "repaired", JSON.stringify(rep).slice(0, 400));
-  assert.equal(rep.version, 2);
-  assert.ok(rep.tests.every((t) => t.pass));
+  const f = (await w.find(kind)) as { count: number; page_changed_and_relearned?: { version: number; tests: { pass: boolean }[] } };
+  assert.equal(f.count, 91, JSON.stringify(f).slice(0, 300));
+  assert.ok(f.page_changed_and_relearned, "the agent is told the page changed and was re-learned");
+  assert.ok(f.page_changed_and_relearned!.tests.every((t) => t.pass));
   assert.equal(cap()?.status, "active");
+  assert.equal(cap()?.version, 2);
   assert.equal(cap()?.repairs, 1);
-
-  // and it works again, on the right record, verified against the system's own state
   w.delegate({ kinds: [kind], ops: ["delete"], limit: 3, ttlMs: 60_000 });
   const done = (await w.apply({ op: "delete", kind, key: "1002" })) as { status: string };
   assert.ok(["done", "done_with_surprise"].includes(done.status), JSON.stringify(done).slice(0, 300));
@@ -61,16 +53,12 @@ test("a renamed KEY column disables the capability, refuses writes, and a repair
   assert.equal(g.state.residents.length, 90);
 });
 
-test("when the delete control stops meaning delete, the repair is NOT proven: it stays disabled and the owner is told", async () => {
+test("when the delete control stops meaning delete, the automatic re-learn is NOT accepted: it stays disabled and the owner is told", async () => {
   await fresh(); g.setDrift("no_delete");
   const f = await w.find(kind);
-  assert.ok(isRefusal(f) && f.error === "capability_changed");
-  const rep = await w.repairCapability(kind);
-  assert.ok(isRefusal(rep) && rep.error === "repair_not_proven", JSON.stringify(rep).slice(0, 300));
+  assert.ok(isRefusal(f) && f.error === "capability_changed", JSON.stringify(f).slice(0, 240));
   assert.equal(cap()?.status, "disabled");
-  const tests = (rep as unknown as { tests: { name: string; pass: boolean }[] }).tests;
-  assert.ok(tests.some((t) => /still means delete/.test(t.name) && !t.pass));
-  assert.ok((w.ownerState() as { escalations: unknown[] }).escalations.length >= 1);
+  assert.ok((w.ownerState() as { escalations: unknown[] }).escalations.length >= 1, "the owner was told");
   const del = await w.preview({ op: "delete", kind, key: "1003" });
   assert.ok(isRefusal(del) && del.error === "capability_disabled");
   assert.equal(g.state.residents.length, 91);
@@ -170,4 +158,17 @@ test("once both pages are compiled, the same delete predicts the devices, commit
   assert.equal(done.verified?.matches_prediction, true);
   assert.equal(g.state.devices.filter((d) => d.dir === "1004").length, 0);
   assert.ok(before >= 1);
+});
+
+test("a cascade into a table Aperture never compiled: the receipt does not overclaim, it says what was compared and that other effects are unknown", async () => {
+  await fresh(); // only the residents page is compiled; no dependency declared
+  const devicesBefore = g.state.devices.length;
+  w.delegate({ kinds: [kind], ops: ["delete"], limit: 3, ttlMs: 60_000 });
+  const r = (await w.apply({ op: "delete", kind, key: "1004" })) as { status: string; verified: { scope: { action: string; known_dependencies: string; tables_compared: string[]; other_effects: string } } };
+  // the truth: the app also removed that resident's devices, in a table Aperture never saw
+  assert.ok(g.state.devices.length < devicesBefore, "the hidden cascade really happened");
+  assert.equal(r.verified.scope.action, "verified");
+  assert.deepEqual(r.verified.scope.tables_compared, [kind], "only the residents table was compared");
+  assert.equal(r.verified.scope.known_dependencies, "none known");
+  assert.match(r.verified.scope.other_effects, /unknown/);
 });

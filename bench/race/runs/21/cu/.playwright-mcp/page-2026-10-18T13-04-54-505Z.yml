@@ -1,0 +1,80 @@
+- generic [ref=f10e2]:
+  - generic [ref=f10e3]:
+    - generic [aria-hidden] [ref=f10e4]: 👑
+    - generic [ref=f10e5]: Log On - GateAdmin32
+    - generic [ref=f10e6]: REPLICA for testing AI agents - not a real gate system, no real data, not affiliated with any vendor
+    - generic [ref=f10e7]:
+      - generic [ref=f10e8]: –
+      - generic [ref=f10e9]: ▢
+      - generic [ref=f10e10]: ✕
+  - generic [ref=f10e11]:
+    - generic [ref=f10e12]: File
+    - generic [ref=f10e13]: Edit
+    - generic [ref=f10e14]: View
+    - generic [ref=f10e15]: Action
+    - generic [ref=f10e16]: Options
+    - generic [ref=f10e17]: Help
+  - toolbar "Toolbar" [ref=f10e18]:
+    - generic "Add" [ref=f10e19]:
+      - generic [aria-hidden] [ref=f10e20]: ➕
+    - generic "Delete" [ref=f10e22]:
+      - generic [aria-hidden] [ref=f10e23]: ⊗
+    - generic "Send Data Now" [ref=f10e25]:
+      - generic [aria-hidden] [ref=f10e26]: ⇉
+      - generic [ref=f10e27]: Snd Data
+    - generic "Receive Data Now" [ref=f10e28]:
+      - generic [aria-hidden] [ref=f10e29]: ⇇
+      - generic [ref=f10e30]: Rcv Data
+    - generic "Receive Transactions Now" [ref=f10e31]:
+      - generic [aria-hidden] [ref=f10e32]: ⇆
+      - generic [ref=f10e33]: Rcv Tran
+    - generic "Sort" [ref=f10e34]:
+      - generic [aria-hidden] [ref=f10e35]: ⇅
+  - tree "Accounts" [ref=f10e38]:
+    - link "Scheduled Transfers" [ref=f10e40] [cursor=pointer]:
+      - /url: /Accounts.aspx
+      - text: ⏰ Scheduled Transfers
+    - link "Accounts" [ref=f10e42] [cursor=pointer]:
+      - /url: /Accounts.aspx
+      - text: 📂 Accounts
+    - treeitem "Cedar Office Park" [ref=f10e43]: 📁 Cedar Office Park
+    - treeitem "Maple Court" [ref=f10e44]: 📁 Maple Court
+    - treeitem "Harbor View Apartments" [ref=f10e45]: 📂 Harbor View Apartments
+    - treeitem "System Information" [ref=f10e46]: ▤ System Information
+    - treeitem "Hold Open" [ref=f10e47]: ⚿ Hold Open
+    - treeitem "Security Level" [ref=f10e48]: 🔒 Security Level
+    - treeitem "Anti Pass" [ref=f10e49]: ⛔ Anti Pass
+    - link "Resident" [ref=f10e51] [cursor=pointer]:
+      - /url: /Residents.aspx
+      - text: 👤 Resident
+    - link "Devices" [ref=f10e53] [cursor=pointer]:
+      - /url: /Devices.aspx
+      - text: ▦ Devices
+    - treeitem "Transactions" [ref=f10e54]: ✎ Transactions
+    - treeitem "Westgate Storage" [ref=f10e55]: 📁 Westgate Storage
+    - link "Log off" [ref=f10e57] [cursor=pointer]:
+      - /url: /Logout.aspx
+      - text: ⏻ Log off
+  - generic [ref=f10e61]:
+    - generic [ref=f10e62]:
+      - generic [ref=f10e63]: Log On
+      - generic [ref=f10e64]: ✕
+    - generic [ref=f10e66]:
+      - group "Enter your user name and password" [ref=f10e67]:
+        - table [ref=f10e69]:
+          - rowgroup [ref=f10e70]:
+            - row [ref=f10e71]:
+              - cell "User name:" [ref=f10e72]
+              - cell [ref=f10e73]:
+                - textbox "User name:" [ref=f10e74]
+            - row [ref=f10e75]:
+              - cell "Password:" [ref=f10e76]
+              - cell [ref=f10e77]:
+                - textbox "Password:" [ref=f10e78]
+      - generic [ref=f10e79]:
+        - button "Log In" [ref=f10e80]
+        - button "Cancel" [ref=f10e81]
+  - generic [ref=f10e82]:
+    - generic [ref=f10e83]: For Help, press F1
+    - generic [ref=f10e84]: Not logged on
+    - generic [ref=f10e85]: NUM

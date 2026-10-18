@@ -1,0 +1,1 @@
+{"run": "browser-user-7", "arm": "browser", "task": "user", "model": "default", "used": "browser", "aperture_calls": 0, "browser_calls": 18, "correct": true, "seconds": 72, "cost": 0.4}

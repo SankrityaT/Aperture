@@ -1,0 +1,110 @@
+- generic [ref=f9e2]:
+  - generic [ref=f9e3]:
+    - generic [aria-hidden] [ref=f9e4]: 👑
+    - generic [ref=f9e5]: Accounts - GateAdmin32
+    - generic [ref=f9e6]: REPLICA for testing AI agents - not a real gate system, no real data, not affiliated with any vendor
+    - generic [ref=f9e7]:
+      - generic [ref=f9e8]: –
+      - generic [ref=f9e9]: ▢
+      - generic [ref=f9e10]: ✕
+  - generic [ref=f9e11]:
+    - generic [ref=f9e12]: File
+    - generic [ref=f9e13]: Edit
+    - generic [ref=f9e14]: View
+    - generic [ref=f9e15]: Action
+    - generic [ref=f9e16]: Options
+    - generic [ref=f9e17]: Help
+  - generic [ref=f9e18]:
+    - toolbar "Toolbar" [ref=f9e19]:
+      - generic "Add" [ref=f9e20]:
+        - generic [aria-hidden] [ref=f9e21]: ➕
+      - generic "Delete" [ref=f9e23]:
+        - generic [aria-hidden] [ref=f9e24]: ⊗
+      - button "Snd Data" [ref=f9e26] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f9e27]: ⇉
+      - generic "Receive Data Now" [ref=f9e29]:
+        - generic [aria-hidden] [ref=f9e30]: ⇇
+        - generic [ref=f9e31]: Rcv Data
+      - generic "Receive Transactions Now" [ref=f9e32]:
+        - generic [aria-hidden] [ref=f9e33]: ⇆
+        - generic [ref=f9e34]: Rcv Tran
+      - generic "Sort" [ref=f9e35]:
+        - generic [aria-hidden] [ref=f9e36]: ⇅
+      - generic "Config Ports" [ref=f9e38]:
+        - generic [aria-hidden] [ref=f9e39]: ⚙
+      - generic "Registration" [ref=f9e41]:
+        - generic [aria-hidden] [ref=f9e42]: 🔑
+      - generic "Activity" [ref=f9e44]:
+        - generic [aria-hidden] [ref=f9e45]: ▥
+      - generic "Messages" [ref=f9e47]:
+        - generic [aria-hidden] [ref=f9e48]: ●
+      - generic "Share Info" [ref=f9e50]:
+        - generic [aria-hidden] [ref=f9e51]: 👥
+    - generic [ref=f9e53]:
+      - tree "Accounts" [ref=f9e54]:
+        - link "Scheduled Transfers" [ref=f9e56] [cursor=pointer]:
+          - /url: /Accounts.aspx
+          - text: ⏰ Scheduled Transfers
+        - link "Accounts" [ref=f9e58] [cursor=pointer]:
+          - /url: /Accounts.aspx
+          - text: 📂 Accounts
+        - treeitem "Cedar Office Park" [ref=f9e59]: 📁 Cedar Office Park
+        - treeitem "Maple Court" [ref=f9e60]: 📁 Maple Court
+        - treeitem "Harbor View Apartments" [ref=f9e61]: 📂 Harbor View Apartments
+        - treeitem "System Information" [ref=f9e62]: ▤ System Information
+        - treeitem "Hold Open" [ref=f9e63]: ⚿ Hold Open
+        - treeitem "Security Level" [ref=f9e64]: 🔒 Security Level
+        - treeitem "Anti Pass" [ref=f9e65]: ⛔ Anti Pass
+        - link "Resident" [ref=f9e67] [cursor=pointer]:
+          - /url: /Residents.aspx
+          - text: 👤 Resident
+        - link "Devices" [ref=f9e69] [cursor=pointer]:
+          - /url: /Devices.aspx
+          - text: ▦ Devices
+        - treeitem "Transactions" [ref=f9e70]: ✎ Transactions
+        - treeitem "Westgate Storage" [ref=f9e71]: 📁 Westgate Storage
+        - link "Log off" [ref=f9e73] [cursor=pointer]:
+          - /url: /Logout.aspx
+          - text: ⏻ Log off
+      - table "Accounts" [ref=f9e76]:
+        - caption [ref=f9e77]: Accounts
+        - rowgroup [ref=f9e78]:
+          - row [ref=f9e79]:
+            - columnheader [ref=f9e80]
+            - columnheader "Account Name" [ref=f9e81]
+            - columnheader "Contact Name" [ref=f9e82]
+            - columnheader "Contact Phone" [ref=f9e83]
+            - columnheader "Series" [ref=f9e84]
+            - columnheader "Status" [ref=f9e85]
+          - row [ref=f9e86]:
+            - cell "▸" [ref=f9e87]
+            - cell "Harbor View Apartments" [ref=f9e88]
+            - cell "Property Office" [ref=f9e89]
+            - cell "555-0142" [ref=f9e90]
+            - cell "30" [ref=f9e91]
+            - cell "History" [ref=f9e92]
+          - row [ref=f9e93]:
+            - cell [ref=f9e94]
+            - cell "Maple Court" [ref=f9e95]
+            - cell [ref=f9e96]
+            - cell [ref=f9e97]
+            - cell "30" [ref=f9e98]
+            - cell "History" [ref=f9e99]
+          - row [ref=f9e100]:
+            - cell [ref=f9e101]
+            - cell "Westgate Storage" [ref=f9e102]
+            - cell [ref=f9e103]
+            - cell [ref=f9e104]
+            - cell "30" [ref=f9e105]
+            - cell "History" [ref=f9e106]
+          - row [ref=f9e107]:
+            - cell [ref=f9e108]
+            - cell "Cedar Office Park" [ref=f9e109]
+            - cell [ref=f9e110]
+            - cell [ref=f9e111]
+            - cell "30" [ref=f9e112]
+            - cell "History" [ref=f9e113]
+  - generic [ref=f9e114]:
+    - generic [ref=f9e115]: For Help, press F1
+    - generic [ref=f9e116]: Ready
+    - generic [ref=f9e117]: NUM

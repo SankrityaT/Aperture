@@ -1,0 +1,1 @@
+{"run": "browser-user-29", "arm": "browser", "task": "user", "model": "sonnet", "used": "browser", "aperture_calls": 0, "browser_calls": 11, "correct": true, "seconds": 43, "cost": 0.12}

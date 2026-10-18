@@ -13,7 +13,7 @@ import { serialize } from "./browser-lock.js";
 import type { Frame, Page } from "playwright-core";
 import type { Adapter, Kind, Rec } from "../types.js";
 import { explorePage, type FieldModel, type FormModel } from "./explore.js";
-import { assertAuthorized } from "./form-adapter.js";
+import { assertAuthorized, assertMayAct } from "./form-adapter.js";
 
 export type ActionType = "delete" | "edit" | "view" | "other";
 
@@ -886,6 +886,7 @@ export class TableAdapter implements Adapter {
   // ---------- writing ----------
 
   async delete(kind: Kind, key: string): Promise<void> {
+    const m = this.models.get(kind); if (m) assertMayAct(m.url, "delete records");
     try { await this.deleteInner(kind, key); } finally { this.memo.clear(); }
   }
 
@@ -984,6 +985,7 @@ export class TableAdapter implements Adapter {
   }
 
   async create(kind: Kind, record: Rec): Promise<void> {
+    const m = this.models.get(kind); if (m) assertMayAct(m.url, "create records");
     try { await this.createInner(kind, record); } finally { this.memo.clear(); }
   }
 

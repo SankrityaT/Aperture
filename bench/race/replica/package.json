@@ -1,0 +1,11 @@
+{
+  "name": "gateadmin-replica",
+  "private": true,
+  "type": "module",
+  "description": "GateAdmin: a replica gate-access admin portal for testing AI agents. Not a real gate system.",
+  "scripts": {
+    "start": "node --env-file=.env server.mjs",
+    "smoke": "node smoke.mjs"
+  },
+  "engines": { "node": ">=20.6" }
+}

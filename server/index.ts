@@ -1,7 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { FileLedger } from "./src/ledger.js";
 import { exclusive } from "./src/generator/browser-lock.js";
-import { llmsTxt, quickstartMd, errorsMd, robotsTxt, NAME_LINE } from "./src/agent-docs.js";
+import { llmsTxt, quickstartMd, errorsMd, robotsTxt, NAME_LINE, skillMd } from "./src/agent-docs.js";
 import { MCPServer } from "mcp-use";
 import { z } from "zod";
 import { Wicket } from "./src/engine.js";
@@ -11,6 +11,7 @@ import { CompositeAdapter } from "./src/adapters/composite.js";
 import { FormAdapter, HumanRequired, NoBrowser, NoSecret, NotAuthorized, type CompileSummary } from "./src/generator/form-adapter.js";
 import { TableAdapter, type TableModel } from "./src/generator/tables.js";
 import { RemoteWorker } from "./src/worker/remote.js";
+import { split } from "./src/worker/split.js";
 import type { Adapter } from "./src/types.js";
 import { OWNER_PAGE } from "./src/owner-page.js";
 import type { Op } from "./src/types.js";
@@ -26,6 +27,7 @@ const server = new MCPServer({
   instructions: [
     "Aperture is for changing records in a web admin portal or legacy business system that has no API: resident lists, user lists, customer or inventory screens, registrar pages.",
     "What it does that driving the page by hand does not: it turns the page into typed tools, shows what a change will affect before it happens (including records that go with it), reads the system back afterwards and compares it with the prediction, gives a receipt, and can undo.",
+    "Reading is open: compile_site works on any public page without setup. Signing in and changing anything only happen on systems the operator listed, through the owner's authority.",
     "Start with find_systems (what you need, in plain words) or compile_site (a page address), then find to get exact keys, then delete or create with dry_run first. Compile every page whose records a change touches.",
     "Not for: systems that have a real API, sites you are not allowed to automate, or CAPTCHA and sign-in steps (a person does those).",
   ].join(" "),
@@ -46,11 +48,21 @@ let worker: RemoteWorker | null = null;
 if (process.env.WICKET_WORKER_URL) {
   worker = new RemoteWorker(process.env.WICKET_WORKER_URL, process.env.WICKET_WORKER_TOKEN ?? "");
   forms = worker.forms; tables = worker.tables;
+  // Optional second browser for public pages on an ordinary connection (see src/worker/split.ts). Without it, one worker does both.
+  if (process.env.WICKET_PUBLIC_WORKER_URL) {
+    const s = split(worker, new RemoteWorker(process.env.WICKET_PUBLIC_WORKER_URL, process.env.WICKET_PUBLIC_WORKER_TOKEN ?? ""));
+    forms = s.forms; tables = s.tables;
+  }
 } else {
   const local = new FormAdapter();
   forms = local; tables = new TableAdapter(() => local.currentPage());
 }
 const wicket = new Wicket(new CompositeAdapter([...(process.env.WICKET_FAKE_SCHOOL === "1" ? [new FakeSchool()] : []), forms, tables]), { rules, ...(process.env.WICKET_LEDGER_PATH ? { ledger: new FileLedger(process.env.WICKET_LEDGER_PATH) } : {}) });
+
+/** Item cards read from public pages are for reading only: refuse a change on them before any plan exists. */
+const readOnly = (kind: string | undefined) => kind && /_items(_\d+)?$/.test(kind) && !tables.kinds().includes(kind) && !forms.kinds().some((k) => k === kind && !/_items(_\d+)?$/.test(k))
+  ? reply({ status: "refused", error: "read_only", detail: `'${kind}' is a list of item cards read from a public page. Aperture reads it; it never changes anything there.`, next: ["use find to read it", "to change records, use a system the operator listed (find_systems)"] })
+  : null;
 
 /** Small on purpose: an agent pays for every token of this. */
 const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), ...(t.keySource === "none" ? { writes: "refused: no column or link on this list identifies a row uniquely, so a change could hit the wrong record. Reading and previews are unavailable for the same reason." } : {}), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}), ...(t.recoveryHints?.length ? { recovery_options_seen: t.recoveryHints, recovery_note: "The application offers these. Aperture has not used or tested them; ask the owner whether a reversible option (archive, deactivate) is enough before deleting." } : {}) });
@@ -63,14 +75,22 @@ const thisPageTables = (all: TableModel[], pageUrl: string) => {
   return { tables: here.map(tableView), ...(others.length ? { also_compiled_and_still_live: others } : {}) };
 };
 /** Some systems record a change in one place and only make it live when a separate step is pressed ("Send Data", "Sync"). We never press it for the agent, so a receipt must not read as "live". */
+// Send steps seen on ANY page compiled in this server's life, with the page they live on: Send often sits on a different page from the records.
+// Kept per system (host and port), so a send step on one system never shows up on another system's receipts.
+const seenSendSteps = new Map<string, { label: string; url: string }>();
+const hostOf = (u: string) => { try { return new URL(u).host; } catch { return u; } };
+const rememberSendSteps = (s: { url: string; send_steps?: string[] }) => { const l = s.send_steps?.[0]; if (l && !seenSendSteps.has(hostOf(s.url))) seenSendSteps.set(hostOf(s.url), { label: l, url: s.url }); };
 const sendStep = async (): Promise<string | null> => {
-  try { const s = await forms.summary(); return s.forms.map((f) => f.submit).filter((x): x is string => !!x).find((x) => /\b(send|sync|upload|push|transmit)\b/i.test(x)) ?? null; } catch { return null; }
+  let here = "";
+  try { const s = await forms.summary(); rememberSendSteps(s); here = hostOf(s.url); } catch { return null; }
+  const found = seenSendSteps.get(here);
+  return found ? `${found.label}' on ${found.url}` : null;
 };
 const replyWrite = async (obj: Record<string, unknown>) => {
   const wrote = typeof obj.receipt === "string" || (typeof obj.committed === "number" && obj.committed > 0);
   if (!wrote) return reply(obj);
   const step = await sendStep();
-  return reply(step ? { ...obj, not_yet_live: `Recorded in this system. It also has a separate step ('${step}') that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner.` } : obj);
+  return reply(step ? { ...obj, not_yet_live: `Recorded in this system. It also has a separate step ('${step}) that Aperture has not pressed, so the change may not be live elsewhere (for example at a gate or another system) until it is sent. Sending goes through publish and needs the owner.` } : obj);
 };
 const reply = (obj: Record<string, unknown>) => ({
   content: [{ type: "text" as const, text: JSON.stringify(obj) }],
@@ -78,7 +98,7 @@ const reply = (obj: Record<string, unknown>) => ({
   isError: obj.status === "refused",
 });
 
-const kindDoc = "Record kind: student, class, enrollment, timetable or guardian.";
+const kindDoc = "Record kind, as compile_site or find_systems named it (for example residents or devices). Call compile_site first if you have none.";
 const keyDoc = "The unique key from find, like S014. Never a name.";
 
 // ---- tools ----
@@ -106,6 +126,7 @@ server.tool(
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, key, dry_run, plan_id }) => {
+    const ro = readOnly(kind); if (ro) return ro;
     if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "delete", kind, key });
     return reply(wicket.present(plan));
@@ -120,6 +141,7 @@ server.tool(
     annotations: { destructiveHint: false, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, record, plan_id }) => {
+    const ro = readOnly(kind); if (ro) return ro;
     if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "create", kind, record: record as Op["record"] });
     return reply(wicket.present(plan));
@@ -129,13 +151,21 @@ server.tool(
 server.tool(
   {
     name: "publish",
-    description: "Push all staged changes to the outside world (for example notifying families). It always needs the owner. Without plan_id it previews and asks the owner. It cannot be undone.",
+    description: "Send staged changes to the outside world (for example to devices, a gate, or another system). It always needs the owner. Without plan_id it previews and asks the owner. It cannot be undone.",
     inputSchema: z.object({ plan_id: z.string().optional() }),
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: true },
   },
   async ({ plan_id }) => {
     if (plan_id) return reply(wicket.present(await wicket.commit(plan_id)));
-    return reply(await wicket.apply({ op: "publish" }));
+    const r = (await wicket.apply({ op: "publish" })) as Record<string, unknown>;
+    // Some systems record changes on one page and send them from another ("Send Data" on an accounts page). Aperture does not press that
+    // step; the owner does. Say so, with the count, instead of "nothing staged", which would contradict the receipts' not_yet_live.
+    if (r.error === "nothing_to_publish") {
+      const step = await sendStep();
+      const recorded = [...wicket.receipts.values()].filter((x) => (x.status === "done" || x.status === "done_with_surprise") && x.op.op !== "publish").length;
+      if (step && recorded > 0) return reply({ status: "refused", error: "send_needs_owner", detail: `${recorded} change(s) are recorded in this system but not sent. Sending is a separate step ('${step}) that reaches the outside world (for example the gate), and only the owner does it.`, changes_recorded_not_sent: recorded, next: ["tell the owner the changes are ready to send", "report the change as recorded, not as live"] });
+    }
+    return reply(r);
   },
 );
 
@@ -144,7 +174,7 @@ const opSchema = z.object({ op: z.enum(["delete", "create", "update", "publish"]
 // ---- compiling a web system on demand (the generator) ----
 
 const compileFail = (e: unknown) => {
-  if (e instanceof NotAuthorized) return reply({ status: "refused", error: "not_authorized", detail: e.message, next: ["ask the operator to add the host they own or have permission to use", "never try to get around this"] });
+  if (e instanceof NotAuthorized) return reply({ status: "refused", error: "not_authorized", detail: e.message, next: ["to read: use a public address (internal and private addresses are never browsed)", "to sign in or change something: only on systems the operator listed; ask the operator to list it", "never try to get around this"] });
   if (e instanceof NoSecret) return reply({ status: "refused", error: "no_stored_login", detail: e.message, next: ["ask the operator to store the login on the server", "never ask a person to paste a password into the chat"] });
   if (e instanceof HumanRequired) return reply({ status: "refused", error: "human_required", detail: e.message, next: ["a person must complete this step, then call compile_site again"] });
   if (e instanceof NoBrowser) return reply({ status: "refused", error: "no_browser", detail: e.message, next: ["run the worker on a machine with a browser (see BRIEF.md)"] });
@@ -156,7 +186,7 @@ server.tool(
     name: "compile_site",
     description: "Point Aperture at a web page and it reads the page's forms, read-only, and turns each one into a typed record you can fill. Only works on hosts the operator has authorized. It never submits anything and never tries to get past a CAPTCHA: a person does that. Returns each form's id, fields (label, type, required, allowed values) and submit button.",
     inputSchema: z.object({
-      url: z.string().describe("The page address, like http://host/signup. With login set, this is the login page."),
+      url: z.string().optional().describe("The page address. With login set, this is the sign-in page. Leave it out to read the current page again (after a submit, or when a page changed)."),
       login: z.string().optional().describe("Name of a login the operator stored on the server. You never see the password."),
       then: z.string().optional().describe("With login: the page to compile after signing in."),
     }),
@@ -166,49 +196,23 @@ server.tool(
   ({ url, login, then }) => exclusive(async () => {
     try {
       if (login) {
+        if (!url) return reply({ status: "refused", error: "missing_url", detail: "With login, give the sign-in page as url.", next: ["call compile_site with url (the sign-in page), login and then (the page you want)"] });
         const r = await forms.signIn(url, login);
         if (!r.signedIn) return reply({ status: "refused", error: "login_failed", detail: r.detail, next: ["ask the operator to check the stored login"] });
         if (then) await forms.open(then);
       }
-      const s = login ? await forms.refresh() : await forms.compile(url);
+      const s = login || !url ? await forms.refresh() : await forms.compile(url);
       for (const f of s.forms) rules.set(f.id, "update", [], true); // filling fields is a reversible draft
+      rememberSendSteps(s);
       const t = await tables.attach();
       wicket.flush();
-      return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
+      return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["item cards (search results, product grids): find(kind) with the items kind; read-only", "records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
     } catch (e) { return compileFail(e); }
   }),
 );
 
-server.tool(
-  { name: "describe_forms", description: "List the compiled forms again: ids, fields, types, allowed values, hints. Use it when you are unsure what a field accepts.", inputSchema: z.object({}), annotations: { readOnlyHint: true, openWorldHint: false } },
-  async () => { try { return reply({ status: "ok", ...(await forms.summary()) }); } catch (e) { return compileFail(e); } },
-);
 
-server.tool(
-  { name: "refresh_forms", description: "Read the current page again, for example after a submit moved to the next page. Read-only.", inputSchema: z.object({}), annotations: { readOnlyHint: true, openWorldHint: true } },
-  () => exclusive(async () => {
-    try {
-      const s = await forms.refresh();
-      for (const f of s.forms) rules.set(f.id, "update", [], true);
-      const t = await tables.attach();
-      wicket.flush();
-      return reply({ status: "refreshed", ...s, ...(t.length ? thisPageTables(t, s.url) : {}) });
-    } catch (e) { return compileFail(e); }
-  }),
-);
 
-server.tool(
-  {
-    name: "update",
-    description: "Change fields on one record, or fill a compiled form (kind is the form id, key is 'current'). With dry_run: true it previews old -> new for each field and checks the values. Commit with plan_id. For most jobs use apply with op 'update'. Filling a form never submits it.",
-    inputSchema: z.object({ kind: z.string().describe(kindDoc), key: z.string().default("current").describe(keyDoc), patch: z.record(z.string(), z.unknown()), dry_run: z.boolean().optional(), plan_id: z.string().optional() }),
-    annotations: { destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  },
-  async ({ kind, key, patch, plan_id }) => {
-    if (plan_id) return reply(wicket.present(await wicket.commit(plan_id)));
-    return reply(wicket.present(await wicket.preview({ op: "update", kind, key, patch })));
-  },
-);
 
 server.tool(
   {
@@ -217,28 +221,24 @@ server.tool(
     inputSchema: opSchema,
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async (args) => replyWrite((await wicket.apply(args as Op)) as Record<string, unknown>),
+  async (args) => readOnly((args as Op).kind) ?? replyWrite((await wicket.apply(args as Op)) as Record<string, unknown>),
 );
 
 server.tool(
   {
     name: "apply_batch",
     description: "Apply many changes in one call. Everything inside the rules commits. Items that need the owner are listed with plan_ids. Refusals are listed with next moves. Stops at the first failed commit. Returns one summary, so you do not need many round trips.",
-    inputSchema: z.object({ ops: z.array(opSchema).min(1).max(50), stop_on_failure: z.boolean().optional(), dry_run: z.boolean().optional().describe("Change nothing. Returns the total blast radius: everything that would be removed, dependents included."), canary: z.number().int().min(1).max(10).optional().describe("Commit only the first N, check they did exactly what was predicted, and halt the rest if any surprised or failed.") }),
+    inputSchema: z.object({ ops: z.array(opSchema).min(1).max(50).optional(), plan_ids: z.array(z.string()).min(1).max(50).optional().describe("Instead of ops: commit plans the owner already approved, in order, with the first `canary` checked first."), stop_on_failure: z.boolean().optional(), dry_run: z.boolean().optional().describe("Change nothing. Returns the total blast radius: everything that would be removed, dependents included."), canary: z.number().int().min(1).max(10).optional().describe("Commit only the first N, check they did exactly what was predicted, and halt the rest if any surprised or failed.") }),
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async ({ ops, stop_on_failure, dry_run, canary }) => replyWrite(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary })),
+  async ({ ops, plan_ids, stop_on_failure, dry_run, canary }) => {
+    for (const o of ops ?? []) { const ro = readOnly((o as Op).kind); if (ro) return ro; }
+    if (plan_ids?.length) return replyWrite(await wicket.commitBatch(plan_ids, canary ?? 1));
+    if (!ops?.length) return reply({ status: "refused", error: "nothing_to_do", detail: "Give ops (changes to make) or plan_ids (approved plans to commit).", next: ["apply_batch with ops: [{op, kind, key}]"] });
+    return replyWrite(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary }));
+  },
 );
 
-server.tool(
-  {
-    name: "commit_batch",
-    description: "Commit several plans the owner has approved, in order. The first `canary` ones run carefully and are checked against the prediction; if any surprises, the rest are not touched and you get the receipt to undo.",
-    inputSchema: z.object({ plan_ids: z.array(z.string()).min(1).max(50), canary: z.number().int().min(1).max(10).optional() }),
-    annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
-  },
-  async ({ plan_ids, canary }) => replyWrite(await wicket.commitBatch(plan_ids, canary ?? 1)),
-);
 
 // ---- shared profiles: what one agent learned about a system, for the next agent ----
 // Structure and learned rules only. Never records, never credentials. Held in memory: a restart empties it.
@@ -258,7 +258,7 @@ const words = (t: string) => new Set(t.toLowerCase().replace(/[^a-z0-9 ]+/g, " "
 server.tool(
   {
     name: "find_systems",
-    description: "Start here when you are not given an address. Describe what you need to do in plain words (for example 'remove a student from the school list' or 'send an invoice'). Returns the systems you are allowed to work in that match, with the address to compile and any profile other agents shared. It never searches the open web.",
+    description: "Start here when you are not given an address. Describe what you need to do in plain words (for example 'remove a resident from the access list' or 'update a customer record'). Returns the systems you are allowed to work in that match, with the address to compile and any profile other agents shared. It never searches the open web.",
     inputSchema: z.object({ need: z.string().describe("What you need to do or find, in plain words.") }),
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
@@ -272,44 +272,13 @@ server.tool(
       const hits = [...want].filter((w) => have.has(w));
       return { sy, host, prof, hits, score: hits.length };
     }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
-    if (!systems.length) return reply({ status: "refused", error: "no_systems_registered", detail: "The operator has not listed any systems for agents to work in.", next: ["ask the operator to set WICKET_SYSTEMS", "or call compile_site with an address they gave you"] });
-    if (!scored.length) return reply({ status: "none_found", detail: "Nothing the operator registered matches that description.", registered: systems.map((x) => x.name), next: ["describe it with different words", "ask the operator to register the system you need"] });
+    if (!systems.length) return reply({ status: "refused", error: "no_systems_registered", detail: "The operator has not listed any systems for agents to work in.", next: ["to read a public site: call compile_site with its address", "to change records: ask the operator to register the system"] });
+    if (!scored.length) return reply({ status: "none_found", detail: "Nothing the operator registered matches that description.", registered: systems.map((x) => x.name), next: ["describe it with different words", "to read a public site: call compile_site with its address", "to change records somewhere else: ask the operator to register it"] });
     return reply({ status: "found", matches: scored.map((x) => ({ name: x.sy.name, address: x.sy.url, about: x.sy.about, ...(x.sy.login ? { sign_in: `needs the operator's stored login '${x.sy.login}': compile_site with login '${x.sy.login}', url '${x.sy.sign_in_url ?? x.sy.url}', then '${x.sy.url}'. You never see or type the password.` } : {}), matched_on: x.hits, shared_profile: x.prof ? { dependents_known: x.prof.rules.filter((r) => r.cascades.length).length, shared_at: x.prof.shared_at } : null })), next: ["compile_site with the address of the best match", "if it has a shared profile, call use_profile with its host before changing anything"] });
   },
 );
 
-server.tool(
-  {
-    name: "share_profile",
-    description: "Publish what you learned about the system you compiled, for other agents: its tables, keys, and the dependents you saw when deletes did more than predicted. Structure and rules only; no records, no logins. Other agents load it with use_profile.",
-    inputSchema: z.object({ site: z.string().describe("The site's host, like crm.example.com. It is the profile's name.") }),
-    annotations: { destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  },
-  async ({ site }) => {
-    const t = await tables.summary();
-    if (!t.length) return reply({ status: "refused", error: "nothing_compiled", detail: "No tables are compiled yet, so there is nothing to share.", next: ["compile_site first"] });
-    const kinds = new Set(t.map((x) => x.id));
-    const rules = wicket.rules.exportRules().filter((r) => kinds.has(r.kind) && (r.cascades.length || r.vouched));
-    const profile: Profile = { site: siteKey(site), shared_at: new Date().toISOString(), tables: t.map(tableView), rules };
-    registry.set(profile.site, profile);
-    return reply({ status: "shared", site: profile.site, tables: profile.tables.length, rules: rules.length, next: ["another agent can call use_profile with this site", "open /registry to see all shared profiles"] });
-  },
-);
 
-server.tool(
-  {
-    name: "use_profile",
-    description: "Load what another agent learned about a system. You still compile the page yourself (that takes a second). What you gain is the dependents it saw: your previews and dry runs now predict them. Nothing is trusted blindly: your first real delete still asks the owner and takes a full copy, then confirms the rule itself.",
-    inputSchema: z.object({ site: z.string() }),
-    annotations: { readOnlyHint: false, idempotentHint: true, openWorldHint: false },
-  },
-  async ({ site }) => {
-    const p = registry.get(siteKey(site));
-    if (!p) return reply({ status: "refused", error: "no_profile", detail: `Nobody has shared a profile for ${siteKey(site)}.`, known_sites: [...registry.keys()], next: ["compile_site yourself, then share_profile so the next agent has it"] });
-    const learned = wicket.rules.importRules(p.rules.map((r) => ({ kind: r.kind, op: r.op as "delete" | "create" | "update", cascades: r.cascades })));
-    return reply({ status: "loaded", site: p.site, shared_at: p.shared_at, dependents_learned: learned, tables_described: p.tables.map((x) => x.id), trust: "Your first delete here still asks the owner and takes a full copy. Rules become confirmed only by your own matching run." });
-  },
-);
 
 const esc = (x: string) => x.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]!));
 server.get("/registry/:site", (c) => {
@@ -323,45 +292,20 @@ server.get("/registry/:site", (c) => {
 
 server.get("/registry", (c) => c.json({ note: "Shared profiles: structure and learned rules only. In memory; a restart empties it.", profiles: [...registry.values()] }));
 
-server.tool(
-  {
-    name: "check_capability",
-    description: "Read-only. Does the page still match what was compiled for this kind? Returns matches_contract, or what changed and how serious it is (ui_changed stops work on the kind; signed out and transient errors do not). Changes nothing.",
-    inputSchema: z.object({ kind: z.string() }),
-    annotations: { readOnlyHint: true, openWorldHint: false },
-  },
-  async ({ kind }) => reply((await wicket.checkCapability(kind)) as Record<string, unknown>),
-);
 
-server.tool(
-  {
-    name: "repair_capability",
-    description: "For a capability that was disabled because its page changed: re-learn the page and re-enable it only if every test passes (a matching list, a usable key, delete still meaning delete, and earlier records still being the same records). Reads only; never changes a record. If it cannot prove the repair, it stays disabled and the owner is told.",
-    inputSchema: z.object({ kind: z.string() }),
-    annotations: { destructiveHint: false, idempotentHint: false, openWorldHint: false },
-  },
-  async ({ kind }) => reply((await wicket.repairCapability(kind)) as Record<string, unknown>),
-);
 
-server.tool(
-  {
-    name: "reconcile",
-    description: "Use when commit says outcome_unknown (the server stopped while a change was running). Reads the system to find out what really happened, and never re-runs the change. Returns a receipt if it happened, or retires the plan if it did not.",
-    inputSchema: z.object({ plan_id: z.string() }),
-    annotations: { destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  },
-  async ({ plan_id }) => reply(await wicket.reconcile(plan_id)),
-);
 
 server.tool(
   {
     name: "get_plan",
-    description: "Check a plan: awaiting_approval, approved, expired, committed. Use it to poll for the owner's decision instead of retrying commit.",
+    description: "Check a plan: awaiting_approval, approved, expired, committed. Use it to wait for the owner's decision instead of retrying. If the outcome of a change is unknown (the server stopped while it ran), this reads the system and says what really happened; it never runs the change again.",
     inputSchema: z.object({ plan_id: z.string(), wait_seconds: z.number().int().min(0).max(25).optional().describe("Wait up to this long for the owner to decide, so you do not burn turns polling.") }),
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
   async ({ plan_id, wait_seconds }) => {
     let plan = wicket.getPlan(plan_id) as Record<string, unknown>;
+    // A plan whose outcome is unknown (the server stopped mid-change) is resolved here by reading the system. It is never re-run.
+    if (plan.status === "unknown") return reply((await wicket.reconcile(plan_id)) as Record<string, unknown>);
     const until = Date.now() + (wait_seconds ?? 0) * 1000;
     while (plan.status === "awaiting_approval" && Date.now() < until) { await new Promise((r) => setTimeout(r, 1000)); plan = wicket.getPlan(plan_id) as Record<string, unknown>; }
     return reply(plan);
@@ -417,8 +361,21 @@ const originOf = (c: { req: { url: string; header: (k: string) => string | undef
 server.get("/llms.txt", (c) => c.text(llmsTxt(originOf(c))));
 server.get("/quickstart.md", (c) => c.text(quickstartMd(originOf(c))));
 server.get("/errors.md", (c) => c.text(errorsMd(originOf(c))));
+server.get("/skill.md", (c) => c.text(skillMd));
 server.get("/robots.txt", (c) => c.text(robotsTxt(originOf(c))));
 server.get("/", (c) => c.text(`Aperture\n\n${NAME_LINE}\n\nAn MCP server for working safely in web systems that have no API.\nMCP endpoint: ${originOf(c)}/mcp\nStart: ${originOf(c)}/llms.txt\n`));
+
+// Access to the MCP endpoint. With APERTURE_ACCESS_KEYS set, every call needs one of the keys: an Authorization: Bearer header,
+// an x-aperture-key header, or ?key= on the URL (for clients that cannot send headers). The docs pages stay public.
+// Without the setting the endpoint is open (local development only).
+const ACCESS_KEYS = (process.env.APERTURE_ACCESS_KEYS ?? "").split(",").map((k) => k.trim()).filter((k) => k.length >= 16);
+const keyOk = (given: string | undefined) => !!given && ACCESS_KEYS.some((k) => { const a = Buffer.from(given), b = Buffer.from(k); return a.length === b.length && timingSafeEqual(a, b); });
+server.use("/mcp", async (c, next) => {
+  if (!ACCESS_KEYS.length) return next();
+  const given = (c.req.header("authorization") ?? "").replace(/^Bearer\s+/i, "") || c.req.header("x-aperture-key") || c.req.query("key");
+  if (keyOk(given)) return next();
+  return c.json({ jsonrpc: "2.0", id: null, error: { code: -32001, message: "Aperture needs an access key. Send Authorization: Bearer <key>, or add ?key=<key> to the server URL. Ask the operator for a key." } }, 401);
+});
 
 server.get("/owner", (c) => c.html(OWNER_PAGE));
 server.get("/owner/state", (c) => (allowed(c) ? c.json(wicket.ownerState()) : c.json({ error: "not allowed" }, 403)));

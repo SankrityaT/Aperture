@@ -1,0 +1,903 @@
+- generic [ref=f7e2]:
+  - navigation "Main menu":
+    - link "Skip to main content" [ref=f7e3] [cursor=pointer]:
+      - /url: "#wpbody-content"
+    - link "Skip to toolbar" [ref=f7e4] [cursor=pointer]:
+      - /url: "#wp-toolbar"
+    - list [ref=f7e7]:
+      - listitem [ref=f7e8]:
+        - link "Dashboard" [ref=f7e9] [cursor=pointer]:
+          - /url: index.php
+          - generic [aria-hidden] [ref=f7e10]: 
+        - list [ref=f7e12]:
+          - listitem [ref=f7e13]:
+            - link "Home" [ref=f7e14] [cursor=pointer]:
+              - /url: index.php
+          - listitem [ref=f7e15]:
+            - link "Updates" [ref=f7e16] [cursor=pointer]:
+              - /url: update-core.php
+      - listitem [aria-hidden] [ref=f7e17]
+      - listitem [ref=f7e19]:
+        - link "Posts" [ref=f7e20] [cursor=pointer]:
+          - /url: edit.php
+          - generic [aria-hidden] [ref=f7e21]: 
+        - list [ref=f7e23]:
+          - listitem [ref=f7e24]:
+            - link "All Posts" [ref=f7e25] [cursor=pointer]:
+              - /url: edit.php
+          - listitem [ref=f7e26]:
+            - link "Add Post" [ref=f7e27] [cursor=pointer]:
+              - /url: post-new.php
+          - listitem [ref=f7e28]:
+            - link "Categories" [ref=f7e29] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=category
+          - listitem [ref=f7e30]:
+            - link "Tags" [ref=f7e31] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=post_tag
+      - listitem [ref=f7e32]:
+        - link "Media" [ref=f7e33] [cursor=pointer]:
+          - /url: upload.php
+          - generic [aria-hidden] [ref=f7e34]: 
+        - list [ref=f7e36]:
+          - listitem [ref=f7e37]:
+            - link "Library" [ref=f7e38] [cursor=pointer]:
+              - /url: upload.php
+          - listitem [ref=f7e39]:
+            - link "Add Media File" [ref=f7e40] [cursor=pointer]:
+              - /url: media-new.php
+      - listitem [ref=f7e41]:
+        - link "Pages" [ref=f7e42] [cursor=pointer]:
+          - /url: edit.php?post_type=page
+          - generic [aria-hidden] [ref=f7e43]: 
+        - list [ref=f7e45]:
+          - listitem [ref=f7e46]:
+            - link "All Pages" [ref=f7e47] [cursor=pointer]:
+              - /url: edit.php?post_type=page
+          - listitem [ref=f7e48]:
+            - link "Add Page" [ref=f7e49] [cursor=pointer]:
+              - /url: post-new.php?post_type=page
+      - listitem [ref=f7e50]:
+        - link "Comments" [ref=f7e51] [cursor=pointer]:
+          - /url: edit-comments.php
+          - generic [aria-hidden] [ref=f7e52]: 
+      - listitem [aria-hidden] [ref=f7e54]
+      - listitem [ref=f7e56]:
+        - link "Appearance" [ref=f7e57] [cursor=pointer]:
+          - /url: themes.php
+          - generic [aria-hidden] [ref=f7e58]: 
+        - list [ref=f7e60]:
+          - listitem [ref=f7e61]:
+            - link "Themes" [ref=f7e62] [cursor=pointer]:
+              - /url: themes.php
+          - listitem [ref=f7e63]:
+            - link "Editor" [ref=f7e64] [cursor=pointer]:
+              - /url: site-editor.php
+          - listitem [ref=f7e65]:
+            - link "Fonts" [ref=f7e66] [cursor=pointer]:
+              - /url: font-library.php
+      - listitem [ref=f7e67]:
+        - link "Plugins" [ref=f7e68] [cursor=pointer]:
+          - /url: plugins.php
+          - generic [aria-hidden] [ref=f7e69]: 
+        - list [ref=f7e71]:
+          - listitem [ref=f7e72]:
+            - link "Installed Plugins" [ref=f7e73] [cursor=pointer]:
+              - /url: plugins.php
+          - listitem [ref=f7e74]:
+            - link "Add Plugin" [ref=f7e75] [cursor=pointer]:
+              - /url: plugin-install.php
+      - listitem [ref=f7e76]:
+        - link "Users" [ref=f7e77] [cursor=pointer]:
+          - /url: users.php
+          - generic [aria-hidden] [ref=f7e78]: 
+        - list [ref=f7e80]:
+          - listitem [ref=f7e81]:
+            - link "All Users" [ref=f7e82] [cursor=pointer]:
+              - /url: users.php
+          - listitem [ref=f7e83]:
+            - link "Add User" [ref=f7e84] [cursor=pointer]:
+              - /url: user-new.php
+          - listitem [ref=f7e85]:
+            - link "Profile" [ref=f7e86] [cursor=pointer]:
+              - /url: profile.php
+      - listitem [ref=f7e87]:
+        - link "Tools" [ref=f7e88] [cursor=pointer]:
+          - /url: tools.php
+          - generic [aria-hidden] [ref=f7e89]: 
+        - list [ref=f7e91]:
+          - listitem [ref=f7e92]:
+            - link "Available Tools" [ref=f7e93] [cursor=pointer]:
+              - /url: tools.php
+          - listitem [ref=f7e94]:
+            - link "Import" [ref=f7e95] [cursor=pointer]:
+              - /url: import.php
+          - listitem [ref=f7e96]:
+            - link "Export" [ref=f7e97] [cursor=pointer]:
+              - /url: export.php
+          - listitem [ref=f7e98]:
+            - link "Site Health" [ref=f7e99] [cursor=pointer]:
+              - /url: site-health.php
+          - listitem [ref=f7e100]:
+            - link "Export Personal Data" [ref=f7e101] [cursor=pointer]:
+              - /url: export-personal-data.php
+          - listitem [ref=f7e102]:
+            - link "Erase Personal Data" [ref=f7e103] [cursor=pointer]:
+              - /url: erase-personal-data.php
+          - listitem [ref=f7e104]:
+            - link "Theme File Editor" [ref=f7e105] [cursor=pointer]:
+              - /url: theme-editor.php
+          - listitem [ref=f7e106]:
+            - link "Plugin File Editor" [ref=f7e107] [cursor=pointer]:
+              - /url: plugin-editor.php
+      - listitem [ref=f7e108]:
+        - link "Settings" [ref=f7e109] [cursor=pointer]:
+          - /url: options-general.php
+          - generic [aria-hidden] [ref=f7e110]: 
+        - list [ref=f7e112]:
+          - listitem [ref=f7e113]:
+            - link "General" [ref=f7e114] [cursor=pointer]:
+              - /url: options-general.php
+          - listitem [ref=f7e115]:
+            - link "Connectors" [ref=f7e116] [cursor=pointer]:
+              - /url: options-connectors.php
+          - listitem [ref=f7e117]:
+            - link "Writing" [ref=f7e118] [cursor=pointer]:
+              - /url: options-writing.php
+          - listitem [ref=f7e119]:
+            - link "Reading" [ref=f7e120] [cursor=pointer]:
+              - /url: options-reading.php
+          - listitem [ref=f7e121]:
+            - link "Discussion" [ref=f7e122] [cursor=pointer]:
+              - /url: options-discussion.php
+          - listitem [ref=f7e123]:
+            - link "Media" [ref=f7e124] [cursor=pointer]:
+              - /url: options-media.php
+          - listitem [ref=f7e125]:
+            - link "Permalinks" [ref=f7e126] [cursor=pointer]:
+              - /url: options-permalink.php
+          - listitem [ref=f7e127]:
+            - link "Privacy" [ref=f7e128] [cursor=pointer]:
+              - /url: options-privacy.php
+      - listitem [ref=f7e129]:
+        - button "Collapse Main menu" [expanded] [ref=f7e130] [cursor=pointer]:
+          - generic [ref=f7e132]: Collapse Menu
+  - generic [ref=f7e133]:
+    - generic [ref=f7e134]:
+      - navigation "Toolbar":
+        - menu:
+          - group [ref=f7e135]:
+            - menuitem "About WordPress" [ref=f7e136] [cursor=pointer]
+          - group [ref=f7e139]:
+            - menuitem "Test Site" [ref=f7e140] [cursor=pointer]
+          - group [ref=f7e141]:
+            - menuitem "⌘K Open command palette" [ref=f7e142] [cursor=pointer]:
+              - generic [ref=f7e144]:
+                - text: ⌘K
+                - generic [ref=f7e145]: Open command palette
+          - group [ref=f7e146]:
+            - menuitem "0 Comments in moderation" [ref=f7e147] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f7e149]: "0"
+          - group [ref=f7e151]:
+            - menuitem "New" [ref=f7e152] [cursor=pointer]
+        - menu [ref=f7e155]:
+          - group [ref=f7e156]:
+            - menuitem "Howdy, admin" [ref=f7e157] [cursor=pointer]
+    - main [ref=f7e158]:
+      - generic [ref=f7e159]:
+        - generic [ref=f7e160]:
+          - button "Screen Options" [ref=f7e162] [cursor=pointer]
+          - button "Help" [ref=f7e164] [cursor=pointer]
+        - generic [ref=f7e165]:
+          - heading "Users" [level=1] [ref=f7e166]
+          - link "Add User" [ref=f7e167] [cursor=pointer]:
+            - /url: http://localhost:8082/wp-admin/user-new.php
+          - generic [ref=f7e168]:
+            - text: "Search results for:"
+            - strong [ref=f7e169]: tester
+          - heading "Filter users list" [level=2] [ref=f7e170]
+          - list [ref=f7e171]:
+            - listitem [ref=f7e172]:
+              - link "All (23)" [ref=f7e173] [cursor=pointer]:
+                - /url: users.php
+              - text: "|"
+            - listitem [ref=f7e174]:
+              - link "Administrator (1)" [ref=f7e175] [cursor=pointer]:
+                - /url: users.php?role=administrator
+              - text: "|"
+            - listitem [ref=f7e176]:
+              - link "Subscriber (22)" [ref=f7e177] [cursor=pointer]:
+                - /url: users.php?role=subscriber
+          - generic [ref=f7e178]:
+            - paragraph [ref=f7e179]:
+              - generic [ref=f7e180]: "Search Users:"
+              - searchbox "Search Users:" [ref=f7e181]: tester
+              - button "Search Users" [ref=f7e182] [cursor=pointer]
+            - generic [ref=f7e183]:
+              - generic [ref=f7e184]:
+                - generic [ref=f7e185]: Select bulk action
+                - combobox "Select bulk action" [ref=f7e186] [cursor=pointer]:
+                  - option "Bulk actions" [selected]
+                  - option "Delete"
+                  - option "Send password reset"
+                - button "Apply" [ref=f7e187] [cursor=pointer]
+              - generic [ref=f7e188]:
+                - generic [ref=f7e189]: Change role to…
+                - combobox "Change role to…" [ref=f7e190] [cursor=pointer]:
+                  - option "Change role to…" [selected]
+                  - option "Subscriber"
+                  - option "Contributor"
+                  - option "Author"
+                  - option "Editor"
+                  - option "Administrator"
+                  - option "— No role for this site —"
+                - button "Change" [ref=f7e191] [cursor=pointer]
+              - heading "Users list navigation" [level=2] [ref=f7e192]
+              - generic [ref=f7e193]:
+                - text: 22 items
+                - generic [ref=f7e194]:
+                  - generic [aria-hidden] [ref=f7e195]: «
+                  - generic [aria-hidden] [ref=f7e196]: ‹
+                  - generic [ref=f7e197]:
+                    - generic [ref=f7e198]: Current Page
+                    - textbox "Current Page" [ref=f7e199]: "1"
+                    - generic [ref=f7e200]: of 2
+                  - link "Next page" [ref=f7e201] [cursor=pointer]:
+                    - /url: http://localhost:8082/wp-admin/users.php?s=tester&paged=2
+                    - text: ›
+                  - link "Last page" [ref=f7e203] [cursor=pointer]:
+                    - /url: http://localhost:8082/wp-admin/users.php?s=tester&paged=2
+                    - text: »
+            - heading "Users list" [level=2] [ref=f7e205]
+            - table [ref=f7e206]:
+              - caption [ref=f7e207]: Table ordered by Username. Ascending.
+              - rowgroup [ref=f7e208]:
+                - row [ref=f7e209]:
+                  - cell "Select All" [ref=f7e210]:
+                    - checkbox "Select All" [ref=f7e211] [cursor=pointer]
+                  - columnheader [ref=f7e214]:
+                    - link "Username" [ref=f7e215] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/users.php?s=tester&orderby=login&order=desc
+                  - columnheader "Name" [ref=f7e220]
+                  - columnheader [ref=f7e221]:
+                    - link "Email Sort ascending." [ref=f7e222] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/users.php?s=tester&orderby=email&order=asc
+                      - generic [ref=f7e223]: Email
+                      - generic [ref=f7e227]: Sort ascending.
+                  - columnheader "Role" [ref=f7e228]
+                  - columnheader "Posts" [ref=f7e229]
+              - rowgroup [ref=f7e230]:
+                - row [ref=f7e231]:
+                  - cell "Select tester1" [ref=f7e232]:
+                    - checkbox "Select tester1" [ref=f7e233] [cursor=pointer]
+                  - rowheader "tester1" [ref=f7e236]:
+                    - strong [ref=f7e237]:
+                      - link "tester1" [ref=f7e238] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=2&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e239]:
+                      - generic [ref=f7e240]:
+                        - link "Edit" [ref=f7e241] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=2&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e242]:
+                        - link "Delete" [ref=f7e243] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=2&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e244]:
+                        - link "View posts by Test1 User" [ref=f7e245] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=2
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e247] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=2&_wpnonce=86bb566a0d
+                  - cell "Test1 User" [ref=f7e248]
+                  - cell [ref=f7e249]:
+                    - link "tester1@example.test" [ref=f7e250] [cursor=pointer]:
+                      - /url: mailto:tester1@example.test
+                  - cell "Subscriber" [ref=f7e251]
+                  - cell "0" [ref=f7e252]
+                - row [ref=f7e253]:
+                  - cell "Select tester10" [ref=f7e254]:
+                    - checkbox "Select tester10" [ref=f7e255] [cursor=pointer]
+                  - rowheader "tester10" [ref=f7e258]:
+                    - strong [ref=f7e259]:
+                      - link "tester10" [ref=f7e260] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=11&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e261]:
+                      - generic [ref=f7e262]:
+                        - link "Edit" [ref=f7e263] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=11&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e264]:
+                        - link "Delete" [ref=f7e265] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=11&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e266]:
+                        - link "View posts by Test10 User" [ref=f7e267] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=11
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e269] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=11&_wpnonce=86bb566a0d
+                  - cell "Test10 User" [ref=f7e270]
+                  - cell [ref=f7e271]:
+                    - link "tester10@example.test" [ref=f7e272] [cursor=pointer]:
+                      - /url: mailto:tester10@example.test
+                  - cell "Subscriber" [ref=f7e273]
+                  - cell "0" [ref=f7e274]
+                - row [ref=f7e275]:
+                  - cell "Select tester11" [ref=f7e276]:
+                    - checkbox "Select tester11" [ref=f7e277] [cursor=pointer]
+                  - rowheader "tester11" [ref=f7e280]:
+                    - strong [ref=f7e281]:
+                      - link "tester11" [ref=f7e282] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=12&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e283]:
+                      - generic [ref=f7e284]:
+                        - link "Edit" [ref=f7e285] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=12&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e286]:
+                        - link "Delete" [ref=f7e287] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=12&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e288]:
+                        - link "View posts by Test11 User" [ref=f7e289] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=12
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e291] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=12&_wpnonce=86bb566a0d
+                  - cell "Test11 User" [ref=f7e292]
+                  - cell [ref=f7e293]:
+                    - link "tester11@example.test" [ref=f7e294] [cursor=pointer]:
+                      - /url: mailto:tester11@example.test
+                  - cell "Subscriber" [ref=f7e295]
+                  - cell "0" [ref=f7e296]
+                - row [ref=f7e297]:
+                  - cell "Select tester12" [ref=f7e298]:
+                    - checkbox "Select tester12" [ref=f7e299] [cursor=pointer]
+                  - rowheader "tester12" [ref=f7e302]:
+                    - strong [ref=f7e303]:
+                      - link "tester12" [ref=f7e304] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=13&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e305]:
+                      - generic [ref=f7e306]:
+                        - link "Edit" [ref=f7e307] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=13&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e308]:
+                        - link "Delete" [ref=f7e309] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=13&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e310]:
+                        - link "View posts by Test12 User" [ref=f7e311] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=13
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e313] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=13&_wpnonce=86bb566a0d
+                  - cell "Test12 User" [ref=f7e314]
+                  - cell [ref=f7e315]:
+                    - link "tester12@example.test" [ref=f7e316] [cursor=pointer]:
+                      - /url: mailto:tester12@example.test
+                  - cell "Subscriber" [ref=f7e317]
+                  - cell "0" [ref=f7e318]
+                - row [ref=f7e319]:
+                  - cell "Select tester13" [ref=f7e320]:
+                    - checkbox "Select tester13" [ref=f7e321] [cursor=pointer]
+                  - rowheader "tester13" [ref=f7e324]:
+                    - strong [ref=f7e325]:
+                      - link "tester13" [ref=f7e326] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=14&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e327]:
+                      - generic [ref=f7e328]:
+                        - link "Edit" [ref=f7e329] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=14&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e330]:
+                        - link "Delete" [ref=f7e331] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=14&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e332]:
+                        - link "View posts by Test13 User" [ref=f7e333] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=14
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e335] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=14&_wpnonce=86bb566a0d
+                  - cell "Test13 User" [ref=f7e336]
+                  - cell [ref=f7e337]:
+                    - link "tester13@example.test" [ref=f7e338] [cursor=pointer]:
+                      - /url: mailto:tester13@example.test
+                  - cell "Subscriber" [ref=f7e339]
+                  - cell "0" [ref=f7e340]
+                - row [ref=f7e341]:
+                  - cell "Select tester14" [ref=f7e342]:
+                    - checkbox "Select tester14" [ref=f7e343] [cursor=pointer]
+                  - rowheader "tester14" [ref=f7e346]:
+                    - strong [ref=f7e347]:
+                      - link "tester14" [ref=f7e348] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=15&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e349]:
+                      - generic [ref=f7e350]:
+                        - link "Edit" [ref=f7e351] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=15&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e352]:
+                        - link "Delete" [ref=f7e353] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=15&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e354]:
+                        - link "View posts by Test14 User" [ref=f7e355] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=15
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e357] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=15&_wpnonce=86bb566a0d
+                  - cell "Test14 User" [ref=f7e358]
+                  - cell [ref=f7e359]:
+                    - link "tester14@example.test" [ref=f7e360] [cursor=pointer]:
+                      - /url: mailto:tester14@example.test
+                  - cell "Subscriber" [ref=f7e361]
+                  - cell "0" [ref=f7e362]
+                - row [ref=f7e363]:
+                  - cell "Select tester15" [ref=f7e364]:
+                    - checkbox "Select tester15" [ref=f7e365] [cursor=pointer]
+                  - rowheader "tester15" [ref=f7e368]:
+                    - strong [ref=f7e369]:
+                      - link "tester15" [ref=f7e370] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=16&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e371]:
+                      - generic [ref=f7e372]:
+                        - link "Edit" [ref=f7e373] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=16&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e374]:
+                        - link "Delete" [ref=f7e375] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=16&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e376]:
+                        - link "View posts by Test15 User" [ref=f7e377] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=16
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e379] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=16&_wpnonce=86bb566a0d
+                  - cell "Test15 User" [ref=f7e380]
+                  - cell [ref=f7e381]:
+                    - link "tester15@example.test" [ref=f7e382] [cursor=pointer]:
+                      - /url: mailto:tester15@example.test
+                  - cell "Subscriber" [ref=f7e383]
+                  - cell "0" [ref=f7e384]
+                - row [ref=f7e385]:
+                  - cell "Select tester16" [ref=f7e386]:
+                    - checkbox "Select tester16" [ref=f7e387] [cursor=pointer]
+                  - rowheader "tester16" [ref=f7e390]:
+                    - strong [ref=f7e391]:
+                      - link "tester16" [ref=f7e392] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=17&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e393]:
+                      - generic [ref=f7e394]:
+                        - link "Edit" [ref=f7e395] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=17&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e396]:
+                        - link "Delete" [ref=f7e397] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=17&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e398]:
+                        - link "View posts by Test16 User" [ref=f7e399] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=17
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e401] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=17&_wpnonce=86bb566a0d
+                  - cell "Test16 User" [ref=f7e402]
+                  - cell [ref=f7e403]:
+                    - link "tester16@example.test" [ref=f7e404] [cursor=pointer]:
+                      - /url: mailto:tester16@example.test
+                  - cell "Subscriber" [ref=f7e405]
+                  - cell "0" [ref=f7e406]
+                - row [ref=f7e407]:
+                  - cell "Select tester17" [ref=f7e408]:
+                    - checkbox "Select tester17" [ref=f7e409] [cursor=pointer]
+                  - rowheader "tester17" [ref=f7e412]:
+                    - strong [ref=f7e413]:
+                      - link "tester17" [ref=f7e414] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=18&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e415]:
+                      - generic [ref=f7e416]:
+                        - link "Edit" [ref=f7e417] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=18&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e418]:
+                        - link "Delete" [ref=f7e419] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=18&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e420]:
+                        - link "View posts by Test17 User" [ref=f7e421] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=18
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e423] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=18&_wpnonce=86bb566a0d
+                  - cell "Test17 User" [ref=f7e424]
+                  - cell [ref=f7e425]:
+                    - link "tester17@example.test" [ref=f7e426] [cursor=pointer]:
+                      - /url: mailto:tester17@example.test
+                  - cell "Subscriber" [ref=f7e427]
+                  - cell "0" [ref=f7e428]
+                - row [ref=f7e429]:
+                  - cell "Select tester18" [ref=f7e430]:
+                    - checkbox "Select tester18" [ref=f7e431] [cursor=pointer]
+                  - rowheader "tester18" [ref=f7e434]:
+                    - strong [ref=f7e435]:
+                      - link "tester18" [ref=f7e436] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=19&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e437]:
+                      - generic [ref=f7e438]:
+                        - link "Edit" [ref=f7e439] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=19&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e440]:
+                        - link "Delete" [ref=f7e441] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=19&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e442]:
+                        - link "View posts by Test18 User" [ref=f7e443] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=19
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e445] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=19&_wpnonce=86bb566a0d
+                  - cell "Test18 User" [ref=f7e446]
+                  - cell [ref=f7e447]:
+                    - link "tester18@example.test" [ref=f7e448] [cursor=pointer]:
+                      - /url: mailto:tester18@example.test
+                  - cell "Subscriber" [ref=f7e449]
+                  - cell "0" [ref=f7e450]
+                - row [ref=f7e451]:
+                  - cell "Select tester19" [ref=f7e452]:
+                    - checkbox "Select tester19" [ref=f7e453] [cursor=pointer]
+                  - rowheader "tester19" [ref=f7e456]:
+                    - strong [ref=f7e457]:
+                      - link "tester19" [ref=f7e458] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=20&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e459]:
+                      - generic [ref=f7e460]:
+                        - link "Edit" [ref=f7e461] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=20&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e462]:
+                        - link "Delete" [ref=f7e463] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=20&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e464]:
+                        - link "View posts by Test19 User" [ref=f7e465] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=20
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e467] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=20&_wpnonce=86bb566a0d
+                  - cell "Test19 User" [ref=f7e468]
+                  - cell [ref=f7e469]:
+                    - link "tester19@example.test" [ref=f7e470] [cursor=pointer]:
+                      - /url: mailto:tester19@example.test
+                  - cell "Subscriber" [ref=f7e471]
+                  - cell "0" [ref=f7e472]
+                - row [ref=f7e473]:
+                  - cell "Select tester2" [ref=f7e474]:
+                    - checkbox "Select tester2" [ref=f7e475] [cursor=pointer]
+                  - rowheader "tester2" [ref=f7e478]:
+                    - strong [ref=f7e479]:
+                      - link "tester2" [ref=f7e480] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=3&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e481]:
+                      - generic [ref=f7e482]:
+                        - link "Edit" [ref=f7e483] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=3&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e484]:
+                        - link "Delete" [ref=f7e485] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=3&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e486]:
+                        - link "View posts by Test2 User" [ref=f7e487] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=3
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e489] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=3&_wpnonce=86bb566a0d
+                  - cell "Test2 User" [ref=f7e490]
+                  - cell [ref=f7e491]:
+                    - link "tester2@example.test" [ref=f7e492] [cursor=pointer]:
+                      - /url: mailto:tester2@example.test
+                  - cell "Subscriber" [ref=f7e493]
+                  - cell "0" [ref=f7e494]
+                - row [ref=f7e495]:
+                  - cell "Select tester20" [ref=f7e496]:
+                    - checkbox "Select tester20" [ref=f7e497] [cursor=pointer]
+                  - rowheader "tester20" [ref=f7e500]:
+                    - strong [ref=f7e501]:
+                      - link "tester20" [ref=f7e502] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=21&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e503]:
+                      - generic [ref=f7e504]:
+                        - link "Edit" [ref=f7e505] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=21&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e506]:
+                        - link "Delete" [ref=f7e507] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=21&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e508]:
+                        - link "View posts by Test20 User" [ref=f7e509] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=21
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e511] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=21&_wpnonce=86bb566a0d
+                  - cell "Test20 User" [ref=f7e512]
+                  - cell [ref=f7e513]:
+                    - link "tester20@example.test" [ref=f7e514] [cursor=pointer]:
+                      - /url: mailto:tester20@example.test
+                  - cell "Subscriber" [ref=f7e515]
+                  - cell "0" [ref=f7e516]
+                - row [ref=f7e517]:
+                  - cell "Select tester21" [ref=f7e518]:
+                    - checkbox "Select tester21" [ref=f7e519] [cursor=pointer]
+                  - rowheader "tester21" [ref=f7e522]:
+                    - strong [ref=f7e523]:
+                      - link "tester21" [ref=f7e524] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=22&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e525]:
+                      - generic [ref=f7e526]:
+                        - link "Edit" [ref=f7e527] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=22&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e528]:
+                        - link "Delete" [ref=f7e529] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=22&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e530]:
+                        - link "View posts by Test21 User" [ref=f7e531] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=22
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e533] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=22&_wpnonce=86bb566a0d
+                  - cell "Test21 User" [ref=f7e534]
+                  - cell [ref=f7e535]:
+                    - link "tester21@example.test" [ref=f7e536] [cursor=pointer]:
+                      - /url: mailto:tester21@example.test
+                  - cell "Subscriber" [ref=f7e537]
+                  - cell "0" [ref=f7e538]
+                - row [ref=f7e539]:
+                  - cell "Select tester22" [ref=f7e540]:
+                    - checkbox "Select tester22" [ref=f7e541] [cursor=pointer]
+                  - rowheader "tester22" [ref=f7e544]:
+                    - strong [ref=f7e545]:
+                      - link "tester22" [ref=f7e546] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=23&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e547]:
+                      - generic [ref=f7e548]:
+                        - link "Edit" [ref=f7e549] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=23&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e550]:
+                        - link "Delete" [ref=f7e551] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=23&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e552]:
+                        - link "View posts by Test22 User" [ref=f7e553] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=23
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e555] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=23&_wpnonce=86bb566a0d
+                  - cell "Test22 User" [ref=f7e556]
+                  - cell [ref=f7e557]:
+                    - link "tester22@example.test" [ref=f7e558] [cursor=pointer]:
+                      - /url: mailto:tester22@example.test
+                  - cell "Subscriber" [ref=f7e559]
+                  - cell "0" [ref=f7e560]
+                - row [ref=f7e561]:
+                  - cell "Select tester23" [ref=f7e562]:
+                    - checkbox "Select tester23" [ref=f7e563] [cursor=pointer]
+                  - rowheader "tester23" [ref=f7e566]:
+                    - strong [ref=f7e567]:
+                      - link "tester23" [ref=f7e568] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=24&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e569]:
+                      - generic [ref=f7e570]:
+                        - link "Edit" [ref=f7e571] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=24&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e572]:
+                        - link "Delete" [ref=f7e573] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=24&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e574]:
+                        - link "View posts by Test23 User" [ref=f7e575] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=24
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e577] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=24&_wpnonce=86bb566a0d
+                  - cell "Test23 User" [ref=f7e578]
+                  - cell [ref=f7e579]:
+                    - link "tester23@example.test" [ref=f7e580] [cursor=pointer]:
+                      - /url: mailto:tester23@example.test
+                  - cell "Subscriber" [ref=f7e581]
+                  - cell "0" [ref=f7e582]
+                - row [ref=f7e583]:
+                  - cell "Select tester24" [ref=f7e584]:
+                    - checkbox "Select tester24" [ref=f7e585] [cursor=pointer]
+                  - rowheader "tester24" [ref=f7e588]:
+                    - strong [ref=f7e589]:
+                      - link "tester24" [ref=f7e590] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=25&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e591]:
+                      - generic [ref=f7e592]:
+                        - link "Edit" [ref=f7e593] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=25&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e594]:
+                        - link "Delete" [ref=f7e595] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=25&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e596]:
+                        - link "View posts by Test24 User" [ref=f7e597] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=25
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e599] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=25&_wpnonce=86bb566a0d
+                  - cell "Test24 User" [ref=f7e600]
+                  - cell [ref=f7e601]:
+                    - link "tester24@example.test" [ref=f7e602] [cursor=pointer]:
+                      - /url: mailto:tester24@example.test
+                  - cell "Subscriber" [ref=f7e603]
+                  - cell "0" [ref=f7e604]
+                - row [ref=f7e605]:
+                  - cell "Select tester3" [ref=f7e606]:
+                    - checkbox "Select tester3" [ref=f7e607] [cursor=pointer]
+                  - rowheader "tester3" [ref=f7e610]:
+                    - strong [ref=f7e611]:
+                      - link "tester3" [ref=f7e612] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=4&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e613]:
+                      - generic [ref=f7e614]:
+                        - link "Edit" [ref=f7e615] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=4&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e616]:
+                        - link "Delete" [ref=f7e617] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=4&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e618]:
+                        - link "View posts by Test3 User" [ref=f7e619] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=4
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e621] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=4&_wpnonce=86bb566a0d
+                  - cell "Test3 User" [ref=f7e622]
+                  - cell [ref=f7e623]:
+                    - link "tester3@example.test" [ref=f7e624] [cursor=pointer]:
+                      - /url: mailto:tester3@example.test
+                  - cell "Subscriber" [ref=f7e625]
+                  - cell "0" [ref=f7e626]
+                - row [ref=f7e627]:
+                  - cell "Select tester4" [ref=f7e628]:
+                    - checkbox "Select tester4" [ref=f7e629] [cursor=pointer]
+                  - rowheader "tester4" [ref=f7e632]:
+                    - strong [ref=f7e633]:
+                      - link "tester4" [ref=f7e634] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=5&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e635]:
+                      - generic [ref=f7e636]:
+                        - link "Edit" [ref=f7e637] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=5&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e638]:
+                        - link "Delete" [ref=f7e639] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=5&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e640]:
+                        - link "View posts by Test4 User" [ref=f7e641] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=5
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e643] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=5&_wpnonce=86bb566a0d
+                  - cell "Test4 User" [ref=f7e644]
+                  - cell [ref=f7e645]:
+                    - link "tester4@example.test" [ref=f7e646] [cursor=pointer]:
+                      - /url: mailto:tester4@example.test
+                  - cell "Subscriber" [ref=f7e647]
+                  - cell "0" [ref=f7e648]
+                - row [ref=f7e649]:
+                  - cell "Select tester6" [ref=f7e650]:
+                    - checkbox "Select tester6" [ref=f7e651] [cursor=pointer]
+                  - rowheader "tester6" [ref=f7e654]:
+                    - strong [ref=f7e655]:
+                      - link "tester6" [ref=f7e656] [cursor=pointer]:
+                        - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=7&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                    - generic [ref=f7e657]:
+                      - generic [ref=f7e658]:
+                        - link "Edit" [ref=f7e659] [cursor=pointer]:
+                          - /url: http://localhost:8082/wp-admin/user-edit.php?user_id=7&wp_http_referer=%2Fwp-admin%2Fusers.php%3Fs%3Dtester
+                        - text: "|"
+                      - generic [ref=f7e660]:
+                        - link "Delete" [ref=f7e661] [cursor=pointer]:
+                          - /url: users.php?action=delete&user=7&_wpnonce=86bb566a0d
+                        - text: "|"
+                      - generic [ref=f7e662]:
+                        - link "View posts by Test6 User" [ref=f7e663] [cursor=pointer]:
+                          - /url: http://localhost:8082/?author=7
+                          - text: View
+                        - text: "|"
+                      - link "Send password reset" [ref=f7e665] [cursor=pointer]:
+                        - /url: users.php?action=resetpassword&users=7&_wpnonce=86bb566a0d
+                  - cell "Test6 User" [ref=f7e666]
+                  - cell [ref=f7e667]:
+                    - link "tester6@example.test" [ref=f7e668] [cursor=pointer]:
+                      - /url: mailto:tester6@example.test
+                  - cell "Subscriber" [ref=f7e669]
+                  - cell "0" [ref=f7e670]
+              - rowgroup [ref=f7e671]:
+                - row [ref=f7e672]:
+                  - cell "Select All" [ref=f7e673]:
+                    - checkbox "Select All" [ref=f7e674] [cursor=pointer]
+                  - columnheader [ref=f7e677]:
+                    - link "Username" [ref=f7e678] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/users.php?s=tester&orderby=login&order=desc
+                  - columnheader "Name" [ref=f7e683]
+                  - columnheader [ref=f7e684]:
+                    - link "Email Sort ascending." [ref=f7e685] [cursor=pointer]:
+                      - /url: http://localhost:8082/wp-admin/users.php?s=tester&orderby=email&order=asc
+                      - generic [ref=f7e686]: Email
+                      - generic [ref=f7e690]: Sort ascending.
+                  - columnheader "Role" [ref=f7e691]
+                  - columnheader "Posts" [ref=f7e692]
+            - generic [ref=f7e693]:
+              - generic [ref=f7e694]:
+                - generic [ref=f7e695]: Select bulk action
+                - combobox "Select bulk action" [ref=f7e696] [cursor=pointer]:
+                  - option "Bulk actions" [selected]
+                  - option "Delete"
+                  - option "Send password reset"
+                - button "Apply" [ref=f7e697] [cursor=pointer]
+              - generic [ref=f7e698]:
+                - generic [ref=f7e699]: Change role to…
+                - combobox "Change role to…" [ref=f7e700] [cursor=pointer]:
+                  - option "Change role to…" [selected]
+                  - option "Subscriber"
+                  - option "Contributor"
+                  - option "Author"
+                  - option "Editor"
+                  - option "Administrator"
+                  - option "— No role for this site —"
+                - button "Change" [ref=f7e701] [cursor=pointer]
+              - generic [ref=f7e702]:
+                - text: 22 items
+                - generic [ref=f7e703]:
+                  - generic [aria-hidden] [ref=f7e704]: «
+                  - generic [aria-hidden] [ref=f7e705]: ‹
+                  - generic [ref=f7e706]: Current Page
+                  - generic [ref=f7e707]: 1 of 2
+                  - link "Next page" [ref=f7e709] [cursor=pointer]:
+                    - /url: http://localhost:8082/wp-admin/users.php?s=tester&paged=2
+                    - text: ›
+                  - link "Last page" [ref=f7e711] [cursor=pointer]:
+                    - /url: http://localhost:8082/wp-admin/users.php?s=tester&paged=2
+                    - text: »
+  - contentinfo [ref=f7e713]:
+    - paragraph [ref=f7e714]:
+      - generic [ref=f7e715]:
+        - text: Thank you for creating with
+        - link "WordPress" [ref=f7e716] [cursor=pointer]:
+          - /url: https://wordpress.org/
+        - text: .
+    - paragraph [ref=f7e717]: Version 7.1.3

@@ -1,0 +1,1 @@
+{"run": "aperture-user-23", "arm": "aperture", "task": "user", "model": "sonnet", "used": "aperture", "aperture_calls": 7, "browser_calls": 0, "correct": true, "seconds": 38, "cost": 0.06}

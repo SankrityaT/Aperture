@@ -1,0 +1,15 @@
+- generic [ref=f14e3]:
+  - generic [ref=f14e6]:
+    - heading "This site can’t be reached" [level=1] [ref=f14e7]
+    - paragraph [ref=f14e8]:
+      - strong [ref=f14e9]: 127.0.0.1
+      - text: refused to connect.
+    - generic [ref=f14e10]:
+      - paragraph [ref=f14e11]: "Try:"
+      - list [ref=f14e12]:
+        - listitem [ref=f14e13]: Checking the connection
+        - listitem [ref=f14e14]:
+          - link "Checking the proxy and the firewall" [ref=f14e15] [cursor=pointer]:
+            - /url: "#buttons"
+    - generic [ref=f14e16]: ERR_CONNECTION_REFUSED
+  - button "Details" [ref=f14e18] [cursor=pointer]
