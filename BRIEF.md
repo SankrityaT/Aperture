@@ -37,6 +37,22 @@ Never put real names, resident data, or credentials in the repo, the demo, or an
 - Latency budget (targets, to be measured): find and dry-run under 300 ms from cache, queue ack under 100 ms.
 - Prefer direct form posts over browser clicks where the system allows it (spike on Gibbon).
 
+## Honesty rules for the demo (no hardcoding)
+1. One general generator. No code specific to Gibbon or the DS-160. The tools come from exploring the live pages.
+2. Gibbon is the development set. The DS-160 is held out and only run at the end, so we do not tune to it.
+3. Pass criteria are written BEFORE the held-out run: per section, fields end with the right values, the read-back
+   matches, and manual edits are counted.
+4. Count and disclose every manual edit to generated adapters ("3 of 5 pages worked unaided").
+5. Report failures plainly. Never present a scripted or hand-fixed path as generated.
+6. DS-160 limits: never submit, never enter false statements, never bypass the CAPTCHA (a human solves it), no real
+   passport or personal data on camera, check the site terms for automated use first.
+
+## Schedule (Sunday 10 AM PT submission)
+- about 11 PM Sat: generator working on Gibbon
+- about 3 AM Sun: held-out DS-160 run
+- about 6 AM Sun: feature freeze
+- 7 to 9 AM Sun: record the demo and submit
+
 ## Split
 - Kinjal: the system under test. Gibbon on an InstaBox machine, seeded with fake data, resettable.
 - Sanki: the product. Manufact MCP server, ticket engine, rules, owner page.
