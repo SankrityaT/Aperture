@@ -79,6 +79,9 @@ export class FormAdapter implements Adapter {
     const creds = readSecret(secretName);
     const page = await this.ensurePage();
     await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    // Client-rendered apps draw their login form after load. Let the page go quiet, then give a password field a moment to appear before deciding there is none.
+    await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => undefined);
+    await page.waitForSelector('input[type="password"]', { timeout: 4000 }).catch(() => undefined);
     const model = await explorePage(page);
     if (model.warnings.length) throw new HumanRequired(model.warnings[0]!);
     const form = model.forms.find((f) => f.fields.some((x) => x.type === "password"));
@@ -93,7 +96,9 @@ export class FormAdapter implements Adapter {
       page.waitForLoadState("load").catch(() => undefined),
       scope.locator(form.submit.selector).first().click(),
     ]);
-    await page.waitForTimeout(150);
+    // A client-rendered app may not navigate at all. Wait for the password field to go away (or the page to change) before judging.
+    await page.waitForFunction(() => !document.querySelector('input[type="password"]'), undefined, { timeout: 8000 }).catch(() => undefined);
+    await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => undefined);
     const after = await explorePage(page);
     const still = after.forms.some((f) => f.fields.some((x) => x.type === "password"));
     return still ? { signedIn: false, detail: "The login form is still showing. Check the stored login." } : { signedIn: true, detail: "Signed in." };
@@ -104,6 +109,7 @@ export class FormAdapter implements Adapter {
     assertAuthorized(url);
     const page = await this.ensurePage();
     await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => undefined);
   }
 
   async refresh(): Promise<CompileSummary> {

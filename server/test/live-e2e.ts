@@ -24,7 +24,7 @@ async function tool(name: string, args: Record<string, unknown>) {
 const truth = (port: number, path: string): any => JSON.parse(execFileSync("instabox", ["exec", "wicket-worker", "--", `curl -s http://127.0.0.1:${port}${path}`], { encoding: "utf8", env: { ...process.env, INSTABOX_NO_TELEMETRY: "1", PATH: `${process.env.HOME}/.local/bin:${process.env.PATH}` } }));
 const results: boolean[] = [];
 const check = (label: string, ok: boolean, extra = "") => { results.push(ok); console.log(`${ok ? "PASS" : "FAIL"}  ${label}${extra ? "  " + extra : ""}`); };
-const approve = (plan_id: string) => fetch(`${base}/owner/approve`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ plan_id }) });
+const approve = (plan_id: string) => fetch(`${base}/owner/approve?token=${process.env.OWNER_TOKEN ?? ""}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ plan_id }) });
 
 await rpc("initialize", { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "live-e2e", version: "0" } });
 await tool("reset_demo", {});

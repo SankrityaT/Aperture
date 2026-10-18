@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { MCPServer } from "mcp-use";
 import { z } from "zod";
 import { Wicket } from "./src/engine.js";
@@ -43,7 +44,7 @@ if (process.env.WICKET_WORKER_URL) {
 const wicket = new Wicket(new CompositeAdapter([...(process.env.WICKET_FAKE_SCHOOL === "1" ? [new FakeSchool()] : []), forms, tables]), { rules });
 
 /** Small on purpose: an agent pays for every token of this. */
-const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}) });
+const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), ...(t.keySource === "none" ? { writes: "refused: no column or link on this list identifies a row uniquely, so a change could hit the wrong record. Reading and previews are unavailable for the same reason." } : {}), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}) });
 
 const reply = (obj: Record<string, unknown>) => ({
   content: [{ type: "text" as const, text: JSON.stringify(obj) }],
@@ -350,7 +351,9 @@ server.prompt(
 // ---- owner side: a plain web page, never an agent tool ----
 
 const OWNER_TOKEN = process.env.OWNER_TOKEN;
-const allowed = (c: { req: { query: (k: string) => string | undefined } }) => !OWNER_TOKEN || c.req.query("token") === OWNER_TOKEN;
+// Closed unless a token is set. Approval must never be reachable by an agent, so there is no open default (WICKET_OPEN_OWNER=1 is for local development only).
+const sameToken = (given: string | undefined) => { if (!OWNER_TOKEN || !given) return false; const a = Buffer.from(given), b = Buffer.from(OWNER_TOKEN); return a.length === b.length && timingSafeEqual(a, b); };
+const allowed = (c: { req: { query: (k: string) => string | undefined } }) => (OWNER_TOKEN ? sameToken(c.req.query("token")) : process.env.WICKET_OPEN_OWNER === "1");
 
 server.get("/owner", (c) => c.html(OWNER_PAGE));
 server.get("/owner/state", (c) => (allowed(c) ? c.json(wicket.ownerState()) : c.json({ error: "not allowed" }, 403)));
