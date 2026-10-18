@@ -115,11 +115,14 @@ table.rgMasterTable{border-collapse:collapse;background:#fff;min-width:100%}
 @media (max-width:700px){.win{height:auto}.grid.res{max-height:60vh}.main{flex-direction:column}.tree{width:auto;max-height:150px}.pane{margin:3px}.tb{min-width:44px;padding:2px 3px}.tb .g{font-size:16px;line-height:20px}.title .rep{white-space:normal}}`;
 
 const glyph = { Account: "🗂", Add: "➕", "Add Dev": "▤", Delete: "⊗", Assign: "⎘", AntiPass: "⛔", Sort: "⇅", Search: "🔍", Stats: "▦", "Sec Level": "🔒", "Elev. Ref": "▯", "Snd Data": "⇉", "Rcv Data": "⇇", "Rcv Tran": "⇆", "Config Ports": "⚙", Registration: "🔑", Activity: "▥", Messages: "●", "Share Info": "👥" };
+// Windows toolbars show a tooltip with the full command name.
+const TIPS = { "Snd Data": "Send Data Now", "Rcv Data": "Receive Data Now", "Rcv Tran": "Receive Transactions Now", "Add Dev": "Add Device", "Sec Level": "Security Level", "Elev. Ref": "Elevator Reference", "AntiPass": "Anti-Passback" };
 const tool = (label, { on = false, href = "", name = "", confirm = "" } = {}) => {
+  const tip = ` title="${esc(TIPS[label] ?? label)}"`;
   const inner = `<span class="g" aria-hidden="true">${glyph[label] ?? "□"}</span><span>${esc(label)}</span>`;
-  if (!on) return `<span class="tb off" aria-disabled="true">${inner}</span>`;
-  if (name) return `<button type="submit" class="tb" name="${name}" id="${name}" value="${esc(label)}"${confirm ? ` onclick="return confirm('${confirm}');"` : ""}>${inner}</button>`;
-  return `<a class="tb" href="${href}">${inner}</a>`;
+  if (!on) return `<span class="tb off" aria-disabled="true"${tip}>${inner}</span>`;
+  if (name) return `<button type="submit" class="tb" name="${name}" id="${name}" value="${esc(label)}"${tip}${confirm ? ` onclick="return confirm('${confirm}');"` : ""}>${inner}</button>`;
+  return `<a class="tb" href="${href}"${tip}>${inner}</a>`;
 };
 
 function page(title, inner, { tools = "", cur = "", dialog = "", status = "Ready" } = {}) {
