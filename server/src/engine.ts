@@ -507,6 +507,12 @@ export class Wicket {
     this.persist();
     return d;
   }
+  /** Owner only: say in advance that deleting one kind also removes another. Stays unconfirmed, so the first real run still takes a full copy and checks the prediction. */
+  declareDependency(kind: Kind, cascade: { kind: Kind; by: string }): void {
+    this.rules.set(kind, "delete", [...this.rules.cascadesFor(kind, "delete").filter((c) => !(c.kind === cascade.kind && c.by === cascade.by)), cascade], this.rules.isConfirmed(kind, "delete"));
+    this.persist();
+  }
+
   revokeDelegation(id: string): { ok: boolean } { const d = this.delegations.get(id); if (!d) return { ok: false }; d.revoked = true; this.persist(); return { ok: true }; }
   resumeDelegation(id: string): { ok: boolean } { const d = this.delegations.get(id); if (!d) return { ok: false }; d.paused = null; this.persist(); return { ok: true }; }
 

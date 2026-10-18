@@ -1,5 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { FileLedger } from "./src/ledger.js";
+import { llmsTxt, quickstartMd, errorsMd, robotsTxt, NAME_LINE } from "./src/agent-docs.js";
 import { MCPServer } from "mcp-use";
 import { z } from "zod";
 import { Wicket } from "./src/engine.js";
@@ -342,15 +343,6 @@ server.tool(
   async ({ reason }) => reply(wicket.escalate(reason)),
 );
 
-server.tool(
-  {
-    name: "reset_demo",
-    description: "Demo only. Resets the fake data and counters to the starting state so a run can be repeated. Never touches anything real.",
-    inputSchema: z.object({}),
-    annotations: { destructiveHint: true, idempotentHint: true, openWorldHint: false },
-  },
-  async () => { await wicket.resetDemo(); seedRules(); await worker?.resetDemo().catch(() => undefined); return reply({ status: "reset", note: "Fake data, counters and what was learned are back to the start." }); },
-);
 
 server.prompt(
   { name: "safe-batch-job", description: "How to run a multi-step job safely and finish it without a human watching.", schema: z.object({ task: z.string().describe("What needs doing, in one or two sentences.") }) },
@@ -366,6 +358,23 @@ const OWNER_TOKEN = process.env.OWNER_TOKEN;
 const sameToken = (given: string | undefined) => { if (!OWNER_TOKEN || !given) return false; const a = Buffer.from(given), b = Buffer.from(OWNER_TOKEN); return a.length === b.length && timingSafeEqual(a, b); };
 const allowed = (c: { req: { query: (k: string) => string | undefined } }) => (OWNER_TOKEN ? sameToken(c.req.query("token")) : process.env.WICKET_OPEN_OWNER === "1");
 
+// Demo control: owner only, never a tool. An agent being tested cannot wipe the systems it is working in.
+server.post("/owner/demo", async (c) => {
+  if (!allowed(c)) return c.json({ error: "not allowed" }, 403);
+  const b = (await c.req.json().catch(() => ({}))) as { action?: string; noop?: string[]; after?: string[] };
+  if (b.action === "reset") { await wicket.resetDemo(); seedRules(); await worker?.resetDemo().catch(() => undefined); return c.json({ status: "reset" }); }
+  if (b.action === "hang" && worker) { await worker.call("demo", "hang", [b.noop ?? [], b.after ?? []]); return c.json({ status: "hang set", noop: b.noop ?? [], after: b.after ?? [] }); }
+  return c.json({ error: "action must be reset or hang" }, 400);
+});
+
+// What a coding agent finds first.
+const originOf = (c: { req: { url: string; header: (k: string) => string | undefined } }) => { const h = c.req.header("x-forwarded-host") ?? c.req.header("host"); const proto = c.req.header("x-forwarded-proto") ?? "https"; return h ? `${proto}://${h}` : new URL(c.req.url).origin; };
+server.get("/llms.txt", (c) => c.text(llmsTxt(originOf(c))));
+server.get("/quickstart.md", (c) => c.text(quickstartMd(originOf(c))));
+server.get("/errors.md", (c) => c.text(errorsMd(originOf(c))));
+server.get("/robots.txt", (c) => c.text(robotsTxt(originOf(c))));
+server.get("/", (c) => c.text(`Wicket\n\n${NAME_LINE}\n\nAn MCP server for working safely in web systems that have no API.\nMCP endpoint: ${originOf(c)}/mcp\nStart: ${originOf(c)}/llms.txt\n`));
+
 server.get("/owner", (c) => c.html(OWNER_PAGE));
 server.get("/owner/state", (c) => (allowed(c) ? c.json(wicket.ownerState()) : c.json({ error: "not allowed" }, 403)));
 server.post("/owner/approve", async (c) => {
@@ -379,6 +388,13 @@ server.post("/owner/delegate", async (c) => {
   const ops = (b.ops ?? []).filter((o): o is "create" | "update" | "delete" => o === "create" || o === "update" || o === "delete");
   if (!ops.length || !b.limit || b.limit < 1) return c.json({ error: "give ops (create, update, delete) and a limit of at least 1" }, 400);
   return c.json(wicket.delegate({ kinds: b.kinds?.length ? b.kinds : ["*"], ops, limit: b.limit, ttlMs: Math.min(Math.max(b.hours ?? 4, 0.05), 72) * 3_600_000, note: b.note }));
+});
+server.post("/owner/dependency", async (c) => {
+  if (!allowed(c)) return c.json({ error: "not allowed" }, 403);
+  const b = (await c.req.json()) as { kind?: string; cascade_kind?: string; by?: string };
+  if (!b.kind || !b.cascade_kind || !b.by) return c.json({ error: "give kind, cascade_kind and by" }, 400);
+  wicket.declareDependency(b.kind, { kind: b.cascade_kind, by: b.by });
+  return c.json({ status: "declared", kind: b.kind, also_removes: b.cascade_kind, matched_on: b.by });
 });
 server.post("/owner/delegation/revoke", async (c) => { if (!allowed(c)) return c.json({ error: "not allowed" }, 403); return c.json(wicket.revokeDelegation(((await c.req.json()) as { id: string }).id)); });
 server.post("/owner/delegation/resume", async (c) => { if (!allowed(c)) return c.json({ error: "not allowed" }, 403); return c.json(wicket.resumeDelegation(((await c.req.json()) as { id: string }).id)); });

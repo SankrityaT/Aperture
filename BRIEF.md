@@ -51,7 +51,7 @@ Never put real names, resident data, or credentials in the repo, the demo, or an
 
 ## Schedule (Sunday 10 AM PT submission)
 - about 11 PM Sat: generator working on Gibbon
-- about 3 AM Sun: held-out DS-160 run
+- (removed) the held-out DS-160 run: ruled out, see ground rule 6. The held-out check now uses public demo apps made to be tried (test/heldout.ts).
 - about 6 AM Sun: feature freeze
 - 7 to 9 AM Sun: record the demo and submit
 

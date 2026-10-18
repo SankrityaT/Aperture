@@ -27,7 +27,7 @@ const check = (label: string, ok: boolean, extra = "") => { results.push(ok); co
 const approve = (plan_id: string) => fetch(`${base}/owner/approve?token=${process.env.OWNER_TOKEN ?? ""}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ plan_id }) });
 
 await rpc("initialize", { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "live-e2e", version: "0" } });
-await tool("reset_demo", {});
+await fetch(`${base}/owner/demo?token=${process.env.OWNER_TOKEN ?? ""}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "reset" }) });
 check("the demo systems start from a known state", truth(9101, "/__state").people.length === 5 && truth(9103, "/__aspx").residents.length === 14);
 
 console.log("\n--- 1. a classic table with a confirmation page, on the machine");
@@ -66,7 +66,7 @@ const byName = await tool("apply", { op: "delete", kind: aspKind, key: "Marlow" 
 check("a name instead of a key is refused with suggestions", byName.isError && byName.data.error === "not_found");
 
 console.log("\n--- 5. reset for the next judge");
-await tool("reset_demo", {});
+await fetch(`${base}/owner/demo?token=${process.env.OWNER_TOKEN ?? ""}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "reset" }) });
 check("the demo systems are back to the start", truth(9101, "/__state").people.length === 5 && truth(9103, "/__aspx").residents.length === 14 && truth(9102, "/__zoo").users.length === 11);
 
 console.log(`\n${results.filter(Boolean).length}/${results.length} checks passed`);

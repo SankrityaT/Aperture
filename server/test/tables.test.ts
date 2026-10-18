@@ -129,3 +129,35 @@ test("a name column that links to a profile page is data, so the list still gets
     assert.equal(recs.length, 4);
   } finally { await fa.close(); srv.close(); }
 });
+
+test("blank placeholder rows are not records: a list of 4 real users and 6 empty rows still gets a key and 4 records", async () => {
+  const { createServer } = await import("node:http");
+  const users = [["Admin User", "2"], ["Max Manager", "5"], ["Sam Student", "4"], ["Terri Teacher", "3"]];
+  const blank = `<tr><td></td><td></td><td></td><td></td></tr>`.repeat(6);
+  const html = `<!doctype html><title>Users</title><table><thead><tr><th>Select all</th><th>First name / Last name</th><th>Email address</th><th>Actions</th></tr></thead><tbody>${users.map(([n, id]) => `<tr><td>${n}</td><td><a href="/user/profile.php?id=${id}">${n}</a></td><td>${n.split(" ")[0]!.toLowerCase()}@x.test</td><td><a href="/user/editadvanced.php?id=${id}">Edit</a> <a href="/admin/user.php?delete=${id}">Delete</a></td></tr>`).join("")}${blank}</tbody></table>`;
+  const srv = createServer((_, res) => { res.setHeader("content-type", "text/html"); res.end(html); });
+  await new Promise<void>((r) => srv.listen(0, "127.0.0.1", r));
+  const fa = new FormAdapter();
+  try {
+    await fa.compile(`http://127.0.0.1:${(srv.address() as { port: number }).port}/`);
+    const ta = new TableAdapter(() => fa.currentPage());
+    const [m] = await ta.attach();
+    assert.notEqual(m!.keySource, "none", "blank rows must not defeat key detection");
+    assert.equal((await ta.list(m!.id)).length, 4);
+  } finally { await fa.close(); srv.close(); }
+});
+
+test("a real row with a blank key still fails closed: no key is chosen", async () => {
+  const { createServer } = await import("node:http");
+  const html = `<!doctype html><title>Ids</title><table><thead><tr><th>Id</th><th>Name</th></tr></thead><tbody><tr><td>1</td><td>Ann</td></tr><tr><td></td><td>Bob</td></tr><tr><td>3</td><td>Cy</td></tr></tbody></table>`;
+  const srv = createServer((_, res) => { res.setHeader("content-type", "text/html"); res.end(html); });
+  await new Promise<void>((r) => srv.listen(0, "127.0.0.1", r));
+  const fa = new FormAdapter();
+  try {
+    await fa.compile(`http://127.0.0.1:${(srv.address() as { port: number }).port}/`);
+    const ta = new TableAdapter(() => fa.currentPage());
+    const [m] = await ta.attach();
+    // "Name" is unique and non-blank, so it may be chosen, but the blank Id must never be used as the key
+    assert.notEqual(m!.keyColumn, "Id");
+  } finally { await fa.close(); srv.close(); }
+});

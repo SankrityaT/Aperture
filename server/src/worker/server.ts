@@ -65,6 +65,13 @@ const server = createServer((req, res) => {
         });
         return send(200, { ok: true, result: "reset", kinds: kindsNow() });
       }
+      // Demo only: choose which gate-portal deletes hang, so the failure case can be tested on purpose.
+      if (target === "demo" && method === "hang") {
+        const [noop, after] = (args ?? []) as [string[], string[]];
+        const q = new URLSearchParams({ noop: (noop ?? []).join(","), after: (after ?? []).join(",") });
+        await fetch(`http://127.0.0.1:9104/__hang?${q}`, { signal: AbortSignal.timeout(5000) }).catch(() => undefined);
+        return send(200, { ok: true, result: "hang set", kinds: kindsNow() });
+      }
       if (!ALLOWED[target]?.includes(method) || typeof targets[target]?.[method] !== "function") return send(400, { ok: false, error: { name: "Error", message: `not a worker method: ${target}.${method}` }, kinds: kindsNow() });
       const result = await oneAtATime(async () => await targets[target]![method]!.apply(targets[target], args ?? []));
       send(200, { ok: true, result: result ?? null, kinds: kindsNow() });

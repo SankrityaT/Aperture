@@ -414,7 +414,11 @@ interface Where { route: Hop[]; ri: number; table: RawTable; key: KeyInfo }
 
 export interface KeyInfo { column: string | null; columnIndex: number; param: string | null; source: "column" | "link" | "none" }
 
-export function findKey(t: RawTable): KeyInfo {
+/** A row with no text and no controls is padding (a placeholder, a spacer), not a record. A real row with a blank key is NOT blank: it still has other text. */
+const isBlankRow = (r: RawRow) => r.cells.every((c) => (c ?? "").trim() === "") && r.actions.length === 0;
+
+export function findKey(full: RawTable): KeyInfo {
+  const t: RawTable = { ...full, rows: full.rows.filter((r) => !isBlankRow(r)) };
   const cols = dataColumns(t);
   const n = t.rows.length;
   const unique = (vals: (string | undefined)[]) => vals.length === n && vals.every((v) => !!v) && new Set(vals).size === n;
