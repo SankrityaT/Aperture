@@ -1,4 +1,4 @@
-// Ryan-shaped work order on a REPLICA gate portal: remove 20 leaving residents (and their 31 devices), add 2, never duplicate,
+// A real-world-shaped work order on a REPLICA gate portal: remove 20 leaving residents (and their 31 devices), add 2, never duplicate,
 // use directory codes not names, and report honestly when the app hangs. Ground truth is the replica's own state.
 import { FormAdapter } from "../src/generator/form-adapter.js";
 import { TableAdapter } from "../src/generator/tables.js";
