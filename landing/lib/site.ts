@@ -49,12 +49,12 @@ export const copy = {
 
   // Every number here was measured on Oct 18, 2026 and is reproducible from bench/ in the repo. Small samples, said plainly.
   evidence: {
-    title: "Measured, not promised.",
-    sub: "Fresh agent sessions, graded from each system\u2019s own records, not from what the agent said.",
+    title: "Tested against browser agents.",
+    sub: "Fresh agent sessions on the same job, each graded from the system\u2019s own records.",
     stats: (name: string) => [
-      { big: "2.3\u00d7", unit: "faster", head: "The same work order, side by side.", text: `Remove two residents and their devices from a gate-access admin app. ${name}: median 70\u00a0s, 18 tool calls, $0.23. A browser agent: 158\u00a0s, 33 calls, $0.46. Both 5 of 5 correct.` },
-      { big: "8/10", unit: "chose it", head: "Agents pick it on their own.", text: `Ten fresh sessions had a browser and ${name} connected, and the prompt never named either. 8 used only ${name}, 2 used both, none used only the browser. All 10 correct; none pressed Send without being asked.` },
-      { big: "20/20", unit: "on WordPress", head: "Real third-party software.", text: `Browser only against ${name} only, on Sonnet and Haiku. Every run correct on both sides. Deleting a user: 38\u00a0s against 47\u00a0s, 8 calls against 14, about 60% cheaper. Trashing two posts: even (45\u00a0s against 42\u00a0s).` },
+      { big: "2.3\u00d7", unit: "faster", head: "The same work order, side by side.", ran: [{ logo: "claudecode-color", name: "Claude Code" }, { logo: "playwright", name: "Playwright MCP" }, { logo: "", name: "GateAdmin32 replica" }], text: `Remove two residents and their devices from a gate-access admin app. ${name}: median 70\u00a0s, 18 tool calls, $0.23. A browser agent: 158\u00a0s, 33 calls, $0.46. Both 5 of 5 correct.` },
+      { big: "8/10", unit: "chose it", head: "Agents pick it on their own.", ran: [{ logo: "claudecode-color", name: "Claude Code" }, { logo: "playwright", name: "Playwright MCP" }, { logo: "", name: "10 sessions" }], text: `Ten fresh sessions had a browser and ${name} connected, and the prompt never named either. 8 used only ${name}, 2 used both, none used only the browser. All 10 correct; none pressed Send without being asked.` },
+      { big: "20/20", unit: "on WordPress", head: "Real third-party software.", ran: [{ logo: "wordpress", name: "WordPress" }, { logo: "claude", name: "Sonnet \u00b7 Haiku" }, { logo: "playwright", name: "Playwright MCP" }], text: `Browser only against ${name} only, on Sonnet and Haiku. Every run correct on both sides. Deleting a user: 38\u00a0s against 47\u00a0s, 8 calls against 14, about 60% cheaper. Trashing two posts: even (45\u00a0s against 42\u00a0s).` },
     ],
     note: "Our own test setup, small samples, every run reported, including the ones where it didn\u2019t win.",
   },

@@ -294,6 +294,14 @@ export default function Home() {
                   <p className={`mt-2 font-mono text-base ${GRAY}`}>{st.unit}</p>
                   <h3 className="mt-8 font-newsreader text-[1.5rem] leading-tight">{st.head}</h3>
                   <p className={`mt-3 text-pretty text-lg leading-relaxed ${GRAY}`}>{st.text}</p>
+                  <ul className="mt-auto flex flex-wrap gap-2 pt-8" aria-label="Run with">
+                    {st.ran.map((r) => (
+                      <li key={r.name} className="inline-flex items-center gap-2 rounded-lg border border-[#1426e6]/15 bg-white px-2.5 py-1.5 text-[0.9rem]">
+                        {r.logo ? <Image src={`/logos/${r.logo}.svg`} alt="" width={18} height={18} unoptimized className="h-[18px] w-[18px]" /> : <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#1426e6]" />}
+                        {r.name}
+                      </li>
+                    ))}
+                  </ul>
                 </article>
               </Reveal>
             ))}
