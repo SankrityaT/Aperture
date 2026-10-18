@@ -28,6 +28,8 @@ export class NotAuthorized extends Error {}
 export class NoBrowser extends Error {}
 export class NoSecret extends Error {}
 export class HumanRequired extends Error {}
+/** The browser was busy with (or stuck on) an earlier action, or the worker could not answer in time. Nothing new was started. */
+export class WorkerBusy extends Error { override name = "WorkerBusy"; }
 
 /** Credentials live in the server's own environment as WICKET_CREDS_<NAME>="user:password". The agent only ever names one. */
 export function readSecret(name: string): { user: string; pass: string } {
@@ -153,6 +155,18 @@ export class FormAdapter implements Adapter {
     return this.page;
   }
 
+  /** A page stuck on an action that never finished: open a fresh page in the same signed-in session and close the stuck one.
+   *  Closing it makes the stuck action fail, so the browser lock is released. Compiled pages are kept; the next call opens its page again. */
+  async replacePage(): Promise<void> {
+    const old = this.page;
+    if (!old) return;
+    try { this.page = await old.context().newPage(); }
+    catch { await this.close(); return; } // no way to keep the session: drop the browser; the next call starts a new one
+
+    if (process.env.WICKET_ACTION_TIMEOUT_MS) this.page.setDefaultTimeout(Number(process.env.WICKET_ACTION_TIMEOUT_MS));
+    await old.close().catch(() => undefined);
+  }
+
   async close(): Promise<void> {
     await this.browser?.close().catch(() => undefined);
     this.browser = null; this.page = null;
@@ -179,7 +193,9 @@ export class FormAdapter implements Adapter {
     } catch (e) {
       throw new NoBrowser(`No browser could be started here (${String((e as Error).message).split("\n")[0]}). Run the worker on a machine with a browser.`);
     }
-    this.page = await this.browser.newPage({ viewport: process.env.WICKET_HEADED === "1" ? { width: 1280, height: 800 } : undefined });
+    // An explicit context (not browser.newPage) so a stuck page can be replaced inside the same signed-in session.
+    const ctx = await this.browser.newContext({ viewport: process.env.WICKET_HEADED === "1" ? { width: 1280, height: 800 } : undefined });
+    this.page = await ctx.newPage();
     if (process.env.WICKET_ACTION_TIMEOUT_MS) this.page.setDefaultTimeout(Number(process.env.WICKET_ACTION_TIMEOUT_MS));
     return this.page;
   }

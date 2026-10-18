@@ -9,7 +9,7 @@
 
 import { createServer } from "node:http";
 import { timingSafeEqual } from "node:crypto";
-import { FormAdapter, HumanRequired, NoBrowser, NoSecret, NotAuthorized } from "../generator/form-adapter.js";
+import { FormAdapter, HumanRequired, NoBrowser, NoSecret, NotAuthorized, WorkerBusy } from "../generator/form-adapter.js";
 import { TableAdapter } from "../generator/tables.js";
 
 const TOKEN = process.env.WICKET_WORKER_TOKEN ?? "";
@@ -44,8 +44,37 @@ const oneAtATime = <T>(fn: () => Promise<T>): Promise<T> => {
   return next;
 };
 
+// A call that never finishes (a page that hangs) must not hold the one browser forever, and the caller must always get our answer
+// before the InstaBox proxy's own cut-off (about 20 s) replaces it with a text page.
+//  - Answer deadline: after ANSWER_MS the caller gets WorkerBusy. A call still waiting in the queue is then dropped, never run later.
+//    A call already running may still finish: for a change the engine then says the outcome is unknown and reads the system.
+//  - Run deadline: an action running longer than RUN_MS is stuck. Its page is replaced by a fresh one in the same signed-in session,
+//    which makes the stuck action fail and frees the queue. Compiled pages are kept.
+const ANSWER_MS = Number(process.env.WICKET_ANSWER_DEADLINE_MS ?? 18_000);
+const RUN_MS = Number(process.env.WICKET_RUN_DEADLINE_MS ?? 17_000);
+const withDeadline = <T>(fn: () => Promise<T>): Promise<T> => {
+  let answered = false;
+  let answerTimer: NodeJS.Timeout | undefined;
+  const run = oneAtATime(async () => {
+    if (answered) throw new WorkerBusy("dropped: the caller was already told the browser was busy");
+    let stuck = false;
+    const runTimer = setTimeout(() => { stuck = true; void forms.replacePage().catch(() => undefined); }, RUN_MS);
+    try { return await fn(); }
+    catch (e) { if (stuck) throw new WorkerBusy(`The page did not finish within ${Math.round(RUN_MS / 1000)} s (it is hanging). It was closed and replaced; whether a change on it happened is not known.`); throw e; }
+    finally { clearTimeout(runTimer); }
+  });
+  const late = new Promise<never>((_, reject) => {
+    answerTimer = setTimeout(() => {
+      answered = true;
+      reject(new WorkerBusy(`The browser did not finish this within ${Math.round(ANSWER_MS / 1000)} s: it was busy, or the page is hanging (a hanging page is closed and replaced).`));
+    }, ANSWER_MS);
+  });
+  run.catch(() => undefined);
+  return Promise.race([run, late]).finally(() => { answered = true; clearTimeout(answerTimer); });
+};
+
 const errorName = (e: unknown): string =>
-  (e as { name?: string })?.name === "CapabilityDrift" ? "CapabilityDrift" : e instanceof NotAuthorized ? "NotAuthorized" : e instanceof NoBrowser ? "NoBrowser" : e instanceof NoSecret ? "NoSecret" : e instanceof HumanRequired ? "HumanRequired" : "Error";
+  (e as { name?: string })?.name === "CapabilityDrift" ? "CapabilityDrift" : e instanceof NotAuthorized ? "NotAuthorized" : e instanceof NoBrowser ? "NoBrowser" : e instanceof NoSecret ? "NoSecret" : e instanceof HumanRequired ? "HumanRequired" : e instanceof WorkerBusy ? "WorkerBusy" : "Error";
 
 const server = createServer((req, res) => {
   const send = (code: number, body: unknown) => { res.statusCode = code; res.setHeader("content-type", "application/json"); res.end(JSON.stringify(body)); };
@@ -59,7 +88,7 @@ const server = createServer((req, res) => {
       const { target, method, args } = JSON.parse(raw) as { target: string; method: string; args?: unknown[] };
       // Demo only: put the invented demo systems on this machine back to their starting state, and forget what was compiled.
       if (target === "demo" && method === "reset") {
-        await oneAtATime(async () => {
+        await withDeadline(async () => {
           await fetch("http://127.0.0.1:9100/reset", { method: "POST", signal: AbortSignal.timeout(5000) }).catch(() => undefined);
           await forms.reset(); await tables.reset();
         });
@@ -73,7 +102,7 @@ const server = createServer((req, res) => {
         return send(200, { ok: true, result: "hang set", kinds: kindsNow() });
       }
       if (!ALLOWED[target]?.includes(method) || typeof targets[target]?.[method] !== "function") return send(400, { ok: false, error: { name: "Error", message: `not a worker method: ${target}.${method}` }, kinds: kindsNow() });
-      const result = await oneAtATime(async () => await targets[target]![method]!.apply(targets[target], args ?? []));
+      const result = await withDeadline(async () => await targets[target]![method]!.apply(targets[target], args ?? []));
       send(200, { ok: true, result: result ?? null, kinds: kindsNow() });
     } catch (e) {
       const d = e as { kind?: string; klass?: string; drifts?: unknown };

@@ -1,7 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { FileLedger } from "./src/ledger.js";
 import { exclusive } from "./src/generator/browser-lock.js";
-import { llmsTxt, quickstartMd, errorsMd, robotsTxt, NAME_LINE } from "./src/agent-docs.js";
+import { llmsTxt, quickstartMd, errorsMd, robotsTxt, NAME_LINE, skillMd } from "./src/agent-docs.js";
 import { MCPServer } from "mcp-use";
 import { z } from "zod";
 import { Wicket } from "./src/engine.js";
@@ -86,7 +86,7 @@ const reply = (obj: Record<string, unknown>) => ({
   isError: obj.status === "refused",
 });
 
-const kindDoc = "Record kind: student, class, enrollment, timetable or guardian.";
+const kindDoc = "Record kind, as compile_site or find_systems named it (for example residents or devices). Call compile_site first if you have none.";
 const keyDoc = "The unique key from find, like S014. Never a name.";
 
 // ---- tools ----
@@ -346,8 +346,21 @@ const originOf = (c: { req: { url: string; header: (k: string) => string | undef
 server.get("/llms.txt", (c) => c.text(llmsTxt(originOf(c))));
 server.get("/quickstart.md", (c) => c.text(quickstartMd(originOf(c))));
 server.get("/errors.md", (c) => c.text(errorsMd(originOf(c))));
+server.get("/skill.md", (c) => c.text(skillMd));
 server.get("/robots.txt", (c) => c.text(robotsTxt(originOf(c))));
 server.get("/", (c) => c.text(`Aperture\n\n${NAME_LINE}\n\nAn MCP server for working safely in web systems that have no API.\nMCP endpoint: ${originOf(c)}/mcp\nStart: ${originOf(c)}/llms.txt\n`));
+
+// Access to the MCP endpoint. With APERTURE_ACCESS_KEYS set, every call needs one of the keys: an Authorization: Bearer header,
+// an x-aperture-key header, or ?key= on the URL (for clients that cannot send headers). The docs pages stay public.
+// Without the setting the endpoint is open (local development only).
+const ACCESS_KEYS = (process.env.APERTURE_ACCESS_KEYS ?? "").split(",").map((k) => k.trim()).filter((k) => k.length >= 16);
+const keyOk = (given: string | undefined) => !!given && ACCESS_KEYS.some((k) => { const a = Buffer.from(given), b = Buffer.from(k); return a.length === b.length && timingSafeEqual(a, b); });
+server.use("/mcp", async (c, next) => {
+  if (!ACCESS_KEYS.length) return next();
+  const given = (c.req.header("authorization") ?? "").replace(/^Bearer\s+/i, "") || c.req.header("x-aperture-key") || c.req.query("key");
+  if (keyOk(given)) return next();
+  return c.json({ jsonrpc: "2.0", id: null, error: { code: -32001, message: "Aperture needs an access key. Send Authorization: Bearer <key>, or add ?key=<key> to the server URL. Ask the operator for a key." } }, 401);
+});
 
 server.get("/owner", (c) => c.html(OWNER_PAGE));
 server.get("/owner/state", (c) => (allowed(c) ? c.json(wicket.ownerState()) : c.json({ error: "not allowed" }, 403)));
