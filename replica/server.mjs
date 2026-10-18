@@ -170,7 +170,7 @@ function residentsPage(v, msg) {
     return `<tr class="rgRow${v.sel === r.dir ? " sel" : ""}"><td class="rs"><a href="javascript:__doPostBack('gv','Select$${r.dir}')" title="Select">${v.sel === r.dir ? "▸" : "&nbsp;"}</a></td><td>${esc(r.name)}</td><td><input type="checkbox" disabled></td><td></td><td>${esc(r.phone ?? "")}</td><td>${r.dir}</td><td></td><td>02</td><td>${d ? KIND_LETTER[d.kind] ?? "" : ""}</td><td>${d ? d.id : ""}</td><td></td><td>1</td><td class="notes">${r.unit ? `Unit ${esc(r.unit)}` : ""}</td><td class="act"><a href="javascript:__doPostBack('gv','Delete$${r.dir}')" onclick="return confirm('Delete this resident and their devices?');">Delete</a></td></tr>`;
   }).join("");
   const addRow = v.addOpen
-    ? `<tr class="new"><td class="rs">✎</td><td><input type="text" id="txtName" name="txtName" placeholder="Resident"></td><td></td><td></td><td></td><td><input type="text" id="txtDir" name="txtDir" placeholder="Dir"></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="notes"><input type="text" id="txtUnit" name="txtUnit" placeholder="Unit"> <input type="submit" name="btnSave" value="Save" id="btnSave"> <input type="submit" name="btnCancel" value="Cancel" id="btnCancel">${v.error ? ` <span class="err">${esc(v.error)}</span>` : ""}</td><td></td></tr>`
+    ? `<tr class="new"><td class="rs">✎</td><td><input type="text" id="txtName" name="txtName" aria-label="Resident" placeholder="Resident"></td><td></td><td></td><td></td><td><input type="text" id="txtDir" name="txtDir" aria-label="Dir" placeholder="Dir"></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="notes"><input type="text" id="txtUnit" name="txtUnit" aria-label="Notes" placeholder="Unit"> <input type="submit" name="btnSave" value="Save" id="btnSave"> <input type="submit" name="btnCancel" value="Cancel" id="btnCancel">${v.error ? ` <span class="err">${esc(v.error)}</span>` : ""}</td><td></td></tr>`
     : `<tr class="new"><td class="rs">*</td><td colspan="13"></td></tr>`;
   const vendors = VENDORS.map((x) => `<tr><td class="rs">&nbsp;</td><td>${esc(x.name)}</td><td></td><td></td><td>*VENDOR*</td><td>${x.dir}</td><td></td><td>05</td><td></td><td></td><td></td><td>1</td><td class="notes"></td></tr>`).join("");
   const head = `<th></th><th>Resident</th><th>Hide</th><th>AAC</th><th>Phone</th><th>Dir</th><th>Ent</th><th>SL</th><th>T</th><th>Device #</th><th>FL</th><th>ER</th><th>Notes</th>`;
@@ -182,8 +182,11 @@ function residentsPage(v, msg) {
 function devicesPage(v, msg) {
   const name = (dir) => state.residents.find((r) => r.dir === dir)?.name ?? "";
   const rows = state.devices.map((d) => `<tr class="rgRow"><td class="rs">&nbsp;</td><td>${KIND_LETTER[d.kind] ?? ""}</td><td>${d.id}</td><td>${d.dir}</td><td>${esc(name(d.dir))}</td><td>${esc(d.kind)}</td><td>02</td><td class="act"><a href="javascript:__doPostBack('gv','Delete$${d.id}')" onclick="return confirm('Delete this device?');">Delete</a></td></tr>`).join("");
-  return page(`Account ${ACCOUNT}`, (tree) => `${formOpen(v)}<div class="tools" role="toolbar" aria-label="Toolbar">${tool("Account", { on: true, href: "/Accounts.aspx" })}${tool("Add")}${tool("Add Dev")}${tool("Delete")}${tool("Assign")}${tool("Sort")}${tool("Search")}</div>
-<div class="main">${tree}<div class="pane"><div class="grid res"><table id="gv" class="rgMasterTable" aria-label="Devices"><caption class="vh">Devices</caption><tr><th></th><th>T</th><th>Device #</th><th>Dir</th><th>Resident</th><th>Type</th><th>SL</th><th></th></tr>${rows}</table></div></div></div></form>`, { cur: "dev", status: msg || `${state.devices.length} device(s)` });
+  const addRow = v.addOpen
+    ? `<tr class="new"><td class="rs">✎</td><td></td><td><input type="text" id="txtDevice" name="txtDevice" aria-label="Device #" placeholder="Device #"></td><td><input type="text" id="txtDevDir" name="txtDevDir" aria-label="Dir" placeholder="Dir"></td><td></td><td><input type="text" id="txtKind" name="txtKind" aria-label="Type" placeholder="Card, Transmitter or Keypad code"></td><td></td><td><input type="submit" name="btnSave" value="Save" id="btnSave"> <input type="submit" name="btnCancel" value="Cancel" id="btnCancel">${v.error ? ` <span class="err">${esc(v.error)}</span>` : ""}</td></tr>`
+    : `<tr class="new"><td class="rs">*</td><td colspan="7"></td></tr>`;
+  return page(`Account ${ACCOUNT}`, (tree) => `${formOpen(v)}<div class="tools" role="toolbar" aria-label="Toolbar">${tool("Account", { on: true, href: "/Accounts.aspx" })}<a class="tb" id="lnkAdd" href="javascript:__doPostBack('lnkAdd','')" title="Add"><span class="g" aria-hidden="true">${glyph.Add}</span><span>Add</span></a>${tool("Add Dev")}${tool("Delete")}${tool("Assign")}${tool("Sort")}${tool("Search")}</div>
+<div class="main">${tree}<div class="pane"><div class="grid res"><table id="gv" class="rgMasterTable" aria-label="Devices"><caption class="vh">Devices</caption><tr><th></th><th>T</th><th>Device #</th><th>Dir</th><th>Resident</th><th>Type</th><th>SL</th><th></th></tr>${rows}${addRow}</table></div></div></div></form>`, { cur: "dev", status: msg || `${state.devices.length} device(s)` });
 }
 
 const blankView = () => ({ addOpen: false, error: "", flt: "", sel: "", searchOpen: false, sendOpen: false });
@@ -279,6 +282,16 @@ const server = createServer(async (req, res) => {
     else { const n = pending(); state.gate = { residents: structuredClone(state.residents), devices: structuredClone(state.devices) }; state.sends++; note(`send data: ${n} change(s) to ${ACCOUNT}`); msg = `Send complete: ${chosen.join(", ")}`; }
   }
   else if (b.get("btnCancel") !== null) v.addOpen = false;
+  else if (b.get("btnSave") !== null && path === "/Devices.aspx") {
+    const id = (b.get("txtDevice") ?? "").trim(), dir = (b.get("txtDevDir") ?? "").trim(), raw = (b.get("txtKind") ?? "").trim();
+    const kind = Object.keys(KIND_LETTER).find((k) => k.toLowerCase() === raw.toLowerCase() || KIND_LETTER[k] === raw.toUpperCase());
+    if (!id || !dir || !raw) { v.addOpen = true; v.error = "Device #, Dir and Type are required."; }
+    else if (!/^\d{5}$/.test(id)) { v.addOpen = true; v.error = "Device # must be 5 digits."; }
+    else if (state.devices.some((d) => d.id === id)) { v.addOpen = true; v.error = `Device ${id} already exists.`; }
+    else if (!state.residents.some((r) => r.dir === dir)) { v.addOpen = true; v.error = `Dir ${dir} does not exist.`; }
+    else if (!kind) { v.addOpen = true; v.error = "Type must be Card, Transmitter or Keypad code."; }
+    else { state.devices.push({ id, dir, kind }); v.addOpen = false; note(`add device ${id} to ${dir}`); }
+  }
   else if (b.get("btnSave") !== null && isRes) {
     const name = (b.get("txtName") ?? "").trim(), dir = (b.get("txtDir") ?? "").trim();
     const unit = (b.get("txtUnit") ?? "").trim().replace(/^unit\s+/i, "");

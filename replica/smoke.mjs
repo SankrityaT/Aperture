@@ -81,6 +81,14 @@ await check("a new directory code is added", async () => {
   await post("/Residents.aspx", { btnSave: "Save", txtName: "Nia Fenn", txtDir: "2001", txtUnit: "140A" });
   assert.ok((await truth()).portal.dirs.includes("2001"));
 });
+await check("a device can be added on Devices (5-digit #, existing Dir, valid Type)", async () => {
+  const before = (await truth()).portal.devicesByDir["1002"];
+  await post("/Devices.aspx", { __EVENTTARGET: "lnkAdd" });
+  const bad = await post("/Devices.aspx", { btnSave: "Save", txtDevice: "01001", txtDevDir: "1002", txtKind: "Card" });
+  assert.match(bad, /Device 01001 already exists/);
+  await post("/Devices.aspx", { btnSave: "Save", txtDevice: "09999", txtDevDir: "1002", txtKind: "Card" });
+  const t = await truth(); assert.equal(t.portal.devicesByDir["1002"], before + 1);
+});
 await check("hang 'noop': the delete never answers and nothing is deleted", async () => {
   await fetch(`${BASE}/owner/hang?noop=1005`, { method: "POST", headers: owner });
   await assert.rejects(post("/Residents.aspx", { __EVENTTARGET: "gv", __EVENTARGUMENT: "Delete$1005" }, 2000));
