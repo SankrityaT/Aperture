@@ -8,7 +8,7 @@
 import { serialize } from "./browser-lock.js";
 import type { Browser, Page } from "playwright-core";
 import type { Adapter, Kind, Rec } from "../types.js";
-import { readCards, cardKind, type CardRow } from "./cards.js";
+import { readCards, readProduct, cardKind, type CardRow } from "./cards.js";
 import { explorePage, type FieldModel, type FormModel, type PageModel } from "./explore.js";
 
 export interface CompileSummary {
@@ -94,8 +94,23 @@ export function assertMayAct(url: string, what: string): void {
 /** Open a page and start once its document is in. Big public sites (retail, news) can take far longer than a call's deadline to
  *  fire "load" because of ads and trackers; the records are in the document long before that. Give "load" a few seconds, no more. */
 export async function gotoQuick(page: Page, url: string): Promise<void> {
-  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 12_000 });
+  try { await page.goto(url, { waitUntil: "domcontentloaded", timeout: Number(process.env.WICKET_GOTO_TIMEOUT_MS ?? 12_000) }); }
+  catch (e) {
+    // A site that redirects while loading (search pages do) interrupts the first navigation: wait for where it lands instead.
+    if (!/interrupted by another navigation|net::ERR_ABORTED/i.test(String((e as Error).message))) throw e;
+    await page.waitForLoadState("domcontentloaded", { timeout: 12_000 });
+  }
   await page.waitForLoadState("load", { timeout: 4000 }).catch(() => undefined);
+}
+
+/** Without request interception (some sites reject intercepted requests): if the page itself lands on an internal address that
+ *  is not a listed system, leave it at once, so nothing read there is ever returned. */
+export function watchNavigation(page: Page): void {
+  page.on("framenavigated", (f) => {
+    if (f !== page.mainFrame()) return;
+    let host = ""; try { host = new URL(f.url()).hostname.toLowerCase(); } catch { return; }
+    if (host && isPrivateHost(host) && !allowedHosts().includes(host)) void page.goto("about:blank").catch(() => undefined);
+  });
 }
 
 /** Block every request (redirects and sub-resources included) to an internal address that is not a listed system. */
@@ -180,10 +195,18 @@ export class FormAdapter implements Adapter {
   async refresh(): Promise<CompileSummary> {
     const page = this.page;
     if (!page) throw new NoBrowser("Nothing compiled yet. Call compile_site first.");
-    this.model = await explorePage(page);
+    try { this.model = await explorePage(page); }
+    catch (e) {
+      // The page moved while being read (a redirect, a variant picked by the site): let it settle and read it once more.
+      if (!/context was destroyed|navigation/i.test(String((e as Error).message))) throw e;
+      await page.waitForLoadState("domcontentloaded", { timeout: 10_000 }).catch(() => undefined);
+      this.model = await explorePage(page);
+    }
     this.dirty.clear();
     this.pageItems = [];
-    const groups = await readCards(page).catch(() => []);
+    // A product page first: when the page is one product, read that and ignore its "related products" carousels.
+    const prod = await readProduct(page).catch(() => null);
+    const groups = prod ? [] : await readCards(page).catch(() => []);
     groups.forEach((g, i) => {
       const kind = cardKind(page.url(), i);
       const m = this.cards.get(kind) ?? new Map<string, CardRow>();
@@ -192,6 +215,16 @@ export class FormAdapter implements Adapter {
       this.cards.set(kind, m);
       this.pageItems.push({ kind, key: g.attr.replace(/^data-/, ""), rows: g.rows });
     });
+    // A single product page: its record joins the same site list, marked as read from the product page itself.
+    {
+      if (prod) {
+        const kind = cardKind(page.url(), 0);
+        const m = this.cards.get(kind) ?? new Map<string, CardRow>();
+        m.set(prod.key, { ...(m.get(prod.key) ?? {}), ...prod });
+        this.cards.set(kind, m);
+        this.pageItems.push({ kind, key: "product page", rows: [prod] });
+      }
+    }
     return this.summary();
   }
 
@@ -199,7 +232,7 @@ export class FormAdapter implements Adapter {
     const m = this.model;
     if (!m) throw new NoBrowser("Nothing compiled yet. Call compile_site first.");
     return {
-      url: m.url, title: m.title, warnings: m.warnings, ...(m.sendControls?.length ? { send_steps: m.sendControls } : {}),
+      url: m.url, title: m.title, warnings: this.pageItems.length ? m.warnings.map((w) => (/captcha|bot challenge/i.test(w) ? "A CAPTCHA script is on this page, but it did not block it: the page content loaded and was read." : w)) : m.warnings, ...(m.sendControls?.length ? { send_steps: m.sendControls } : {}),
       ...(this.pageItems.length ? { items: this.pageItems.map((g) => ({ kind: g.kind, count: g.rows.length, key: g.key, fields: ["title", "price", "rating", "ratings", "url", "sku", "note"], sample: g.rows.slice(0, 3), note: `find('${g.kind}') lists every card read on this site so far (${this.cards.get(g.kind)?.size ?? g.rows.length}); search again and they add up. Read-only: what the cards show, not the product page.` })) } : {}),
       // Retail pages carry dozens of hidden widget forms; with item cards present only the first few are worth an agent's tokens.
       forms: (this.pageItems.length ? m.forms.slice(0, 3) : m.forms).map((f) => ({
@@ -240,6 +273,8 @@ export class FormAdapter implements Adapter {
   }
 
   private async ensurePage(): Promise<Page> {
+    // A window someone closed, or a browser that went away: start fresh instead of failing every call after it.
+    if (this.page && (this.page.isClosed() || (this.browser && !this.browser.isConnected()))) { await this.close(); }
     if (this.page) return this.page;
     let chromium;
     try { ({ chromium } = await import("playwright-core")); } catch { throw new NoBrowser("No browser library is available on this server."); }
@@ -263,7 +298,7 @@ export class FormAdapter implements Adapter {
     // An explicit context (not browser.newPage) so a stuck page can be replaced inside the same signed-in session.
     const ctx = await this.browser.newContext({ viewport: process.env.WICKET_HEADED === "1" ? { width: 1280, height: 800 } : undefined });
     this.page = await ctx.newPage();
-    await guardNetwork(this.page);
+    if (process.env.WICKET_NETWORK_GUARD !== "0") await guardNetwork(this.page); else watchNavigation(this.page);
     if (process.env.WICKET_ACTION_TIMEOUT_MS) this.page.setDefaultTimeout(Number(process.env.WICKET_ACTION_TIMEOUT_MS));
     return this.page;
   }
@@ -273,6 +308,13 @@ export class FormAdapter implements Adapter {
   }
 
   // ---------- Adapter ----------
+
+  /** Card lists are already in memory: reading them never waits for the browser. */
+  cardRows(kind: Kind, key?: string): Rec[] | Rec | null | undefined {
+    const cards = this.cards.get(kind);
+    if (!cards) return undefined;
+    return key === undefined ? ([...cards.values()] as Rec[]) : ((cards.get(key) as Rec | undefined) ?? null);
+  }
 
   kinds(): Kind[] {
     return [...this.formIds(), ...this.cards.keys(), ...(this.lastResult ? ["result"] : [])];

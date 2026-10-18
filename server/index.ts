@@ -11,7 +11,7 @@ import { CompositeAdapter } from "./src/adapters/composite.js";
 import { FormAdapter, HumanRequired, NoBrowser, NoSecret, NotAuthorized, type CompileSummary } from "./src/generator/form-adapter.js";
 import { TableAdapter, type TableModel } from "./src/generator/tables.js";
 import { RemoteWorker } from "./src/worker/remote.js";
-import { split } from "./src/worker/split.js";
+import { split, isPrimaryUrl, SplitForms, SplitTables } from "./src/worker/split.js";
 import type { Adapter } from "./src/types.js";
 import { OWNER_PAGE } from "./src/owner-page.js";
 import type { Op } from "./src/types.js";
@@ -192,8 +192,21 @@ server.tool(
     }),
     annotations: { readOnlyHint: true, openWorldHint: true },
   },
-  // Compiling is several steps on one page (sign in, read the forms, read the tables). Two compiles in parallel must not interleave.
-  ({ url, login, then }) => exclusive(async () => {
+  async ({ url, login, then }) => {
+    // Public pages go to the public worker pool and do not wait on each other or on the listed systems.
+    if (url && !login && forms instanceof SplitForms && !isPrimaryUrl(url)) {
+      try {
+        const pc = await forms.publicCompile(url, (tables as SplitTables).a);
+        rememberSendSteps(pc.summary); wicket.flush();
+        return reply({ status: "compiled", ...pc.summary, ...(pc.tables.length ? thisPageTables(pc.tables, pc.summary.url) : {}), next: ["item cards (search results, product grids, product pages): find(kind) with the items kind; read-only. Several compile_site calls can run at once", "records in a table: find(kind)", "reading only: changes happen only on systems the operator listed"] });
+      } catch (e) { return compileFail(e); }
+    }
+    return compileLocked({ url, login, then });
+  },
+);
+
+// Compiling a listed system is several steps on one page (sign in, read the forms, read the tables). Two must not interleave.
+function compileLocked({ url, login, then }: { url?: string; login?: string; then?: string }) { return exclusive(async () => {
     try {
       if (login) {
         if (!url) return reply({ status: "refused", error: "missing_url", detail: "With login, give the sign-in page as url.", next: ["call compile_site with url (the sign-in page), login and then (the page you want)"] });
@@ -208,8 +221,8 @@ server.tool(
       wicket.flush();
       return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["item cards (search results, product grids): find(kind) with the items kind; read-only", "records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
     } catch (e) { return compileFail(e); }
-  }),
-);
+  });
+}
 
 
 

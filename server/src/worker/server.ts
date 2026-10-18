@@ -101,6 +101,12 @@ const server = createServer((req, res) => {
         await fetch(`http://127.0.0.1:9104/__hang?${q}`, { signal: AbortSignal.timeout(5000) }).catch(() => undefined);
         return send(200, { ok: true, result: "hang set", kinds: kindsNow() });
       }
+      // Reading a list of item cards is memory only: answer at once instead of queueing behind page loads.
+      if (target === "forms" && (method === "list" || method === "read")) {
+        const a = (args ?? []) as [string, string?];
+        const rows = forms.cardRows(a[0], method === "read" ? (a[1] ?? "") : undefined);
+        if (rows !== undefined) return send(200, { ok: true, result: rows, kinds: kindsNow() });
+      }
       if (!ALLOWED[target]?.includes(method) || typeof targets[target]?.[method] !== "function") return send(400, { ok: false, error: { name: "Error", message: `not a worker method: ${target}.${method}` }, kinds: kindsNow() });
       const result = await withDeadline(async () => await targets[target]![method]!.apply(targets[target], args ?? []));
       send(200, { ok: true, result: result ?? null, kinds: kindsNow() });

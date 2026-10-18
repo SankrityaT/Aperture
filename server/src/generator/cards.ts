@@ -57,3 +57,59 @@ export function cardKind(url: string, i: number): string {
   let h = "site"; try { const parts = new URL(url).hostname.replace(/^www\./, "").split("."); h = (parts.length > 1 ? parts[parts.length - 2] : parts[0]) ?? "site"; } catch { /* keep default */ }
   return `${h.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_items${i ? `_${i + 1}` : ""}`;
 }
+
+export type ProductRow = CardRow & { source: "product page"; availability?: string | null; condition?: string | null };
+
+/** One product page: the shop's own structured data (schema.org Product, what it publishes for search engines), else the
+ *  common page elements. Returns null when the page is not a single product. */
+export async function readProduct(page: Page): Promise<ProductRow | null> {
+  return page.evaluate(`(() => {
+    var t = function (sel) { var e = document.querySelector(sel); return e ? (e.innerText || e.textContent || "").replace(/\\s+/g, " ").trim() : ""; };
+    var p = null;
+    document.querySelectorAll('script[type="application/ld+json"]').forEach(function (s) {
+      try {
+        var j = JSON.parse(s.textContent || "null"); var list = Array.isArray(j) ? j : (j && j["@graph"]) ? j["@graph"] : [j];
+        list.forEach(function (x) { var ty = x && x["@type"]; if (!p && (ty === "Product" || (Array.isArray(ty) && ty.indexOf("Product") >= 0))) p = x; });
+      } catch (e) {}
+    });
+    var url = location.origin + location.pathname;
+    var skuUrl = (location.pathname.match(/\\/sku\\/(\\d{6,9})/) || location.search.match(/skuId=(\\d{6,9})/) || [])[1];
+    if (p) {
+      var o = p.offers; if (Array.isArray(o)) o = o[0]; if (o && o.offers) o = Array.isArray(o.offers) ? o.offers[0] : o.offers;
+      var ar = p.aggregateRating || {};
+      var key = String(p.sku || skuUrl || p.productID || p.mpn || "");
+      if (!key) return null;
+      var price = o && (o.price || o.lowPrice); var cur = (o && o.priceCurrency) || "USD";
+      return { key: key, title: String(p.name || "").replace(/\\s+/g, " ").trim().slice(0, 200), price: price ? (cur === "USD" ? "$" : cur + " ") + Number(price).toFixed(2) : null,
+        rating: ar.ratingValue ? String(ar.ratingValue) : null, ratings: ar.reviewCount || ar.ratingCount ? String(ar.reviewCount || ar.ratingCount) : null, url: url,
+        availability: o && o.availability ? String(o.availability).replace(/^https?:\\/\\/schema\\.org\\//, "") : null,
+        condition: o && o.itemCondition ? String(o.itemCondition).replace(/^https?:\\/\\/schema\\.org\\//, "") : null, source: "product page" };
+    }
+    // No structured data: read what any product page shows a person. The heading, the first price-labelled amount near it,
+    // "x out of 5", "N ratings/reviews", and an id from the address (the path segment that looks like a product code).
+    var h1 = document.querySelector("h1"); var title = h1 ? (h1.innerText || h1.textContent || "").replace(/\\s+/g, " ").trim() : "";
+    var seg = location.pathname.split("/").filter(function (x) { return /^[A-Z0-9]{8,12}$/.test(x) || /^\\d{6,9}$/.test(x); });
+    var id = seg.length ? seg[seg.length - 1] : "";
+    if (!title || !id) return null;
+    // The price that belongs to this product is the one closest below its heading, not the first on the page (accessories,
+    // trade-ins and other sellers come later). Struck-through list prices are skipped.
+    var hb = h1.getBoundingClientRect(); var best = null; var bestD = 1e9;
+    document.querySelectorAll("[class*=price i], [id*=price i], [data-testid*=price i]").forEach(function (x) {
+      var txt = x.textContent || ""; if (!/\\$\\s?\\d/.test(txt) || txt.length > 60) return;
+      if (x.closest("s, del, [class*=strike i], [class*=list-price i], [class*=basis i]")) return;
+      var r = x.getBoundingClientRect(); if (!r.width || !r.height) { var pr2 = x.parentElement && x.parentElement.getBoundingClientRect(); if (!pr2 || !pr2.height) return; r = pr2; }
+      var d = Math.abs(r.top - hb.bottom) + Math.abs(r.left - hb.left) / 4; if (r.top < hb.top - 50 || r.top > hb.bottom + 900) return;
+      if (d < bestD) { bestD = d; best = x; }
+    });
+    var pm = best ? (best.textContent || "").match(/\\$\\s?\\d[\\d,]*(\\.\\d{2})?/) : null;
+    var body = (document.body.innerText || "").slice(0, 40000); var lab = []; document.querySelectorAll("[aria-label],[title]").forEach(function (x) { lab.push(x.getAttribute("aria-label") || x.getAttribute("title")); });
+    var both = body + " | " + lab.join(" | ");
+    var rt = both.match(/(\\d(?:\\.\\d)?) out of 5/i); var ct = both.match(/(?<![\\d.,])(\\d{1,3}(?:,\\d{3})+|\\d+)\\s*(?:global\\s+)?(?:ratings|reviews)/i);
+    // Flag a used offer only when it is the offer this price belongs to (the words sit next to the price), not anywhere on the page.
+    var near = best ? ((best.parentElement && best.parentElement.parentElement && best.parentElement.parentElement.parentElement) || best).textContent || "" : "";
+    var usedNote = /(^|\\s)(Used|Renewed)\\b|Used - |Pre-owned/.test(title + " " + near.slice(0, 600)) ? "this price is for a used or renewed offer; a new unit may cost more" : null;
+    return { key: id, title: title.slice(0, 200), price: pm ? pm[0].replace(/\\s/g, "") : null, rating: rt ? rt[1] : null, ratings: ct ? ct[1] : null,
+      url: location.origin + location.pathname, availability: null, condition: usedNote, source: "product page" };
+    return null;
+  })()`) as Promise<ProductRow | null>;
+}
