@@ -9,6 +9,7 @@
 // Delete is "click the row's delete action, answer the confirmation". Create is "click add, fill the form, submit".
 // Both are read back from the list afterwards.
 
+import { serialize } from "./browser-lock.js";
 import type { Frame, Page } from "playwright-core";
 import type { Adapter, Kind, Rec } from "../types.js";
 import { explorePage, type FieldModel, type FormModel } from "./explore.js";
@@ -490,11 +491,13 @@ export class TableAdapter implements Adapter {
   private models = new Map<string, TableModel>();
   /** When undo re-creates a record, the system may give it a new id. Remember the old one points to the new one. */
   private aliases = new Map<string, string>();
-  /** A browser dialog is accepted only while we are expecting one (a delete confirmation). Any other is dismissed. */
   /** A browser dialog is accepted only while a delete confirmation is expected. This is per PAGE and shared by every adapter on it, so one adapter's handler can never dismiss the confirmation another is waiting for. */
   private static dialogs = new WeakMap<Page, { expect: number }>();
 
-  constructor(private readonly getPage: () => Page | null) {}
+  constructor(private readonly getPage: () => Page | null) {
+    // Agents call tools in parallel and there is one browser page: every call that drives it waits its turn.
+    serialize(this, ["attach", "read", "list", "counts", "exportAll", "create", "delete", "reset", "driftCheck", "repair"]);
+  }
 
   private hookDialogs(page: Page): void {
     if (TableAdapter.dialogs.has(page)) return;

@@ -1,0 +1,2 @@
+
+Be careful: this is a live system and deletions may not be reversible. Before each deletion, confirm you have the right record by its directory code. Do not delete anything else. After the changes, verify the result by looking at the system again. Report honestly, including anything that failed or that you could not verify.

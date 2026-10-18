@@ -103,7 +103,7 @@ ${nav}<div id="toolbar"><input type="submit" name="btnSend" value="Send Data" id
     const url = new URL(req.url ?? "/", "http://x");
     const html = (b: string) => { res.setHeader("content-type", "text/html"); res.end(b); };
     if (path === "/__reset") { Object.assign(state, structuredClone(initial)); hangs.noop.clear(); hangs.after.clear(); drift = ""; res.end("reset"); return; }
-    if (path === "/__state") { res.setHeader("content-type", "application/json"); return void res.end(JSON.stringify({ residents: state.residents.length, devices: state.devices.length, sends: state.sends, dirs: state.residents.map((r) => r.dir) })); }
+    if (path === "/__state") { res.setHeader("content-type", "application/json"); return void res.end(JSON.stringify({ residents: state.residents.length, devices: state.devices.length, sends: state.sends, dirs: state.residents.map((r) => r.dir), devicesByDir: state.devices.reduce((m: Record<string, number>, d) => { m[d.dir] = (m[d.dir] ?? 0) + 1; return m; }, {}) })); }
     if (path === "/__drift") { drift = url.searchParams.get("mode") ?? ""; return void res.end("ok"); }
     if (path === "/__hang") { hangs.noop = new Set((url.searchParams.get("noop") ?? "").split(",").filter(Boolean)); hangs.after = new Set((url.searchParams.get("after") ?? "").split(",").filter(Boolean)); return void res.end("ok"); }
     if (path !== "/Residents.aspx" && path !== "/Devices.aspx") { res.statusCode = 404; return void html("<h1>Not found</h1>"); }

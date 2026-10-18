@@ -176,3 +176,23 @@ test("recovery controls the application itself offers (archive, restore, export)
     assert.ok(m!.recoveryHints?.some((h) => /archive/i.test(h)), `hints: ${JSON.stringify(m!.recoveryHints)}`);
   } finally { await fa.close(); srv.close(); }
 });
+
+test("agents call tools in parallel: simultaneous reads and deletes on one page neither fail nor trample each other", async () => {
+  const { startGatePortal } = await import("./fixtures/gateportal.js");
+  const g = await startGatePortal(0);
+  const fa2 = new FormAdapter();
+  try {
+    await fa2.compile(`${g.url}/Residents.aspx`);
+    const t = new TableAdapter(() => fa2.currentPage());
+    const [m] = await t.attach();
+    const [a, b, c, d] = await Promise.all([t.list(m!.id), t.read(m!.id, "1004"), t.read(m!.id, "1060"), t.counts(m!.id)]);
+    assert.equal(a.length, 91);
+    assert.equal(b?.key, "1004");
+    assert.equal(c?.key, "1060");
+    assert.equal(d[m!.id], 91);
+    // a delete started while reads are in flight still lands exactly once
+    await Promise.all([t.list(m!.id), t.delete(m!.id, "1005"), t.read(m!.id, "1006")]);
+    assert.ok(!g.state.residents.some((r) => r.dir === "1005"));
+    assert.equal(g.state.residents.length, 90);
+  } finally { await fa2.close(); await g.close(); }
+});

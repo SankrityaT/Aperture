@@ -5,6 +5,7 @@
 //  - publish = click the form's submit button. It always needs the owner and cannot be undone.
 // Nothing here is specific to a site. It only follows the model the explorer produced.
 
+import { serialize } from "./browser-lock.js";
 import type { Browser, Page } from "playwright-core";
 import type { Adapter, Kind, Rec } from "../types.js";
 import { explorePage, type FieldModel, type FormModel, type PageModel } from "./explore.js";
@@ -60,6 +61,11 @@ export class FormAdapter implements Adapter {
   private model: PageModel | null = null;
   private dirty = new Set<string>();
   private lastResult: Rec | null = null;
+
+  constructor() {
+    // Agents call tools in parallel and there is one browser page shared with the table reader: every call that drives it waits its turn.
+    serialize(this, ["compile", "signIn", "open", "refresh", "read", "list", "create", "delete", "update", "publish", "reset", "counts", "exportAll"]);
+  }
 
   // ---------- compile ----------
 

@@ -78,6 +78,9 @@ const bothKinds = [cr.data.tables?.[0]?.id, cd.data.tables?.[0]?.id];
 const fr = await tool("find", { kind: "residents" });
 const fd = await tool("find", { kind: "devices" });
 check("compiling the second page keeps the first (both kinds stay live)", fr.data.count === 91 && fd.data.count === 168, `kinds=${bothKinds.join(",")}`);
+// Agents call tools in parallel. Three reads in the same instant must all succeed (one browser page, one lock).
+const par = await Promise.all([tool("find", { kind: "residents" }), tool("find", { kind: "devices" }), tool("find", { kind: "residents", query: "Alder" })]);
+check("three parallel reads all succeed with full data", par[0].data.count === 91 && par[1].data.count === 168 && !par.some((x) => x.isError), `(${Math.max(...par.map((x) => x.ms))} ms for the slowest)`);
 const gate = truth(9104, "/__state");
 const del = await tool("apply", { op: "delete", kind: "residents", key: "1004" });
 const after = truth(9104, "/__state");
