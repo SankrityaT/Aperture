@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { Logo } from "@/components/Logo";
+import { ViewToggle } from "@/components/ViewToggle";
 
 type Link = { label: string; href: string };
 
@@ -104,6 +105,7 @@ export function Nav({ name, links, docs, github, start, cta }: { name: string; l
           </nav>
 
           <div className="flex shrink-0 items-center justify-end gap-4 text-[0.95rem] md:gap-6">
+            <span className="hidden lg:inline-flex"><ViewToggle current="human" /></span>
             <a href={docs} className="hidden text-[#f2f0ff]/90 transition hover:text-white lg:inline">Docs</a>
             <a href={github} className="hidden text-[#f2f0ff]/90 transition hover:text-white lg:inline">GitHub</a>
             <a href={start} className="hidden shrink-0 whitespace-nowrap rounded-full bg-white px-4 py-1.5 font-medium text-[#1426e6] transition hover:bg-[#e8ebff] md:inline-block">{cta}</a>
@@ -151,7 +153,9 @@ export function Nav({ name, links, docs, github, start, cta }: { name: string; l
                 </button>
               </div>
 
-              <nav aria-label="Menu" className="mt-8">
+              <div className="mt-6"><ViewToggle current="human" /></div>
+
+              <nav aria-label="Menu" className="mt-6">
                 <ul>
                   {items.map((l, i) => (
                     <li key={l.label} className="menu-item border-t border-white/20 last:border-b" style={{ transitionDelay: `${open ? 420 + i * 55 : 0}ms` }}>

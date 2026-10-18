@@ -6,6 +6,7 @@ import { Nav } from "@/components/Nav";
 import { Reveal } from "@/components/Reveal";
 import { CopySetupLink } from "@/components/CopySetupLink";
 import { SetupPrompt } from "@/components/SetupPrompt";
+import { jsonLd } from "@/lib/jsonld";
 import { site, copy, setupPrompt } from "@/lib/site";
 
 const palette = { plate: "#1426e6", hi: "#ffffff", edge: "#c3caff", mid: "#8593ff", lo: "#4659f0" };
@@ -182,6 +183,7 @@ export default function Home() {
   const n = site.name;
   return (
     <div className="min-h-screen bg-[#f4f5fb] p-3 sm:p-5 md:p-7">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd()).replace(/</g, "\\u003c") }} />
     <main className="relative mx-auto max-w-[1680px] overflow-clip rounded-[18px] bg-[#1426e6] text-[#f2f0ff] md:rounded-[24px]">
       <Nav name={n} links={NAV_LINKS} docs={site.docs} github={site.github} start={site.start} cta={copy.primary} />
 

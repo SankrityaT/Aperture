@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description: copy.heroSub(site.name),
   openGraph: { title: `${site.name}: ${copy.h1}`, description: copy.heroSub(site.name), siteName: site.name, type: "website" },
   twitter: { card: "summary_large_image", title: `${site.name}: ${copy.h1}`, description: copy.heroSub(site.name) },
+  alternates: { types: { "text/markdown": "/index.md" } },
   robots: { index: false },
 };
 
