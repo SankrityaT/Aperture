@@ -164,14 +164,13 @@ function Margins({ light }: { light?: boolean }) {
 
 const NAV_LINKS = [
   { label: "How it works", href: "#how" },
-  { label: "See it work", href: "#action" },
+  { label: "Benchmarks", href: "#benchmarks" },
   { label: "Built for agents", href: "#built" },
-  { label: "Works with", href: "#agents" },
   { label: "FAQ", href: "#faq" },
 ];
 
 const FOOTER_LINKS = [
-  { title: "Product", links: [{ label: "How it works", href: "#how" }, { label: "See it work", href: "#action" }, { label: "Built for agents", href: "#built" }, { label: "Works with your agent", href: "#agents" }, { label: "FAQ", href: "#faq" }] },
+  { title: "Product", links: [{ label: "How it works", href: "#how" }, { label: "Benchmarks", href: "#benchmarks" }, { label: "Built for agents", href: "#built" }, { label: "Works with your agent", href: "#agents" }, { label: "FAQ", href: "#faq" }] },
   { title: "Developers", links: [{ label: "Docs", href: site.docs }, { label: "GitHub", href: site.github }] },
 ];
 
@@ -282,7 +281,8 @@ export default function Home() {
               </div>
             </div>
           </Reveal>
-          <Reveal className="mt-24 text-center md:mt-36">
+          <div id="benchmarks" className="mt-24 scroll-mt-20 md:mt-36">
+          <Reveal className="text-center">
             <h2 className={`${h2} mx-auto max-w-[16ch]`}>{copy.evidence.title}</h2>
             <p className={`mx-auto mt-6 max-w-[46ch] text-pretty text-xl leading-relaxed ${GRAY}`}>{copy.evidence.sub}</p>
           </Reveal>
@@ -311,6 +311,7 @@ export default function Home() {
             ))}
           </div>
           <p className={`mx-auto mt-8 max-w-[60ch] text-center font-mono text-sm ${GRAY}`}>{copy.evidence.note}</p>
+          </div>
         </div>
       </section>
 
