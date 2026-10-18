@@ -523,6 +523,7 @@ export class TableAdapter implements Adapter {
   // ---------- compile ----------
 
   async attach(): Promise<TableModel[]> {
+    this.memo.clear();
     const page = this.need();
     this.models.clear();
     await this.settle(page);
@@ -589,8 +590,22 @@ export class TableAdapter implements Adapter {
 
   // ---------- reading ----------
 
+  // A scan reads every page of a list, which is the slow part of verifying a change. Within one operation the same
+  // list is read several times, so a scan is kept for a few seconds and dropped on any write. WICKET_SCAN_TTL_MS=0 turns it off.
+  private memo = new Map<string, { at: number; v: { recs: Rec[]; where: Where[] } }>();
+  private readonly scanTtl = Number(process.env.WICKET_SCAN_TTL_MS ?? 3000);
+
+  private async scan(kind: Kind, stopAt?: string): Promise<{ recs: Rec[]; where: Where[] }> {
+    const hit = this.memo.get(kind);
+    if (this.scanTtl > 0 && hit && Date.now() - hit.at < this.scanTtl) return hit.v;
+    const { recs, where, partial } = await this.scanFresh(kind, 120, stopAt);
+    const v = { recs, where };
+    if (this.scanTtl > 0 && !partial) this.memo.set(kind, { at: Date.now(), v });
+    return v;
+  }
+
   /** Every row of a kind. Moves between pages by address, by clicking the pager, or by scrolling. */
-  private async scan(kind: Kind, maxPages = 120): Promise<{ recs: Rec[]; where: Where[] }> {
+  private async scanFresh(kind: Kind, maxPages = 120, stopAt?: string): Promise<{ recs: Rec[]; where: Where[]; partial: boolean }> {
     const m = this.models.get(kind);
     if (!m) throw new Error(`unknown kind ${kind}`);
     const page = this.need();
@@ -622,9 +637,10 @@ export class TableAdapter implements Adapter {
       if (p > 0 && first === lastFirst) break; // the pager did nothing: stop instead of looping
       lastFirst = first;
       t.rows.forEach((_, ri) => { const r = toRecord(t!, k, ri, cols); if (r) { recs.push(r); where.push({ route: [...route], ri, table: t!, key: k }); } }); // a row with no key value cannot be addressed, so it is left out
+      if (stopAt && recs.some((r) => r.key === stopAt)) return { recs, where, partial: true }; // found what was asked for: no need to turn more pages
       hop = t.next && t.next !== frame.url() && t.next !== page.url() ? { goto: t.next } : t.canNext ? { click: true } : null;
     }
-    return { recs, where };
+    return { recs, where, partial: false };
   }
 
   /** Wait for a list that renders late: its rows, and its pager, may arrive after the page has gone quiet. */
@@ -678,7 +694,7 @@ export class TableAdapter implements Adapter {
 
   async read(kind: Kind, key: string): Promise<Rec | null> {
     const real = this.aliases.get(`${kind}:${key}`) ?? key;
-    const { recs } = await this.scan(kind);
+    const { recs } = await this.scan(kind, real);
     const hit = recs.find((r) => r.key === real) ?? null;
     return hit ? { ...hit, key } : null;
   }
@@ -704,6 +720,10 @@ export class TableAdapter implements Adapter {
   // ---------- writing ----------
 
   async delete(kind: Kind, key: string): Promise<void> {
+    try { await this.deleteInner(kind, key); } finally { this.memo.clear(); }
+  }
+
+  private async deleteInner(kind: Kind, key: string): Promise<void> {
     const m = this.models.get(kind);
     if (!m) throw new Error(`unknown kind ${kind}`);
     const page = this.need();
@@ -791,6 +811,10 @@ export class TableAdapter implements Adapter {
   }
 
   async create(kind: Kind, record: Rec): Promise<void> {
+    try { await this.createInner(kind, record); } finally { this.memo.clear(); }
+  }
+
+  private async createInner(kind: Kind, record: Rec): Promise<void> {
     const m = this.models.get(kind);
     const page = this.need();
     if (!m) throw new Error(`unknown kind ${kind}`);
@@ -859,6 +883,7 @@ export class TableAdapter implements Adapter {
       throw new Error(`the app did not accept the new record${msg ? `: ${msg}` : ""}${skipped.length ? ` (could not fill: ${skipped.join(", ")})` : ""}`);
     }
     // The new row is the one key that was not there before. If several appeared, match on the values we typed in.
+    this.memo.clear(); // the list changed: read it again, not from memory
     const after = (await this.scan(kind)).recs;
     const added = after.filter((r) => !oldKeys.has(r.key));
     const fresh = added.length === 1 ? added[0] : added.find((r) => Object.entries(record).every(([c, v]) => c === "key" || c === m.keyColumn || skipped.includes(c) || String(r[c] ?? "") === String(v ?? "")));
@@ -873,6 +898,7 @@ export class TableAdapter implements Adapter {
   }
   /** Forget what was compiled. */
   async reset(): Promise<void> {
+    this.memo.clear();
     this.aliases.clear();
     this.models.clear();
   }
