@@ -42,7 +42,9 @@ export async function readCards(page: Page): Promise<CardGroup[]> {
         var url = null; if (link) { try { var u = new URL(link.getAttribute("href"), location.href); url = u.origin + u.pathname; } catch (err) {} }
         var sku = (both.match(/SKU:?\\s*(\\d{6,9})/i) || [])[1] || ((e.querySelector("[data-sku-id]") || { getAttribute: function () { return null; } }).getAttribute("data-sku-id")) || undefined;
         var note = /\\b(renewed|refurbished|pre-owned|open-box|used)\\b/i.exec(title) ? "listed as " + RegExp.$1.toLowerCase() : (/^sponsored\\b|\\bsponsored\\b/i.test(t.slice(0, 80)) ? "sponsored" : undefined);
-        var row = { key: key, title: title.slice(0, 200), price: pm ? pm[0].replace(/\\s/g, "") : null, rating: rm ? rm[1] : null, ratings: cm ? cm[1] : null, url: url };
+        var cond = /\\b(renewed|refurbished|pre-owned|open-box|used)\\b/i.exec(title + " " + t.slice(0, 300));
+        var row = { key: key, title: title.slice(0, 200), price: pm ? pm[0].replace(/\\s/g, "") : null, rating: rm ? rm[1] : null, ratings: cm ? cm[1] : null, url: url,
+          condition: cond ? cond[1].toLowerCase() : "not stated on the card", seen_at: new Date().toISOString(), source: "search card" };
         if (sku && sku !== key) row.sku = sku; if (note) row.note = note;
         rows.push(row);
       });
