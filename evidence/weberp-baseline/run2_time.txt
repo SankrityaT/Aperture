@@ -1,0 +1,4 @@
+[2mcreated new session: RXnpVHM2t5wizfZM[0m
+real 117.72
+user 0.50
+sys 0.21

@@ -56,13 +56,15 @@ The question was whether a plain browser agent makes mistakes here that Wicket w
 | Hidden dependents | **Yes** | One customer has several branches (code 54 has 4). Deleting a customer also runs `DELETE FROM custbranch` and `DELETE FROM custcontacts` |
 | Rules that appear only after submit | **Yes** | The delete is refused after submit if there are transactions, sales orders or sales analysis records ("This customer cannot be deleted because there are transactions that refer to it") |
 | Long, paginated lists | **Yes** | The customer search caps at 100 rows. The shared demo is full of other visitors' records |
-| The page says one thing and the system does another | **Yes, a real bug in the source** | The "users exist that refer to it" and "contracts have been created that refer to it" checks print "Cannot delete this customer ..." but never set `$CancelDelete = 1`. The delete then runs and prints "has been deleted - together with all the associated branches and contacts" |
+| The page says one thing and the system does another | **No, not on the live demo (corrected Oct 18, 11:40 UTC)**. The code bug exists, but run 2 showed the delete is blocked; see evidence/weberp-baseline/run2.md | The "users exist that refer to it" and "contracts have been created that refer to it" checks print "Cannot delete this customer ..." but never set `$CancelDelete = 1`. The delete then runs and prints "has been deleted - together with all the associated branches and contacts" |
 | Cannot be undone | **Yes** | The delete is a hard SQL `DELETE` across 3 tables, with no soft delete. Undo has to recreate it from a copy |
 
-Not yet verified live: the contract and user bug, read only in the source. Test it only on a customer we create
+**Corrected after run 2:** with a linked contract the live demo did NOT delete. It showed only the "contracts referring" warning. The bug in the code is masked, probably by a database foreign key. Do not use it in the demo. Test it only on a customer we create
 ourselves (`WKT-TEST-*`) with a contract we create, on the hourly-reset demo, after Sanki's go and Kinjal's go.
 
 **Demo scenario this suggests.** Two customers named "WKT-TEST Acme" (two codes), one with branches and a linked
 contract. Task: "Acme closed their account. Remove them." A plain browser agent has three ways to get it wrong: pick
 by name, miss that branches and contacts go too, or believe "Cannot delete" when the record is actually gone.
 Wicket refuses an ambiguous name, previews the cascade, then reads the system back and reports what really happened.
+
+**Second real bug, confirmed live:** the Delete Customer button is `type="reset"` (`Customers.php` line 1165), so the UI cannot delete a customer at all. Browser agents work around it by forging the request (runs 1 and 2).
