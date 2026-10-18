@@ -137,13 +137,21 @@ server.tool(
 server.tool(
   {
     name: "publish",
-    description: "Push all staged changes to the outside world (for example notifying families). It always needs the owner. Without plan_id it previews and asks the owner. It cannot be undone.",
+    description: "Send staged changes to the outside world (for example to devices, a gate, or another system). It always needs the owner. Without plan_id it previews and asks the owner. It cannot be undone.",
     inputSchema: z.object({ plan_id: z.string().optional() }),
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: true },
   },
   async ({ plan_id }) => {
     if (plan_id) return reply(wicket.present(await wicket.commit(plan_id)));
-    return reply(await wicket.apply({ op: "publish" }));
+    const r = (await wicket.apply({ op: "publish" })) as Record<string, unknown>;
+    // Some systems record changes on one page and send them from another ("Send Data" on an accounts page). Aperture does not press that
+    // step; the owner does. Say so, with the count, instead of "nothing staged", which would contradict the receipts' not_yet_live.
+    if (r.error === "nothing_to_publish") {
+      const step = await sendStep();
+      const recorded = [...wicket.receipts.values()].filter((x) => (x.status === "done" || x.status === "done_with_surprise") && x.op.op !== "publish").length;
+      if (step && recorded > 0) return reply({ status: "refused", error: "send_needs_owner", detail: `${recorded} change(s) are recorded in this system but not sent. Sending is a separate step ('${step}) that reaches the outside world (for example the gate), and only the owner does it.`, changes_recorded_not_sent: recorded, next: ["tell the owner the changes are ready to send", "report the change as recorded, not as live"] });
+    }
+    return reply(r);
   },
 );
 
@@ -164,7 +172,7 @@ server.tool(
     name: "compile_site",
     description: "Point Aperture at a web page and it reads the page's forms, read-only, and turns each one into a typed record you can fill. Only works on hosts the operator has authorized. It never submits anything and never tries to get past a CAPTCHA: a person does that. Returns each form's id, fields (label, type, required, allowed values) and submit button.",
     inputSchema: z.object({
-      url: z.string().describe("The page address, like http://host/signup. With login set, this is the login page."),
+      url: z.string().optional().describe("The page address. With login set, this is the sign-in page. Leave it out to read the current page again (after a submit, or when a page changed)."),
       login: z.string().optional().describe("Name of a login the operator stored on the server. You never see the password."),
       then: z.string().optional().describe("With login: the page to compile after signing in."),
     }),
@@ -174,11 +182,12 @@ server.tool(
   ({ url, login, then }) => exclusive(async () => {
     try {
       if (login) {
+        if (!url) return reply({ status: "refused", error: "missing_url", detail: "With login, give the sign-in page as url.", next: ["call compile_site with url (the sign-in page), login and then (the page you want)"] });
         const r = await forms.signIn(url, login);
         if (!r.signedIn) return reply({ status: "refused", error: "login_failed", detail: r.detail, next: ["ask the operator to check the stored login"] });
         if (then) await forms.open(then);
       }
-      const s = login ? await forms.refresh() : await forms.compile(url);
+      const s = login || !url ? await forms.refresh() : await forms.compile(url);
       for (const f of s.forms) rules.set(f.id, "update", [], true); // filling fields is a reversible draft
       rememberSendSteps(s);
       const t = await tables.attach();
@@ -188,37 +197,8 @@ server.tool(
   }),
 );
 
-server.tool(
-  { name: "describe_forms", description: "List the compiled forms again: ids, fields, types, allowed values, hints. Use it when you are unsure what a field accepts.", inputSchema: z.object({}), annotations: { readOnlyHint: true, openWorldHint: false } },
-  async () => { try { return reply({ status: "ok", ...(await forms.summary()) }); } catch (e) { return compileFail(e); } },
-);
 
-server.tool(
-  { name: "refresh_forms", description: "Read the current page again, for example after a submit moved to the next page. Read-only.", inputSchema: z.object({}), annotations: { readOnlyHint: true, openWorldHint: true } },
-  () => exclusive(async () => {
-    try {
-      const s = await forms.refresh();
-      for (const f of s.forms) rules.set(f.id, "update", [], true);
-      rememberSendSteps(s);
-      const t = await tables.attach();
-      wicket.flush();
-      return reply({ status: "refreshed", ...s, ...(t.length ? thisPageTables(t, s.url) : {}) });
-    } catch (e) { return compileFail(e); }
-  }),
-);
 
-server.tool(
-  {
-    name: "update",
-    description: "Change fields on one record, or fill a compiled form (kind is the form id, key is 'current'). With dry_run: true it previews old -> new for each field and checks the values. Commit with plan_id. For most jobs use apply with op 'update'. Filling a form never submits it.",
-    inputSchema: z.object({ kind: z.string().describe(kindDoc), key: z.string().default("current").describe(keyDoc), patch: z.record(z.string(), z.unknown()), dry_run: z.boolean().optional(), plan_id: z.string().optional() }),
-    annotations: { destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  },
-  async ({ kind, key, patch, plan_id }) => {
-    if (plan_id) return reply(wicket.present(await wicket.commit(plan_id)));
-    return reply(wicket.present(await wicket.preview({ op: "update", kind, key, patch })));
-  },
-);
 
 server.tool(
   {
@@ -234,21 +214,16 @@ server.tool(
   {
     name: "apply_batch",
     description: "Apply many changes in one call. Everything inside the rules commits. Items that need the owner are listed with plan_ids. Refusals are listed with next moves. Stops at the first failed commit. Returns one summary, so you do not need many round trips.",
-    inputSchema: z.object({ ops: z.array(opSchema).min(1).max(50), stop_on_failure: z.boolean().optional(), dry_run: z.boolean().optional().describe("Change nothing. Returns the total blast radius: everything that would be removed, dependents included."), canary: z.number().int().min(1).max(10).optional().describe("Commit only the first N, check they did exactly what was predicted, and halt the rest if any surprised or failed.") }),
+    inputSchema: z.object({ ops: z.array(opSchema).min(1).max(50).optional(), plan_ids: z.array(z.string()).min(1).max(50).optional().describe("Instead of ops: commit plans the owner already approved, in order, with the first `canary` checked first."), stop_on_failure: z.boolean().optional(), dry_run: z.boolean().optional().describe("Change nothing. Returns the total blast radius: everything that would be removed, dependents included."), canary: z.number().int().min(1).max(10).optional().describe("Commit only the first N, check they did exactly what was predicted, and halt the rest if any surprised or failed.") }),
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async ({ ops, stop_on_failure, dry_run, canary }) => replyWrite(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary })),
+  async ({ ops, plan_ids, stop_on_failure, dry_run, canary }) => {
+    if (plan_ids?.length) return replyWrite(await wicket.commitBatch(plan_ids, canary ?? 1));
+    if (!ops?.length) return reply({ status: "refused", error: "nothing_to_do", detail: "Give ops (changes to make) or plan_ids (approved plans to commit).", next: ["apply_batch with ops: [{op, kind, key}]"] });
+    return replyWrite(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary }));
+  },
 );
 
-server.tool(
-  {
-    name: "commit_batch",
-    description: "Commit several plans the owner has approved, in order. The first `canary` ones run carefully and are checked against the prediction; if any surprises, the rest are not touched and you get the receipt to undo.",
-    inputSchema: z.object({ plan_ids: z.array(z.string()).min(1).max(50), canary: z.number().int().min(1).max(10).optional() }),
-    annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
-  },
-  async ({ plan_ids, canary }) => replyWrite(await wicket.commitBatch(plan_ids, canary ?? 1)),
-);
 
 // ---- shared profiles: what one agent learned about a system, for the next agent ----
 // Structure and learned rules only. Never records, never credentials. Held in memory: a restart empties it.
@@ -268,7 +243,7 @@ const words = (t: string) => new Set(t.toLowerCase().replace(/[^a-z0-9 ]+/g, " "
 server.tool(
   {
     name: "find_systems",
-    description: "Start here when you are not given an address. Describe what you need to do in plain words (for example 'remove a student from the school list' or 'send an invoice'). Returns the systems you are allowed to work in that match, with the address to compile and any profile other agents shared. It never searches the open web.",
+    description: "Start here when you are not given an address. Describe what you need to do in plain words (for example 'remove a resident from the access list' or 'update a customer record'). Returns the systems you are allowed to work in that match, with the address to compile and any profile other agents shared. It never searches the open web.",
     inputSchema: z.object({ need: z.string().describe("What you need to do or find, in plain words.") }),
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
@@ -288,38 +263,7 @@ server.tool(
   },
 );
 
-server.tool(
-  {
-    name: "share_profile",
-    description: "Publish what you learned about the system you compiled, for other agents: its tables, keys, and the dependents you saw when deletes did more than predicted. Structure and rules only; no records, no logins. Other agents load it with use_profile.",
-    inputSchema: z.object({ site: z.string().describe("The site's host, like crm.example.com. It is the profile's name.") }),
-    annotations: { destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  },
-  async ({ site }) => {
-    const t = await tables.summary();
-    if (!t.length) return reply({ status: "refused", error: "nothing_compiled", detail: "No tables are compiled yet, so there is nothing to share.", next: ["compile_site first"] });
-    const kinds = new Set(t.map((x) => x.id));
-    const rules = wicket.rules.exportRules().filter((r) => kinds.has(r.kind) && (r.cascades.length || r.vouched));
-    const profile: Profile = { site: siteKey(site), shared_at: new Date().toISOString(), tables: t.map(tableView), rules };
-    registry.set(profile.site, profile);
-    return reply({ status: "shared", site: profile.site, tables: profile.tables.length, rules: rules.length, next: ["another agent can call use_profile with this site", "open /registry to see all shared profiles"] });
-  },
-);
 
-server.tool(
-  {
-    name: "use_profile",
-    description: "Load what another agent learned about a system. You still compile the page yourself (that takes a second). What you gain is the dependents it saw: your previews and dry runs now predict them. Nothing is trusted blindly: your first real delete still asks the owner and takes a full copy, then confirms the rule itself.",
-    inputSchema: z.object({ site: z.string() }),
-    annotations: { readOnlyHint: false, idempotentHint: true, openWorldHint: false },
-  },
-  async ({ site }) => {
-    const p = registry.get(siteKey(site));
-    if (!p) return reply({ status: "refused", error: "no_profile", detail: `Nobody has shared a profile for ${siteKey(site)}.`, known_sites: [...registry.keys()], next: ["compile_site yourself, then share_profile so the next agent has it"] });
-    const learned = wicket.rules.importRules(p.rules.map((r) => ({ kind: r.kind, op: r.op as "delete" | "create" | "update", cascades: r.cascades })));
-    return reply({ status: "loaded", site: p.site, shared_at: p.shared_at, dependents_learned: learned, tables_described: p.tables.map((x) => x.id), trust: "Your first delete here still asks the owner and takes a full copy. Rules become confirmed only by your own matching run." });
-  },
-);
 
 const esc = (x: string) => x.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]!));
 server.get("/registry/:site", (c) => {
@@ -333,45 +277,20 @@ server.get("/registry/:site", (c) => {
 
 server.get("/registry", (c) => c.json({ note: "Shared profiles: structure and learned rules only. In memory; a restart empties it.", profiles: [...registry.values()] }));
 
-server.tool(
-  {
-    name: "check_capability",
-    description: "Read-only. Does the page still match what was compiled for this kind? Returns matches_contract, or what changed and how serious it is (ui_changed stops work on the kind; signed out and transient errors do not). Changes nothing.",
-    inputSchema: z.object({ kind: z.string() }),
-    annotations: { readOnlyHint: true, openWorldHint: false },
-  },
-  async ({ kind }) => reply((await wicket.checkCapability(kind)) as Record<string, unknown>),
-);
 
-server.tool(
-  {
-    name: "repair_capability",
-    description: "For a capability that was disabled because its page changed: re-learn the page and re-enable it only if every test passes (a matching list, a usable key, delete still meaning delete, and earlier records still being the same records). Reads only; never changes a record. If it cannot prove the repair, it stays disabled and the owner is told.",
-    inputSchema: z.object({ kind: z.string() }),
-    annotations: { destructiveHint: false, idempotentHint: false, openWorldHint: false },
-  },
-  async ({ kind }) => reply((await wicket.repairCapability(kind)) as Record<string, unknown>),
-);
 
-server.tool(
-  {
-    name: "reconcile",
-    description: "Use when commit says outcome_unknown (the server stopped while a change was running). Reads the system to find out what really happened, and never re-runs the change. Returns a receipt if it happened, or retires the plan if it did not.",
-    inputSchema: z.object({ plan_id: z.string() }),
-    annotations: { destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  },
-  async ({ plan_id }) => reply(await wicket.reconcile(plan_id)),
-);
 
 server.tool(
   {
     name: "get_plan",
-    description: "Check a plan: awaiting_approval, approved, expired, committed. Use it to poll for the owner's decision instead of retrying commit.",
+    description: "Check a plan: awaiting_approval, approved, expired, committed. Use it to wait for the owner's decision instead of retrying. If the outcome of a change is unknown (the server stopped while it ran), this reads the system and says what really happened; it never runs the change again.",
     inputSchema: z.object({ plan_id: z.string(), wait_seconds: z.number().int().min(0).max(25).optional().describe("Wait up to this long for the owner to decide, so you do not burn turns polling.") }),
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
   async ({ plan_id, wait_seconds }) => {
     let plan = wicket.getPlan(plan_id) as Record<string, unknown>;
+    // A plan whose outcome is unknown (the server stopped mid-change) is resolved here by reading the system. It is never re-run.
+    if (plan.status === "unknown") return reply((await wicket.reconcile(plan_id)) as Record<string, unknown>);
     const until = Date.now() + (wait_seconds ?? 0) * 1000;
     while (plan.status === "awaiting_approval" && Date.now() < until) { await new Promise((r) => setTimeout(r, 1000)); plan = wicket.getPlan(plan_id) as Record<string, unknown>; }
     return reply(plan);

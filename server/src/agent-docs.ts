@@ -51,7 +51,7 @@ Add this to your MCP client config (Claude Code: \`.mcp.json\`; Codex and Cursor
 - \`apply_batch\` or \`commit_batch\` with \`canary: 1\` runs the first item with a full check across every table it has read, and stops the rest if anything differs from the prediction.
 
 ## 4. If the server restarted mid-change
-A commit may answer \`outcome_unknown\`. Call \`reconcile\` with the plan id. It reads the system and tells you whether the change happened. Never commit that plan again.
+A commit may answer \`outcome_unknown\`. Call \`get_plan\` with the plan id. It reads the system and tells you whether the change happened. Never commit that plan again.
 
 ## Limits you should know
 - Tickets and receipts are kept in a file on the server; a redeploy can clear it.
@@ -74,9 +74,10 @@ Every refusal returns \`error\`, \`detail\` and a \`next\` list. These are the o
 | already_exists | A create would duplicate a key | Use a different key or find the existing record |
 | awaiting_approval | The owner has not approved this change | \`get_plan\` with wait_seconds; do not retry commit in a loop |
 | delegation_ended | The owner's delegation was revoked, paused or used up before commit | Poll \`get_plan\`; it now waits for the owner |
+| capability_changed | The page changed since it was compiled and Aperture could not prove a re-learned version | Nothing was changed; do not retry; tell the owner |
 | changed_since_preview | The record changed after you previewed | Run a new preview |
 | policy_denied | A cap such as deletes per day was reached | \`escalate\` with a reason |
-| outcome_unknown | The server stopped while this change was running | \`reconcile\`; never commit it again |
+| outcome_unknown | The server stopped while this change was running | \`get_plan\` (it checks the system); never commit it again |
 | in_progress | This change is running now | Poll \`get_plan\` |
 | undo_failed | The app refused to take the record back | The saved values are in the response; re-enter by hand and tell the owner |
 | no_profile | Nobody has shared a profile for that site | Compile the site yourself, then \`share_profile\` |

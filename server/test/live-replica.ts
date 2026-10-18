@@ -28,6 +28,8 @@ console.log(acc.data.status === "compiled" ? "PASS" : "FAIL", "the Accounts page
 const del = await tool("apply", { op: "delete", kind: "residents", key: "1004" });
 console.log(["done", "done_with_surprise"].includes(del.data.status) ? "PASS" : "FAIL", "delete 1004 behind the login:", del.data.status ?? del.data.error, del.data.detail ?? "", JSON.stringify(del.data.verified ?? {}).slice(0, 160));
 console.log(del.data.not_yet_live ? "PASS" : "FAIL", "the receipt says the change is not yet sent to the gate:", String(del.data.not_yet_live ?? "(nothing said)").slice(0, 110));
+const pub = await tool("publish", {});
+console.log(pub.data.error === "send_needs_owner" ? "PASS" : "FAIL", "publish agrees with the receipt (recorded, not sent, owner sends):", pub.data.error, String(pub.data.detail ?? "").slice(0, 110));
 const after = await ownerState();
 console.log("portal residents:", before.portal?.residents?.length ?? before.residents, "->", after.portal?.residents?.length ?? after.residents, "| pending:", JSON.stringify(after.pending ?? after.pending_changes ?? null).slice(0, 120));
 if (del.data.receipt) { const u = await tool("undo", { receipt_id: del.data.receipt }); console.log(u.data.status === "undone" ? "PASS" : "FAIL", "undo:", u.data.status ?? u.data.error, u.data.detail ?? "", JSON.stringify(u.data.verified?.fields_not_restored ?? [])); }
