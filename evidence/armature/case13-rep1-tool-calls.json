@@ -1,0 +1,480 @@
+{
+  "rows": [
+    {
+      "id": "b201275d-9b44-480a-ac17-40e091d6db48",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "f3c39d30-005d-5b3c-af88-5df92159d576",
+      "agent_run_id": "ebcecde2-161d-43d5-8a40-d9fdd250e334",
+      "role": "tester",
+      "trace_event_start_id": "7e10c105-196a-4e83-8bae-24be0fe26596",
+      "trace_event_end_id": "7e10c105-196a-4e83-8bae-24be0fe26596",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "student",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: student, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "next": [
+            "find with one of: form1, devices, residents, vendors"
+          ],
+          "error": "unknown_kind",
+          "detail": "No kind 'student'.",
+          "status": "refused"
+        },
+        "byte_length": 137,
+        "fields_seen": [
+          "status",
+          "error",
+          "detail",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "failed",
+      "started_at": "2026-10-18T13:11:34.137Z",
+      "completed_at": "2026-10-18T13:11:34.503Z",
+      "duration_ms": 366,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:11:40.560Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "next": [
+            "find with one of: form1, devices, residents, vendors"
+          ],
+          "error": "unknown_kind",
+          "detail": "No kind 'student'.",
+          "status": "refused"
+        },
+        "byte_length": 137,
+        "fields_seen": [
+          "status",
+          "error",
+          "detail",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "da663443-e012-4f35-a30a-8dd466afe140",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "f3c39d30-005d-5b3c-af88-5df92159d576",
+      "agent_run_id": "ebcecde2-161d-43d5-8a40-d9fdd250e334",
+      "role": "tester",
+      "trace_event_start_id": "21982a9a-c2f7-4e80-a660-34b950559cf0",
+      "trace_event_end_id": "21982a9a-c2f7-4e80-a660-34b950559cf0",
+      "tool_name": "mcp__yc_hack__find_systems",
+      "arguments_redacted": {
+        "keys": [
+          "need"
+        ],
+        "safe": {
+          "need": "find gate devices held by a resident/unit"
+        },
+        "summary": "need: find gate devices held by a resident/..."
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "compile_site with the address of the best match",
+            "if it has a shared profile, call use_profile with its host before changing anything"
+          ],
+          "status": "found",
+          "matches": [
+            {
+              "name": "GateAdmin replica, residents (sign-in required)",
+              "about": "gate access admin, residents, move out, directory code, property management, apartment community, pending changes sent to the gate",
+              "address": "http://127.0.0.1:9105/Residents.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Residents.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "resident"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, devices (sign-in required)",
+              "about": "gate devices, remotes, transmitters, keypad codes, cards, credentials, access, property management",
+              "address": "http://127.0.0.1:9105/Devices.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Devices.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "devic"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, accounts and Send Data to the gate (sign-in required)",
+              "about": "gate access accounts, send data to the gate, upload changes, property management, residents changes pending",
+              "address": "http://127.0.0.1:9105/Accounts.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Accounts.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "resident"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Residents (demo)",
+              "about": "residents, entry codes, directory numbers, apartment building",
+              "address": "http://127.0.0.1:9103/Residents.aspx",
+              "matched_on": [
+                "resident"
+              ],
+              "shared_profile": null
+            }
+          ]
+        },
+        "byte_length": 1882,
+        "fields_seen": [
+          "status",
+          "matches",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:11:34.480Z",
+      "completed_at": "2026-10-18T13:11:34.825Z",
+      "duration_ms": 345,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:11:40.560Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "compile_site with the address of the best match",
+            "if it has a shared profile, call use_profile with its host before changing anything"
+          ],
+          "status": "found",
+          "matches": [
+            {
+              "name": "GateAdmin replica, residents (sign-in required)",
+              "about": "gate access admin, residents, move out, directory code, property management, apartment community, pending changes sent to the gate",
+              "address": "http://127.0.0.1:9105/Residents.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Residents.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "resident"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, devices (sign-in required)",
+              "about": "gate devices, remotes, transmitters, keypad codes, cards, credentials, access, property management",
+              "address": "http://127.0.0.1:9105/Devices.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Devices.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "devic"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, accounts and Send Data to the gate (sign-in required)",
+              "about": "gate access accounts, send data to the gate, upload changes, property management, residents changes pending",
+              "address": "http://127.0.0.1:9105/Accounts.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Accounts.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "resident"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Residents (demo)",
+              "about": "residents, entry codes, directory numbers, apartment building",
+              "address": "http://127.0.0.1:9103/Residents.aspx",
+              "matched_on": [
+                "resident"
+              ],
+              "shared_profile": null
+            }
+          ]
+        },
+        "byte_length": 1882,
+        "fields_seen": [
+          "status",
+          "matches",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "79f30e57-cd9a-44fb-b346-7baadc9800cc",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "f3c39d30-005d-5b3c-af88-5df92159d576",
+      "agent_run_id": "ebcecde2-161d-43d5-8a40-d9fdd250e334",
+      "role": "tester",
+      "trace_event_start_id": "3cd4096c-0b79-431b-9067-6063aeb24d94",
+      "trace_event_end_id": "3cd4096c-0b79-431b-9067-6063aeb24d94",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "residents",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: residents, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "count": 1,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "1045",
+              "Notes": "Unit 104A",
+              "Phone": "555-0144",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 188,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:11:36.869Z",
+      "completed_at": "2026-10-18T13:11:37.771Z",
+      "duration_ms": 902,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:11:40.560Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "kind": "residents",
+          "count": 1,
+          "items": [
+            {
+              "T": "T",
+              "ER": "1",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "1045",
+              "Notes": "Unit 104A",
+              "Phone": "555-0144",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 188,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "27c1c3c7-a83f-4b83-8634-e69fcd12f95f",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "f3c39d30-005d-5b3c-af88-5df92159d576",
+      "agent_run_id": "ebcecde2-161d-43d5-8a40-d9fdd250e334",
+      "role": "tester",
+      "trace_event_start_id": "35a14c59-ecda-4c55-9194-3e620ddcd370",
+      "trace_event_end_id": "35a14c59-ecda-4c55-9194-3e620ddcd370",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind",
+          "query"
+        ],
+        "safe": {
+          "kind": "devices",
+          "query": "Eli Cole"
+        },
+        "summary": "kind: devices, query: Eli Cole"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 4,
+          "items": [
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 534,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:11:37.214Z",
+      "completed_at": "2026-10-18T13:11:38.322Z",
+      "duration_ms": 1108,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:11:40.560Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "kind": "devices",
+          "note": "Several matches. Names are not unique, use the key.",
+          "count": 4,
+          "items": [
+            {
+              "T": "T",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01076",
+              "Type": "Transmitter",
+              "Device #": "01076",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "K",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01077",
+              "Type": "Keypad code",
+              "Device #": "01077",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01078",
+              "Type": "Card",
+              "Device #": "01078",
+              "Resident": "Eli Cole"
+            },
+            {
+              "T": "C",
+              "SL": "02",
+              "Dir": "1045",
+              "key": "01151",
+              "Type": "Card",
+              "Device #": "01151",
+              "Resident": "Eli Cole"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 534,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms",
+          "note"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    }
+  ]
+}

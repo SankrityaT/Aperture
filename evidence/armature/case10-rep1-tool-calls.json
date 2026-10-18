@@ -1,0 +1,748 @@
+{
+  "rows": [
+    {
+      "id": "a2c58d1d-0e67-417b-854c-8546b9114157",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "b1d1ce38-b465-5b99-a019-2da749ee912e",
+      "agent_run_id": "7d7c7da9-a618-4443-afe2-730efd2b296a",
+      "role": "tester",
+      "trace_event_start_id": "5d6bb9ce-6b22-42af-9b5e-09ff606c5561",
+      "trace_event_end_id": "5d6bb9ce-6b22-42af-9b5e-09ff606c5561",
+      "tool_name": "mcp__yc_hack__find_systems",
+      "arguments_redacted": {
+        "keys": [
+          "need"
+        ],
+        "safe": {
+          "need": "gate access system for vendors with directory codes"
+        },
+        "summary": "need: gate access system for vendors with d..."
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "compile_site with the address of the best match",
+            "if it has a shared profile, call use_profile with its host before changing anything"
+          ],
+          "status": "found",
+          "matches": [
+            {
+              "name": "GateAdmin replica, residents (sign-in required)",
+              "about": "gate access admin, residents, move out, directory code, property management, apartment community, pending changes sent to the gate",
+              "address": "http://127.0.0.1:9105/Residents.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Residents.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "acces",
+                "directory"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, devices (sign-in required)",
+              "about": "gate devices, remotes, transmitters, keypad codes, cards, credentials, access, property management",
+              "address": "http://127.0.0.1:9105/Devices.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Devices.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "acces",
+                "cod"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Residents (demo)",
+              "about": "residents, entry codes, directory numbers, apartment building",
+              "address": "http://127.0.0.1:9103/Residents.aspx",
+              "matched_on": [
+                "directory",
+                "cod"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, accounts and Send Data to the gate (sign-in required)",
+              "about": "gate access accounts, send data to the gate, upload changes, property management, residents changes pending",
+              "address": "http://127.0.0.1:9105/Accounts.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Accounts.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "acces"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Staff directory (demo)",
+              "about": "staff, teachers, employees, email directory",
+              "address": "http://127.0.0.1:9101/staff",
+              "matched_on": [
+                "directory"
+              ],
+              "shared_profile": null
+            }
+          ]
+        },
+        "byte_length": 2078,
+        "fields_seen": [
+          "status",
+          "matches",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:11:24.403Z",
+      "completed_at": "2026-10-18T13:11:24.778Z",
+      "duration_ms": 375,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:11:40.005Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "next": [
+            "compile_site with the address of the best match",
+            "if it has a shared profile, call use_profile with its host before changing anything"
+          ],
+          "status": "found",
+          "matches": [
+            {
+              "name": "GateAdmin replica, residents (sign-in required)",
+              "about": "gate access admin, residents, move out, directory code, property management, apartment community, pending changes sent to the gate",
+              "address": "http://127.0.0.1:9105/Residents.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Residents.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "acces",
+                "directory"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, devices (sign-in required)",
+              "about": "gate devices, remotes, transmitters, keypad codes, cards, credentials, access, property management",
+              "address": "http://127.0.0.1:9105/Devices.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Devices.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "acces",
+                "cod"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Residents (demo)",
+              "about": "residents, entry codes, directory numbers, apartment building",
+              "address": "http://127.0.0.1:9103/Residents.aspx",
+              "matched_on": [
+                "directory",
+                "cod"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "GateAdmin replica, accounts and Send Data to the gate (sign-in required)",
+              "about": "gate access accounts, send data to the gate, upload changes, property management, residents changes pending",
+              "address": "http://127.0.0.1:9105/Accounts.aspx",
+              "sign_in": "needs the operator's stored login 'REPLICA': compile_site with login 'REPLICA', url 'http://127.0.0.1:9105/Login.aspx', then 'http://127.0.0.1:9105/Accounts.aspx'. You never see or type the password.",
+              "matched_on": [
+                "gate",
+                "acces"
+              ],
+              "shared_profile": null
+            },
+            {
+              "name": "Staff directory (demo)",
+              "about": "staff, teachers, employees, email directory",
+              "address": "http://127.0.0.1:9101/staff",
+              "matched_on": [
+                "directory"
+              ],
+              "shared_profile": null
+            }
+          ]
+        },
+        "byte_length": 2078,
+        "fields_seen": [
+          "status",
+          "matches",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "d24bf3a5-46fc-4015-b9ca-92e47d1e594a",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "b1d1ce38-b465-5b99-a019-2da749ee912e",
+      "agent_run_id": "7d7c7da9-a618-4443-afe2-730efd2b296a",
+      "role": "tester",
+      "trace_event_start_id": "0c3fcece-31d3-482c-b2ea-aa3196600414",
+      "trace_event_end_id": "0c3fcece-31d3-482c-b2ea-aa3196600414",
+      "tool_name": "mcp__yc_hack__compile_site",
+      "arguments_redacted": {
+        "keys": [
+          "url",
+          "login",
+          "then"
+        ],
+        "safe": {
+          "url": "http://127.0.0.1:9105/Login.aspx",
+          "then": "http://127.0.0.1:9105/Residents.aspx",
+          "login": "REPLICA"
+        },
+        "summary": "url: http://127.0.0.1:9105/Login.aspx, login: REPLICA, then: http://127.0.0.1:9105/Residents.aspx"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "url": "http://127.0.0.1:9105/Residents.aspx",
+          "next": [
+            "records in a table: find(kind), then apply({op:'delete'|'create', kind, key})",
+            "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})",
+            "submit with publish (always needs the owner)",
+            "a delete or create this system has never done asks the owner the first time"
+          ],
+          "forms": [
+            {
+              "id": "form1",
+              "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+              "fields": [],
+              "submit": "Search"
+            }
+          ],
+          "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+          "status": "compiled",
+          "tables": [
+            {
+              "id": "residents",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 86,
+              "actions": [
+                "Select (view)",
+                "Delete (delete)"
+              ],
+              "columns": [
+                "Resident",
+                "Phone",
+                "Dir",
+                "SL",
+                "T"
+              ]
+            },
+            {
+              "id": "vendors",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 3,
+              "actions": [],
+              "columns": [
+                "Vendor",
+                "Dir",
+                "SL",
+                "ER"
+              ]
+            }
+          ],
+          "warnings": [],
+          "also_compiled_and_still_live": [
+            "devices"
+          ]
+        },
+        "byte_length": 886,
+        "fields_seen": [
+          "status",
+          "url",
+          "title",
+          "warnings",
+          "forms",
+          "tables",
+          "also_compiled_and_still_live",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:11:27.716Z",
+      "completed_at": "2026-10-18T13:11:31.771Z",
+      "duration_ms": 4055,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:11:40.005Z",
+      "raw_result_body": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "url": "http://127.0.0.1:9105/Residents.aspx",
+          "next": [
+            "records in a table: find(kind), then apply({op:'delete'|'create', kind, key})",
+            "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})",
+            "submit with publish (always needs the owner)",
+            "a delete or create this system has never done asks the owner the first time"
+          ],
+          "forms": [
+            {
+              "id": "form1",
+              "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+              "fields": [],
+              "submit": "Search"
+            }
+          ],
+          "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+          "status": "compiled",
+          "tables": [
+            {
+              "id": "residents",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 86,
+              "actions": [
+                "Select (view)",
+                "Delete (delete)"
+              ],
+              "columns": [
+                "Resident",
+                "Phone",
+                "Dir",
+                "SL",
+                "T"
+              ]
+            },
+            {
+              "id": "vendors",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 3,
+              "actions": [],
+              "columns": [
+                "Vendor",
+                "Dir",
+                "SL",
+                "ER"
+              ]
+            }
+          ],
+          "warnings": [],
+          "also_compiled_and_still_live": [
+            "devices"
+          ]
+        },
+        "byte_length": 886,
+        "fields_seen": [
+          "status",
+          "url",
+          "title",
+          "warnings",
+          "forms",
+          "tables",
+          "also_compiled_and_still_live",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "80fa12ef-64a1-43d0-98e0-42b5ab6f1037",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "b1d1ce38-b465-5b99-a019-2da749ee912e",
+      "agent_run_id": "7d7c7da9-a618-4443-afe2-730efd2b296a",
+      "role": "tester",
+      "trace_event_start_id": "b631cea3-ecfc-4dc0-b591-01e807e4e74d",
+      "trace_event_end_id": "b631cea3-ecfc-4dc0-b591-01e807e4e74d",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind"
+        ],
+        "safe": {
+          "kind": "vendors"
+        },
+        "summary": "kind: vendors"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "vendors",
+          "count": 3,
+          "items": [
+            {
+              "ER": "1",
+              "SL": "05",
+              "Dir": "930",
+              "key": "930",
+              "Vendor": "Pool Service"
+            },
+            {
+              "ER": "1",
+              "SL": "05",
+              "Dir": "931",
+              "key": "931",
+              "Vendor": "Trash"
+            },
+            {
+              "ER": "1",
+              "SL": "05",
+              "Dir": "932",
+              "key": "932",
+              "Vendor": "Landscaping"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 250,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:11:33.030Z",
+      "completed_at": "2026-10-18T13:11:34.132Z",
+      "duration_ms": 1102,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:11:40.005Z",
+      "raw_result_body": {
+        "omitted": [],
+        "preview": {
+          "kind": "vendors",
+          "count": 3,
+          "items": [
+            {
+              "ER": "1",
+              "SL": "05",
+              "Dir": "930",
+              "key": "930",
+              "Vendor": "Pool Service"
+            },
+            {
+              "ER": "1",
+              "SL": "05",
+              "Dir": "931",
+              "key": "931",
+              "Vendor": "Trash"
+            },
+            {
+              "ER": "1",
+              "SL": "05",
+              "Dir": "932",
+              "key": "932",
+              "Vendor": "Landscaping"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 250,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "80991dee-9f1f-4ef4-a7dc-2cb936307cb6",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "b1d1ce38-b465-5b99-a019-2da749ee912e",
+      "agent_run_id": "7d7c7da9-a618-4443-afe2-730efd2b296a",
+      "role": "tester",
+      "trace_event_start_id": "8694031e-647f-4ceb-bf27-47d5be2e2bbc",
+      "trace_event_end_id": "8694031e-647f-4ceb-bf27-47d5be2e2bbc",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind"
+        ],
+        "safe": {
+          "kind": "vendors"
+        },
+        "summary": "kind: vendors"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "next": [
+            "find with one of: form1"
+          ],
+          "error": "unknown_kind",
+          "detail": "No kind 'vendors'.",
+          "status": "refused"
+        },
+        "byte_length": 108,
+        "fields_seen": [
+          "status",
+          "error",
+          "detail",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "failed",
+      "started_at": "2026-10-18T13:12:57.727Z",
+      "completed_at": "2026-10-18T13:12:58.101Z",
+      "duration_ms": 374,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:13:20.452Z",
+      "raw_result_body": "{\"status\":\"refused\",\"error\":\"unknown_kind\",\"detail\":\"No kind 'vendors'.\",\"next\":[\"find with one of: form1\"]}",
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "2c621406-28e0-4a15-a415-ca146974a1b9",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "b1d1ce38-b465-5b99-a019-2da749ee912e",
+      "agent_run_id": "7d7c7da9-a618-4443-afe2-730efd2b296a",
+      "role": "tester",
+      "trace_event_start_id": "189973a2-acae-4300-b487-66129b35c4ed",
+      "trace_event_end_id": "189973a2-acae-4300-b487-66129b35c4ed",
+      "tool_name": "mcp__yc_hack__compile_site",
+      "arguments_redacted": {
+        "keys": [
+          "url",
+          "login",
+          "then"
+        ],
+        "safe": {
+          "url": "http://127.0.0.1:9105/Login.aspx",
+          "then": "http://127.0.0.1:9105/Residents.aspx",
+          "login": "REPLICA"
+        },
+        "summary": "url: http://127.0.0.1:9105/Login.aspx, login: REPLICA, then: http://127.0.0.1:9105/Residents.aspx"
+      },
+      "result_redacted": {
+        "omitted": [
+          "raw_result_body"
+        ],
+        "preview": {
+          "url": "http://127.0.0.1:9105/Residents.aspx",
+          "next": [
+            "records in a table: find(kind), then apply({op:'delete'|'create', kind, key})",
+            "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})",
+            "submit with publish (always needs the owner)",
+            "a delete or create this system has never done asks the owner the first time"
+          ],
+          "forms": [
+            {
+              "id": "form1",
+              "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+              "fields": [],
+              "submit": "Search"
+            }
+          ],
+          "title": "Account Harbor View Apartments - GateAdmin32 (replica)",
+          "status": "compiled",
+          "tables": [
+            {
+              "id": "residents",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 91,
+              "actions": [
+                "Select (view)",
+                "Delete (delete)"
+              ],
+              "columns": [
+                "Resident",
+                "Phone",
+                "Dir",
+                "SL",
+                "T"
+              ]
+            },
+            {
+              "id": "vendors",
+              "add": "Add",
+              "key": "Dir",
+              "rows": 3,
+              "actions": [],
+              "columns": [
+                "Vendor",
+                "Dir",
+                "SL",
+                "ER"
+              ]
+            }
+          ],
+          "warnings": []
+        },
+        "byte_length": 843,
+        "fields_seen": [
+          "status",
+          "url",
+          "title",
+          "warnings",
+          "forms",
+          "tables",
+          "next"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:13:00.771Z",
+      "completed_at": "2026-10-18T13:13:04.627Z",
+      "duration_ms": 3856,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:13:20.452Z",
+      "raw_result_body": "{\"status\":\"compiled\",\"url\":\"http://127.0.0.1:9105/Residents.aspx\",\"title\":\"Account Harbor View Apartments - GateAdmin32 (replica)\",\"warnings\":[],\"forms\":[{\"id\":\"form1\",\"title\":\"Account Harbor View Apartments - GateAdmin32 (replica)\",\"submit\":\"Search\",\"fields\":[]}],\"tables\":[{\"id\":\"residents\",\"rows\":91,\"columns\":[\"Resident\",\"Phone\",\"Dir\",\"SL\",\"T\",\"Device #\",\"ER\",\"Notes\"],\"key\":\"Dir\",\"actions\":[\"Select (view)\",\"Delete (delete)\"],\"add\":\"Add\"},{\"id\":\"vendors\",\"rows\":3,\"columns\":[\"Vendor\",\"Dir\",\"SL\",\"ER\"],\"key\":\"Dir\",\"actions\":[],\"add\":\"Add\"}],\"next\":[\"records in a table: find(kind), then apply({op:'delete'|'create', kind, key})\",\"fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})\",\"submit with publish (always needs the owner)\",\"a delete or create this system has never done asks the owner the first time\"]}",
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "84a8c933-e38d-4c47-9795-dc5a612371f6",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "b1d1ce38-b465-5b99-a019-2da749ee912e",
+      "agent_run_id": "7d7c7da9-a618-4443-afe2-730efd2b296a",
+      "role": "tester",
+      "trace_event_start_id": "04e34333-9fd8-48a1-96e1-e879e67afe2f",
+      "trace_event_end_id": "04e34333-9fd8-48a1-96e1-e879e67afe2f",
+      "tool_name": "mcp__yc_hack__find",
+      "arguments_redacted": {
+        "keys": [
+          "kind"
+        ],
+        "safe": {
+          "kind": "vendors"
+        },
+        "summary": "kind: vendors"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": {
+          "kind": "vendors",
+          "count": 3,
+          "items": [
+            {
+              "ER": "1",
+              "SL": "05",
+              "Dir": "930",
+              "key": "930",
+              "Vendor": "Pool Service"
+            },
+            {
+              "ER": "1",
+              "SL": "05",
+              "Dir": "931",
+              "key": "931",
+              "Vendor": "Trash"
+            },
+            {
+              "ER": "1",
+              "SL": "05",
+              "Dir": "932",
+              "key": "932",
+              "Vendor": "Landscaping"
+            }
+          ],
+          "as_of_ms": 0
+        },
+        "byte_length": 250,
+        "fields_seen": [
+          "kind",
+          "count",
+          "items",
+          "as_of_ms"
+        ],
+        "content_type": "object",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:13:06.905Z",
+      "completed_at": "2026-10-18T13:13:10.351Z",
+      "duration_ms": 3446,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:13:20.452Z",
+      "raw_result_body": "{\"kind\":\"vendors\",\"count\":3,\"items\":[{\"key\":\"930\",\"Vendor\":\"Pool Service\",\"Dir\":\"930\",\"SL\":\"05\",\"ER\":\"1\"},{\"key\":\"931\",\"Vendor\":\"Trash\",\"Dir\":\"931\",\"SL\":\"05\",\"ER\":\"1\"},{\"key\":\"932\",\"Vendor\":\"Landscaping\",\"Dir\":\"932\",\"SL\":\"05\",\"ER\":\"1\"}],\"as_of_ms\":0}",
+      "agent_role": "tester",
+      "provider_run_id": null
+    },
+    {
+      "id": "de8c3213-44f2-44c0-81e1-5d92ac950dfd",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "workflow_run_id": "b1d1ce38-b465-5b99-a019-2da749ee912e",
+      "agent_run_id": "7d7c7da9-a618-4443-afe2-730efd2b296a",
+      "role": "tester",
+      "trace_event_start_id": "3184e50d-fba9-4f09-ac52-fff4103476e8",
+      "trace_event_end_id": "3184e50d-fba9-4f09-ac52-fff4103476e8",
+      "tool_name": "ReportFindings",
+      "arguments_redacted": {
+        "keys": [
+          "findings"
+        ],
+        "safe": {
+          "findings": []
+        },
+        "summary": "findings: []"
+      },
+      "result_redacted": {
+        "omitted": [],
+        "preview": "No findings reported.",
+        "text_chars": 21,
+        "byte_length": 21,
+        "content_type": "text",
+        "estimated_tokens": "[REDACTED]"
+      },
+      "status": "completed",
+      "started_at": "2026-10-18T13:13:13.636Z",
+      "completed_at": "2026-10-18T13:13:13.641Z",
+      "duration_ms": 5,
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "raw_request_artifact_id": null,
+      "raw_response_artifact_id": null,
+      "created_at": "2026-10-18T13:13:20.452Z",
+      "raw_result_body": "No findings reported.",
+      "agent_role": "tester",
+      "provider_run_id": null
+    }
+  ]
+}
