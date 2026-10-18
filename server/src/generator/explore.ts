@@ -139,13 +139,17 @@ const EXPLORE_SCRIPT = `(() => {
       fields.push(f);
     });
 
-    var sub = form.querySelector('[type=submit], button:not([type]), input[type=image]');
-    var submit = null;
-    if (sub) {
-      var sl = clean(sub.value || sub.innerText) || "Submit";
-      var ss = sub.id ? "#" + CSS.escape(sub.id) : sub.name ? '[name="' + sub.name + '"]' : sub.tagName.toLowerCase() === "button" ? "button" : "[type=submit]";
-      submit = { label: sl, selector: ss };
-    }
+    var describe = function (el) {
+      var l = clean(el.value || el.innerText) || "Submit";
+      var sel = el.id ? "#" + CSS.escape(el.id) : el.name ? '[name="' + el.name + '"]' : el.tagName.toLowerCase() === "button" ? "button" : "[type=submit]";
+      return { label: l, selector: sel };
+    };
+    // A page can have several submit buttons (a toolbar, a filter, the real Save). Prefer one whose label says it saves.
+    var cands = Array.prototype.map.call(form.querySelectorAll('[type=submit], button:not([type])'), describe);
+    var good = cands.filter(function (c) { return /(save|add|create|submit|confirm|update|apply|register|ok|yes)/i.test(c.label) && !/(cancel|reset|back|filter)/i.test(c.label); })[0];
+    var pick = good || cands[cands.length - 1];
+    if (!pick) { var img = form.querySelector("input[type=image]"); if (img) pick = describe(img); }
+    var submit = pick ? { label: pick.label, selector: pick.selector } : null;
     forms.push({ id: id, selector: selector, title: title, action: form.getAttribute("action") || "", method: (form.getAttribute("method") || "get").toLowerCase(), fields: fields, hiddenFields: hiddenFields, submit: submit });
   });
 
