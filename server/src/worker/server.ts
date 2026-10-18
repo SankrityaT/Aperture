@@ -57,6 +57,14 @@ const server = createServer((req, res) => {
   req.on("end", async () => {
     try {
       const { target, method, args } = JSON.parse(raw) as { target: string; method: string; args?: unknown[] };
+      // Demo only: put the invented demo systems on this machine back to their starting state, and forget what was compiled.
+      if (target === "demo" && method === "reset") {
+        await oneAtATime(async () => {
+          await fetch("http://127.0.0.1:9100/reset", { method: "POST", signal: AbortSignal.timeout(5000) }).catch(() => undefined);
+          await forms.reset(); await tables.reset();
+        });
+        return send(200, { ok: true, result: "reset", kinds: kindsNow() });
+      }
       if (!ALLOWED[target]?.includes(method) || typeof targets[target]?.[method] !== "function") return send(400, { ok: false, error: { name: "Error", message: `not a worker method: ${target}.${method}` }, kinds: kindsNow() });
       const result = await oneAtATime(async () => await targets[target]![method]!.apply(targets[target], args ?? []));
       send(200, { ok: true, result: result ?? null, kinds: kindsNow() });

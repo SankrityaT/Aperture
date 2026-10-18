@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "primitive-connect": {
+      "source": "primitivedotdev/skills",
+      "sourceType": "github",
+      "skillPath": "skills/primitive-connect/SKILL.md",
+      "computedHash": "2185f77e247886c25fbdfd65e6c00b641c7efc8b1ff87df72332c68ec8e5e4a9"
+    },
+    "primitive-inbox": {
+      "source": "primitivedotdev/skills",
+      "sourceType": "github",
+      "skillPath": "skills/primitive-inbox/SKILL.md",
+      "computedHash": "ee2cc2e9d978c3dbc04d65f044636a323a965b22828714859935c5f895a40acb"
+    }
+  }
+}

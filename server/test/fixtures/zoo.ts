@@ -104,7 +104,7 @@ new IntersectionObserver(function (e) { if (e[0].isIntersecting && loaded < tota
 setTimeout(more, 300);
 `;
 
-export async function startZoo(): Promise<Zoo> {
+export async function startZoo(port = 0): Promise<Zoo & { reset(): void }> {
   const first = ["Aiko", "Bram", "Cleo", "Dev", "Esme", "Finn", "Gita", "Hugo", "Ines", "Jude", "Kira"];
   const last = ["Tan", "Voss", "Marsh", "Rao", "Lund", "Okoro", "Sen", "Ward", "Cruz", "Hale", "Pike"];
   const roles = ["Admin", "Editor", "Viewer"];
@@ -115,6 +115,7 @@ export async function startZoo(): Promise<Zoo> {
     nested: [{ sku: "K-100", name: "Anvil", city: "Leeds" }, { sku: "K-101", name: "Bellows", city: "York" }, { sku: "K-102", name: "Crucible", city: "Hull" }, { sku: "K-103", name: "Drill", city: "Bath" }],
   };
 
+  const initial = structuredClone(state);
   const css = "body{font-family:sans-serif} .row{display:flex;gap:12px;padding:6px;border-bottom:1px solid #ddd}.row>div{flex:1}.head{font-weight:700}.modal{position:fixed;left:30%;top:30%;background:#fff;border:2px solid #333;padding:16px}.sr-only{position:absolute;left:-9999px}.item{display:flex;gap:12px;padding:6px}#viewport{height:120px;overflow:auto;border:1px solid #999}";
 
   const server: Server = createServer((req, res) => {
@@ -126,6 +127,7 @@ export async function startZoo(): Promise<Zoo> {
     const body = (cb: (raw: string) => void) => { let raw = ""; req.on("data", (c) => (raw += c)); req.on("end", () => cb(raw)); };
 
     if (path === "/__zoo") return json(state);
+    if (path === "/__reset") { Object.assign(state, structuredClone(initial)); return json({ ok: true }); }
 
     // ---- APIs ----
     if (path === "/api/users" && req.method === "GET") {
@@ -165,7 +167,7 @@ export async function startZoo(): Promise<Zoo> {
 
     res.statusCode = 404; html("<h1>Not found</h1>");
   });
-  await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
-  const port = (server.address() as AddressInfo).port;
-  return { url: `http://127.0.0.1:${port}`, state, close: () => new Promise((r) => server.close(() => r())) };
+  await new Promise<void>((r) => server.listen(port, "127.0.0.1", r));
+  const bound = (server.address() as AddressInfo).port;
+  return { url: `http://127.0.0.1:${bound}`, state, reset: () => { Object.assign(state, structuredClone(initial)); }, close: () => new Promise((r) => server.close(() => r())) };
 }

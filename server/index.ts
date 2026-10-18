@@ -32,8 +32,9 @@ interface FormsApi extends Adapter { compile(url: string): Promise<CompileSummar
 interface TablesApi extends Adapter { attach(): Promise<TableModel[]> }
 let forms: FormsApi;
 let tables: TablesApi;
+let worker: RemoteWorker | null = null;
 if (process.env.WICKET_WORKER_URL) {
-  const worker = new RemoteWorker(process.env.WICKET_WORKER_URL, process.env.WICKET_WORKER_TOKEN ?? "");
+  worker = new RemoteWorker(process.env.WICKET_WORKER_URL, process.env.WICKET_WORKER_TOKEN ?? "");
   forms = worker.forms; tables = worker.tables;
 } else {
   const local = new FormAdapter();
@@ -238,7 +239,7 @@ server.tool(
     inputSchema: z.object({}),
     annotations: { destructiveHint: true, idempotentHint: true, openWorldHint: false },
   },
-  async () => { await wicket.resetDemo(); seedRules(); return reply({ status: "reset", note: "Fake data, counters and what was learned are back to the start." }); },
+  async () => { await wicket.resetDemo(); seedRules(); await worker?.resetDemo().catch(() => undefined); return reply({ status: "reset", note: "Fake data, counters and what was learned are back to the start." }); },
 );
 
 server.prompt(

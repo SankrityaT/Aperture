@@ -21,13 +21,14 @@ const PAGE_SIZE = 5;
 
 interface View { page: number; sort: string; addOpen: boolean; error: string }
 
-export async function startAspx(): Promise<AspxSite> {
+export async function startAspx(port = 0): Promise<AspxSite & { reset(): void }> {
   const names = ["Marlow D", "Petrov A", "Halvorsen L", "Tanaka R", "Rowan T", "Silva M", "Okafor N", "Brandt K", "Quill E", "Ivers J", "Nakamura H", "Dunne P", "Castro V", "Arden S"];
   const state: AspxSite["state"] = {
     residents: names.map((n, i) => ({ dir: String(101 + i), name: n, ent: String(1000 + i * 7), sl: "01" })),
     sends: 0,
   };
 
+  const initial = structuredClone(state);
   const shown = (v: View) => {
     const sorted = [...state.residents].sort((a, b) => (v.sort === "Dir" ? a.dir.localeCompare(b.dir) : a.name.localeCompare(b.name)));
     return { sorted, pages: Math.max(1, Math.ceil(sorted.length / PAGE_SIZE)), slice: sorted.slice((v.page - 1) * PAGE_SIZE, v.page * PAGE_SIZE) };
@@ -69,6 +70,7 @@ ${panel}
   const server: Server = createServer((req, res) => {
     const path = new URL(req.url ?? "/", "http://x").pathname;
     const html = (b: string) => { res.setHeader("content-type", "text/html"); res.end(b); };
+    if (path === "/__reset") { Object.assign(state, structuredClone(initial)); res.end("reset"); return; }
     if (path === "/__aspx") { res.setHeader("content-type", "application/json"); return void res.end(JSON.stringify(state)); }
     if (path !== "/Residents.aspx") { res.statusCode = 404; return void html("<h1>Not found</h1>"); }
     if (req.method === "GET") return html(render({ page: 1, sort: "Name", addOpen: false, error: "" }));
@@ -97,7 +99,7 @@ ${panel}
       html(render(v));
     });
   });
-  await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
-  const port = (server.address() as AddressInfo).port;
-  return { url: `http://127.0.0.1:${port}`, state, close: () => new Promise((r) => server.close(() => r())) };
+  await new Promise<void>((r) => server.listen(port, "127.0.0.1", r));
+  const bound = (server.address() as AddressInfo).port;
+  return { url: `http://127.0.0.1:${bound}`, state, reset: () => { Object.assign(state, structuredClone(initial)); }, close: () => new Promise((r) => server.close(() => r())) };
 }

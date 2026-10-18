@@ -22,7 +22,7 @@ export class RemoteWorker {
     return this.kinds[target];
   }
 
-  async call<T>(target: "forms" | "tables", method: string, args: unknown[] = []): Promise<T> {
+  async call<T>(target: "forms" | "tables" | "demo", method: string, args: unknown[] = []): Promise<T> {
     let res: Response;
     try {
       res = await fetch(`${this.base.replace(/\/$/, "")}/rpc`, {
@@ -45,6 +45,9 @@ export class RemoteWorker {
     if (name === "HumanRequired") throw new HumanRequired(message);
     throw new Error(message);
   }
+
+  /** Demo only: reset the invented demo systems on the worker's machine. */
+  async resetDemo(): Promise<void> { await this.call("demo", "reset"); }
 
   async health(): Promise<boolean> {
     try { const r = await fetch(`${this.base.replace(/\/$/, "")}/health`, { signal: AbortSignal.timeout(5000) }); return r.ok; } catch { return false; }
