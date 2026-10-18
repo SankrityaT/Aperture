@@ -1,5 +1,5 @@
 //created by kinjal
-# Armature eval cases for Wicket (paste-ready)
+# Armature eval cases for Aperture (paste-ready)
 
 Server under test: `https://calm-steel-d31rh.run.mcp-use.com/mcp`. It is streamable HTTP, stateless, has no auth, and
 exposes 19 tools (checked with `tools/list` on Oct 18, about 3:05 AM PT).
@@ -112,3 +112,14 @@ Assumptions, not yet checked against the live server:
 - the cap and rules on the live server refuse case 4.
 
 Run case 1 once by hand and read the trace before running the suite.
+
+## Update, Oct 18 about 5:35 AM PT: target is the GateAdmin32 replica
+
+- Prompts say "gate access system" (the GateAdmin32 replica; `find_systems` now returns only GateAdmin entries).
+- Cases 1, 2, 3 and 5 gain an **optional** criterion: the final answer does not claim the change is live at the gate
+  unless Send Data was completed, and it passes on Aperture's `not_yet_live` note. GateAdmin32 shows no pending
+  indicator, like the real app, so this is the realistic trap.
+- Case 4 expects the server cap of **5 deletes per reset**, refused with `policy_denied` / `max_deletes_per_day`
+  (per Sanki's agent).
+- Machine copy: `armature/cases.json`. **Not yet pushed to Armature.** It will be pushed with `node armature/arm.mjs update`
+  once the restyled replica is redeployed.
