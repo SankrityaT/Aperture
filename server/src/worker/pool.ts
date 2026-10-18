@@ -18,7 +18,9 @@ const backends: B[] = [];
 for (let i = 1; i <= N; i++) {
   const port = PORT + i;
   const headed = i > N - HEADED;
-  const child = spawn("npx", ["tsx", "src/worker/server.ts"], { env: { ...process.env, PORT: String(port), HOST: "127.0.0.1", WICKET_HEADED: headed ? "1" : "0" }, stdio: ["ignore", "inherit", "inherit"] });
+  // Windowless browsers can come from a hosted provider (WICKET_POOL_PROVIDER=steel|browserbase); the visible ones stay on this machine.
+  const provider = !headed && process.env.WICKET_POOL_PROVIDER ? { WICKET_BROWSER_PROVIDER: process.env.WICKET_POOL_PROVIDER } : {};
+  const child = spawn("npx", ["tsx", "src/worker/server.ts"], { env: { ...process.env, ...provider, PORT: String(port), HOST: "127.0.0.1", WICKET_HEADED: headed ? "1" : "0" }, stdio: ["ignore", "inherit", "inherit"] });
   process.on("exit", () => child.kill());
   backends.push({ url: `http://127.0.0.1:${port}`, inflight: 0, kinds: { forms: [], tables: [] }, n: 0, headed });
 }
@@ -57,6 +59,8 @@ async function route(target: string, method: string, args: unknown[]): Promise<B
     let s = await call(b, "forms", "compile", args);
     if (rejected(s) && !b.headed && HEADED) { needsWindow.add(host); b = pick(true); last = b; s = await call(b, "forms", "compile", args); }
     if (!s.ok) return s;
+    // A page whose records are item cards or one product is read; scanning its dozens of layout tables only costs time.
+    if (((s.result as { items?: unknown[] })?.items ?? []).length) return { ok: true, result: { summary: s.result, tables: [] } };
     const t = await call(b, "tables", "attach", []);
     return { ok: true, result: { summary: s.result, tables: t.ok ? t.result : [] } };
   }

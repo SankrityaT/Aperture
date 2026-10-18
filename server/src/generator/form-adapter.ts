@@ -93,14 +93,15 @@ export function assertMayAct(url: string, what: string): void {
 
 /** Open a page and start once its document is in. Big public sites (retail, news) can take far longer than a call's deadline to
  *  fire "load" because of ads and trackers; the records are in the document long before that. Give "load" a few seconds, no more. */
-export async function gotoQuick(page: Page, url: string): Promise<void> {
-  try { await page.goto(url, { waitUntil: "domcontentloaded", timeout: Number(process.env.WICKET_GOTO_TIMEOUT_MS ?? 12_000) }); }
+export async function gotoQuick(page: Page, url: string): Promise<number | null> {
+  try { const r = await page.goto(url, { waitUntil: "domcontentloaded", timeout: Number(process.env.WICKET_GOTO_TIMEOUT_MS ?? 12_000) }); await page.waitForLoadState("load", { timeout: 4000 }).catch(() => undefined); return r?.status() ?? null; }
   catch (e) {
     // A site that redirects while loading (search pages do) interrupts the first navigation: wait for where it lands instead.
     if (!/interrupted by another navigation|net::ERR_ABORTED/i.test(String((e as Error).message))) throw e;
     await page.waitForLoadState("domcontentloaded", { timeout: 12_000 });
+    await page.waitForLoadState("load", { timeout: 4000 }).catch(() => undefined);
+    return null;
   }
-  await page.waitForLoadState("load", { timeout: 4000 }).catch(() => undefined);
 }
 
 /** Without request interception (some sites reject intercepted requests): if the page itself lands on an internal address that
@@ -144,9 +145,17 @@ export class FormAdapter implements Adapter {
 
   async compile(url: string): Promise<CompileSummary> {
     assertAuthorized(url);
-    const page = await this.ensurePage();
-    await gotoQuick(page, url);
-    return this.refresh();
+    let page = await this.ensurePage();
+    const status = await gotoQuick(page, url);
+    let s = await this.refresh();
+    // On a hosted browser, a blocked answer (503, 429, a robot check) gets one fresh browser session on a new network path,
+    // the way a person would try again from another connection. Nothing is solved or faked; a second block is reported as is.
+    const blocked = (status === 503 || status === 429 || s.warnings.some((w) => /captcha|bot challenge|robot/i.test(w))) && !this.pageItems.length;
+    if (blocked && process.env.WICKET_BROWSER_PROVIDER) {
+      await this.close(); page = await this.ensurePage(); await gotoQuick(page, url); s = await this.refresh();
+      s = { ...s, warnings: [...s.warnings, "The first browser was blocked here; this is a fresh browser session."] };
+    }
+    return s;
   }
 
   /**
@@ -210,7 +219,8 @@ export class FormAdapter implements Adapter {
     groups.forEach((g, i) => {
       const kind = cardKind(page.url(), i);
       const m = this.cards.get(kind) ?? new Map<string, CardRow>();
-      for (const r of g.rows) m.set(r.key, r);
+      // A card never replaces what was read on the product page itself; it only fills in a record not seen yet.
+      for (const r of g.rows) { const prev = m.get(r.key) as (CardRow & { source?: string }) | undefined; m.set(r.key, prev?.source === "product page" ? prev : r); }
       while (m.size > 500) m.delete(m.keys().next().value as string);
       this.cards.set(kind, m);
       this.pageItems.push({ kind, key: g.attr.replace(/^data-/, ""), rows: g.rows });
@@ -220,9 +230,10 @@ export class FormAdapter implements Adapter {
       if (prod) {
         const kind = cardKind(page.url(), 0);
         const m = this.cards.get(kind) ?? new Map<string, CardRow>();
-        m.set(prod.key, { ...(m.get(prod.key) ?? {}), ...prod });
+        const row = { ...prod, condition: prod.condition ?? "new (no used or renewed offer shown next to the price)", seen_at: new Date().toISOString() } as CardRow;
+        m.set(prod.key, { ...(m.get(prod.key) ?? {}), ...row });
         this.cards.set(kind, m);
-        this.pageItems.push({ kind, key: "product page", rows: [prod] });
+        this.pageItems.push({ kind, key: "product page", rows: [row] });
       }
     }
     return this.summary();
@@ -272,16 +283,40 @@ export class FormAdapter implements Adapter {
     this.browser = null; this.page = null;
   }
 
+  /** A hosted browser from a provider (WICKET_BROWSER_PROVIDER=browserbase|steel): a real browser on the provider's network,
+   *  reached over CDP. Returns the address to connect to, or null when no provider is configured. */
+  private async providerSession(): Promise<string | null> {
+    const p = (process.env.WICKET_BROWSER_PROVIDER ?? "").toLowerCase();
+    if (p === "browserbase") {
+      const key = process.env.BROWSERBASE_API_KEY ?? ""; const project = process.env.BROWSERBASE_PROJECT_ID ?? "";
+      if (!key || !project) throw new NoBrowser("WICKET_BROWSER_PROVIDER=browserbase needs BROWSERBASE_API_KEY and BROWSERBASE_PROJECT_ID.");
+      const r = await fetch("https://api.browserbase.com/v1/sessions", { method: "POST", headers: { "content-type": "application/json", "X-BB-API-Key": key }, body: JSON.stringify({ projectId: project, proxies: process.env.WICKET_PROVIDER_PROXY !== "0" }), signal: AbortSignal.timeout(20_000) });
+      const j = (await r.json().catch(() => ({}))) as { connectUrl?: string; message?: string };
+      if (!r.ok || !j.connectUrl) throw new NoBrowser(`The browser provider did not start a session (${r.status} ${j.message ?? ""}).`);
+      return j.connectUrl;
+    }
+    if (p === "steel") {
+      const key = process.env.STEEL_API_KEY ?? "";
+      if (!key) throw new NoBrowser("WICKET_BROWSER_PROVIDER=steel needs STEEL_API_KEY.");
+      const r = await fetch("https://api.steel.dev/v1/sessions", { method: "POST", headers: { "content-type": "application/json", "steel-api-key": key }, body: JSON.stringify({ useProxy: process.env.WICKET_PROVIDER_PROXY !== "0" }), signal: AbortSignal.timeout(20_000) });
+      const j = (await r.json().catch(() => ({}))) as { id?: string; websocketUrl?: string; message?: string };
+      if (!r.ok || !j.id) throw new NoBrowser(`The browser provider did not start a session (${r.status} ${j.message ?? ""}).`);
+      return j.websocketUrl ?? `wss://connect.steel.dev?apiKey=${encodeURIComponent(key)}&sessionId=${j.id}`;
+    }
+    return null;
+  }
+
   private async ensurePage(): Promise<Page> {
     // A window someone closed, or a browser that went away: start fresh instead of failing every call after it.
     if (this.page && (this.page.isClosed() || (this.browser && !this.browser.isConnected()))) { await this.close(); }
     if (this.page) return this.page;
     let chromium;
     try { ({ chromium } = await import("playwright-core")); } catch { throw new NoBrowser("No browser library is available on this server."); }
-    if (process.env.WICKET_CDP_URL) {
-      // Attach to a browser a person already signed in to (MFA and all). Wicket never sees the password; it reuses the session.
+    const hosted = await this.providerSession();
+    if (hosted || process.env.WICKET_CDP_URL) {
+      // Attach over CDP: a hosted provider's browser, or a browser a person already signed in to (MFA and all). Aperture never sees a password.
       try {
-        this.browser = await chromium.connectOverCDP(process.env.WICKET_CDP_URL);
+        this.browser = await chromium.connectOverCDP(hosted ?? process.env.WICKET_CDP_URL!);
         const ctx = this.browser.contexts()[0] ?? (await this.browser.newContext());
         this.page = ctx.pages().find((p) => !p.url().startsWith("chrome://")) ?? (await ctx.newPage());
         return this.page;
