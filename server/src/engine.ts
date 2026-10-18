@@ -188,8 +188,10 @@ export class Wicket {
       try { loaded = await this.cached(`list:${kind}`, () => this.adapter.list(kind)); } catch (e2) { return isDrift(e2) ? this.onDrift(kind, e2) : this.unexpected(e2); }
     }
     const { data, ageMs } = loaded;
-    const q = query?.toLowerCase().trim();
-    const hits = q ? data.filter((r) => Object.values(r).some((v) => typeof v === "string" && v.toLowerCase().includes(q))) : data;
+    // Any kind of space is a space (sites write "Pro\u00a03"); a query matches when the text contains it.
+    const norm = (v: string) => v.toLowerCase().replace(/\s+/g, " ");
+    const q = query ? norm(query).trim() : undefined;
+    const hits = q ? data.filter((r) => Object.values(r).some((v) => typeof v === "string" && norm(v).includes(q))) : data;
     const note = hits.length > 1 && q ? "Several matches. Names are not unique, use the key." : undefined;
     return { kind, count: hits.length, items: hits.slice(0, limit), as_of_ms: ageMs, ...(repairedNote ? { page_changed_and_relearned: repairedNote } : {}), ...(hits.length > limit ? { truncated: true } : {}), ...(note ? { note } : {}) };
   }
