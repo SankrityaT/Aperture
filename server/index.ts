@@ -241,7 +241,7 @@ const siteKey = (s: string) => { try { return new URL(s.includes("://") ? s : `h
 // WICKET_SYSTEMS is a JSON list on the server: [{"name","url","about"}]. An agent can only be pointed at systems on it
 // (the worker's host allowlist still decides what it may actually open).
 
-interface SystemEntry { name: string; url: string; about: string }
+interface SystemEntry { name: string; url: string; about: string; login?: string; sign_in_url?: string }
 const systems: SystemEntry[] = (() => { try { const v = JSON.parse(process.env.WICKET_SYSTEMS ?? "[]"); return Array.isArray(v) ? v.filter((x) => x?.name && x?.url) : []; } catch { return []; } })();
 const words = (t: string) => new Set(t.toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter((w) => w.length > 2).map((w) => w.replace(/(ies|es|s)$/, "")));
 
@@ -264,7 +264,7 @@ server.tool(
     }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
     if (!systems.length) return reply({ status: "refused", error: "no_systems_registered", detail: "The operator has not listed any systems for agents to work in.", next: ["ask the operator to set WICKET_SYSTEMS", "or call compile_site with an address they gave you"] });
     if (!scored.length) return reply({ status: "none_found", detail: "Nothing the operator registered matches that description.", registered: systems.map((x) => x.name), next: ["describe it with different words", "ask the operator to register the system you need"] });
-    return reply({ status: "found", matches: scored.map((x) => ({ name: x.sy.name, address: x.sy.url, about: x.sy.about, matched_on: x.hits, shared_profile: x.prof ? { dependents_known: x.prof.rules.filter((r) => r.cascades.length).length, shared_at: x.prof.shared_at } : null })), next: ["compile_site with the address of the best match", "if it has a shared profile, call use_profile with its host before changing anything"] });
+    return reply({ status: "found", matches: scored.map((x) => ({ name: x.sy.name, address: x.sy.url, about: x.sy.about, ...(x.sy.login ? { sign_in: `needs the operator's stored login '${x.sy.login}': compile_site with login '${x.sy.login}', url '${x.sy.sign_in_url ?? x.sy.url}', then '${x.sy.url}'. You never see or type the password.` } : {}), matched_on: x.hits, shared_profile: x.prof ? { dependents_known: x.prof.rules.filter((r) => r.cascades.length).length, shared_at: x.prof.shared_at } : null })), next: ["compile_site with the address of the best match", "if it has a shared profile, call use_profile with its host before changing anything"] });
   },
 );
 
