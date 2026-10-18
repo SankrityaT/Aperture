@@ -8,6 +8,7 @@
 //   node armature/arm.mjs cases                       eval cases
 //   node armature/arm.mjs case <id>                   one eval case in full
 //   node armature/arm.mjs create <serverId> [n...]    create cases from armature/cases.json (all, or by number)
+//   node armature/arm.mjs update [n...]               push cases.json edits to the cases in ids.json
 //   node armature/arm.mjs patch <id> '<json>'         update an eval case
 //   node armature/arm.mjs run <id> [reason]           start one run (WRITES to the target system)
 //   node armature/arm.mjs status <runId>              run status and score
@@ -68,6 +69,22 @@ switch (cmd) {
       });
       const id = created.id ?? created.data?.id ?? created.workflow?.id;
       console.log(`created case ${c.n} "${c.name}" id=${id}`);
+    }
+    break;
+  }
+
+  case "update": {
+    // Push name, description, prompt and criteria from cases.json to the existing cases listed in ids.json.
+    const cases = JSON.parse(readFileSync(join(here, "cases.json"), "utf8")).cases;
+    const ids = JSON.parse(readFileSync(join(here, "ids.json"), "utf8")).cases;
+    for (const c of cases.filter((c) => !args.length || args.includes(String(c.n)))) {
+      await api("PATCH", `/workflows/${ids[c.n]}`, {
+        name: c.name,
+        description: c.description,
+        testerPrompt: c.prompt,
+        criteria: c.criteria.map(([text, required]) => ({ criterionText: text, isRequired: required })),
+      });
+      console.log(`updated case ${c.n} "${c.name}" id=${ids[c.n]}`);
     }
     break;
   }
