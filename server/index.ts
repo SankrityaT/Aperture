@@ -59,6 +59,11 @@ if (process.env.WICKET_WORKER_URL) {
 }
 const wicket = new Wicket(new CompositeAdapter([...(process.env.WICKET_FAKE_SCHOOL === "1" ? [new FakeSchool()] : []), forms, tables]), { rules, ...(process.env.WICKET_LEDGER_PATH ? { ledger: new FileLedger(process.env.WICKET_LEDGER_PATH) } : {}) });
 
+/** Item cards read from public pages are for reading only: refuse a change on them before any plan exists. */
+const readOnly = (kind: string | undefined) => kind && /_items(_\d+)?$/.test(kind) && !tables.kinds().includes(kind) && !forms.kinds().some((k) => k === kind && !/_items(_\d+)?$/.test(k))
+  ? reply({ status: "refused", error: "read_only", detail: `'${kind}' is a list of item cards read from a public page. Aperture reads it; it never changes anything there.`, next: ["use find to read it", "to change records, use a system the operator listed (find_systems)"] })
+  : null;
+
 /** Small on purpose: an agent pays for every token of this. */
 const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), ...(t.keySource === "none" ? { writes: "refused: no column or link on this list identifies a row uniquely, so a change could hit the wrong record. Reading and previews are unavailable for the same reason." } : {}), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}), ...(t.recoveryHints?.length ? { recovery_options_seen: t.recoveryHints, recovery_note: "The application offers these. Aperture has not used or tested them; ask the owner whether a reversible option (archive, deactivate) is enough before deleting." } : {}) });
 
@@ -121,6 +126,7 @@ server.tool(
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, key, dry_run, plan_id }) => {
+    const ro = readOnly(kind); if (ro) return ro;
     if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "delete", kind, key });
     return reply(wicket.present(plan));
@@ -135,6 +141,7 @@ server.tool(
     annotations: { destructiveHint: false, idempotentHint: false, openWorldHint: false },
   },
   async ({ kind, record, plan_id }) => {
+    const ro = readOnly(kind); if (ro) return ro;
     if (plan_id) return replyWrite(wicket.present(await wicket.commit(plan_id)));
     const plan = await wicket.preview({ op: "create", kind, record: record as Op["record"] });
     return reply(wicket.present(plan));
@@ -214,7 +221,7 @@ server.tool(
     inputSchema: opSchema,
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
-  async (args) => replyWrite((await wicket.apply(args as Op)) as Record<string, unknown>),
+  async (args) => readOnly((args as Op).kind) ?? replyWrite((await wicket.apply(args as Op)) as Record<string, unknown>),
 );
 
 server.tool(
@@ -225,6 +232,7 @@ server.tool(
     annotations: { destructiveHint: true, idempotentHint: false, openWorldHint: false },
   },
   async ({ ops, plan_ids, stop_on_failure, dry_run, canary }) => {
+    for (const o of ops ?? []) { const ro = readOnly((o as Op).kind); if (ro) return ro; }
     if (plan_ids?.length) return replyWrite(await wicket.commitBatch(plan_ids, canary ?? 1));
     if (!ops?.length) return reply({ status: "refused", error: "nothing_to_do", detail: "Give ops (changes to make) or plan_ids (approved plans to commit).", next: ["apply_batch with ops: [{op, kind, key}]"] });
     return replyWrite(await wicket.applyBatch(ops as Op[], stop_on_failure ?? true, { dryRun: dry_run, canary }));
