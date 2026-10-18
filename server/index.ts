@@ -40,7 +40,7 @@ if (process.env.WICKET_WORKER_URL) {
   const local = new FormAdapter();
   forms = local; tables = new TableAdapter(() => local.currentPage());
 }
-const wicket = new Wicket(new CompositeAdapter([new FakeSchool(), forms, tables]), { rules });
+const wicket = new Wicket(new CompositeAdapter([...(process.env.WICKET_FAKE_SCHOOL === "1" ? [new FakeSchool()] : []), forms, tables]), { rules });
 
 /** Small on purpose: an agent pays for every token of this. */
 const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}) });
@@ -219,6 +219,37 @@ interface Profile { site: string; shared_at: string; tables: ReturnType<typeof t
 const registry = new Map<string, Profile>();
 const siteKey = (s: string) => { try { return new URL(s.includes("://") ? s : `http://${s}`).host.toLowerCase(); } catch { return s.toLowerCase(); } };
 
+// ---- discovery: which systems can I work in? The operator lists them; the agent describes what it needs ----
+// WICKET_SYSTEMS is a JSON list on the server: [{"name","url","about"}]. An agent can only be pointed at systems on it
+// (the worker's host allowlist still decides what it may actually open).
+
+interface SystemEntry { name: string; url: string; about: string }
+const systems: SystemEntry[] = (() => { try { const v = JSON.parse(process.env.WICKET_SYSTEMS ?? "[]"); return Array.isArray(v) ? v.filter((x) => x?.name && x?.url) : []; } catch { return []; } })();
+const words = (t: string) => new Set(t.toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter((w) => w.length > 2).map((w) => w.replace(/(ies|es|s)$/, "")));
+
+server.tool(
+  {
+    name: "find_systems",
+    description: "Start here when you are not given an address. Describe what you need to do in plain words (for example 'remove a student from the school list' or 'send an invoice'). Returns the systems you are allowed to work in that match, with the address to compile and any profile other agents shared. It never searches the open web.",
+    inputSchema: z.object({ need: z.string().describe("What you need to do or find, in plain words.") }),
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  },
+  async ({ need }) => {
+    const want = words(need);
+    const scored = systems.map((sy) => {
+      const host = siteKey(sy.url);
+      const prof = registry.get(host);
+      const text = `${sy.name} ${sy.about} ${prof ? prof.tables.map((t) => `${t.id} ${t.columns.join(" ")}`).join(" ") : ""}`;
+      const have = words(text);
+      const hits = [...want].filter((w) => have.has(w));
+      return { sy, host, prof, hits, score: hits.length };
+    }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
+    if (!systems.length) return reply({ status: "refused", error: "no_systems_registered", detail: "The operator has not listed any systems for agents to work in.", next: ["ask the operator to set WICKET_SYSTEMS", "or call compile_site with an address they gave you"] });
+    if (!scored.length) return reply({ status: "none_found", detail: "Nothing the operator registered matches that description.", registered: systems.map((x) => x.name), next: ["describe it with different words", "ask the operator to register the system you need"] });
+    return reply({ status: "found", matches: scored.map((x) => ({ name: x.sy.name, address: x.sy.url, about: x.sy.about, matched_on: x.hits, shared_profile: x.prof ? { dependents_known: x.prof.rules.filter((r) => r.cascades.length).length, shared_at: x.prof.shared_at } : null })), next: ["compile_site with the address of the best match", "if it has a shared profile, call use_profile with its host before changing anything"] });
+  },
+);
+
 server.tool(
   {
     name: "share_profile",
@@ -252,16 +283,31 @@ server.tool(
   },
 );
 
+const esc = (x: string) => x.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]!));
+server.get("/registry/:site", (c) => {
+  const p = registry.get(siteKey(c.req.param("site")));
+  if (!p) return c.html("<h1>No profile</h1><p>Nobody has shared this one yet.</p>", 404);
+  const base = new URL(c.req.url).origin;
+  const snippet = `Use the Wicket MCP server at ${base}/mcp to work in ${p.site}. Call compile_site on the page you need, then use_profile with site "${p.site}" before you change anything.`;
+  const rules = p.rules.map((r) => `<li><b>${esc(r.kind)} ${esc(r.op)}</b> also affects: ${r.cascades.length ? r.cascades.map((x) => `${esc(x.kind)} (by ${esc(x.by)})`).join(", ") : "nothing seen"} ${r.vouched ? "<i>(a real run matched this)</i>" : "<i>(seen once, not yet confirmed)</i>"}</li>`).join("");
+  return c.html(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(p.site)} - Wicket profile</title><body style="font:16px/1.5 system-ui;max-width:42rem;margin:2rem auto;padding:0 1rem"><h1>${esc(p.site)}</h1><p>What agents have learned about this system. Structure and rules only: no records, no logins.</p><h2>Copy this to your agent</h2><pre style="white-space:pre-wrap;background:#f4f4f5;padding:1rem;border-radius:8px">${esc(snippet)}</pre><h2>Tables</h2><ul>${p.tables.map((t) => `<li><b>${esc(t.id)}</b>: key ${esc(String(t.key))}; ${t.columns.length} columns; actions: ${esc(t.actions.join(", ") || "none")}</li>`).join("")}</ul><h2>What deleting affects</h2><ul>${rules || "<li>Nothing learned yet.</li>"}</ul><p style="color:#666">Shared ${esc(p.shared_at)}. Held in memory; a server restart empties it.</p></body>`);
+});
+
 server.get("/registry", (c) => c.json({ note: "Shared profiles: structure and learned rules only. In memory; a restart empties it.", profiles: [...registry.values()] }));
 
 server.tool(
   {
     name: "get_plan",
     description: "Check a plan: awaiting_approval, approved, expired, committed. Use it to poll for the owner's decision instead of retrying commit.",
-    inputSchema: z.object({ plan_id: z.string() }),
+    inputSchema: z.object({ plan_id: z.string(), wait_seconds: z.number().int().min(0).max(25).optional().describe("Wait up to this long for the owner to decide, so you do not burn turns polling.") }),
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
-  async ({ plan_id }) => reply(wicket.getPlan(plan_id) as Record<string, unknown>),
+  async ({ plan_id, wait_seconds }) => {
+    let plan = wicket.getPlan(plan_id) as Record<string, unknown>;
+    const until = Date.now() + (wait_seconds ?? 0) * 1000;
+    while (plan.status === "awaiting_approval" && Date.now() < until) { await new Promise((r) => setTimeout(r, 1000)); plan = wicket.getPlan(plan_id) as Record<string, unknown>; }
+    return reply(plan);
+  },
 );
 
 server.tool(
