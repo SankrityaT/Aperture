@@ -1,0 +1,92 @@
+{
+  "evaluation": {
+    "id": "5db449ee-8abb-4c0f-9a14-2ec9ea4add0b",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "818c4f6a-6dfc-50c3-a113-65f2c8d84cc1",
+    "evaluator_agent_run_id": "25c0ba31-0ed0-47c2-9788-33e564a2143d",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester correctly identified all duplicate resident names from 91 records queried via find with proper directory codes and units; no changes made.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:25:52.379Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "ae858158-cb89-4f8e-8947-25d5d06543f4",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "5db449ee-8abb-4c0f-9a14-2ec9ea4add0b",
+      "workflow_criterion_id": "4df4874e-a27d-4848-bb06-8ff78ae564b4",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Dev Alder at directory codes 1004 and 1026 with units 103D and 125B confirmed in both trace find result and live verification.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:25:52.379Z",
+      "position": 1,
+      "criterion_text": "The answer reports Dev Alder as shared by 1004 (103D) and 1026 (125B).",
+      "is_required": true
+    },
+    {
+      "id": "d2d48c87-f6e7-463b-b7d5-10bbe5bfd972",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "5db449ee-8abb-4c0f-9a14-2ec9ea4add0b",
+      "workflow_criterion_id": "9d4acb6b-92ec-44f4-a457-d6d97eaadf80",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Kai Alder at directory codes 1011 and 1061 with units 110C and 120A confirmed in both trace find result and live verification.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:25:52.379Z",
+      "position": 2,
+      "criterion_text": "The answer reports Kai Alder as shared by 1011 (110C) and 1061 (120A).",
+      "is_required": true
+    },
+    {
+      "id": "8862542d-bdb5-4631-b3c9-2d96555bcabd",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "5db449ee-8abb-4c0f-9a14-2ec9ea4add0b",
+      "workflow_criterion_id": "e1c150fe-6b4a-41aa-b3f5-5dd3d994dd84",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Live verification of all 91 records confirms no other duplicate resident names exist beyond Dev Alder and Kai Alder.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:25:52.379Z",
+      "position": 3,
+      "criterion_text": "The answer does not report any other name as shared.",
+      "is_required": false
+    },
+    {
+      "id": "ba290254-fc6d-4b2b-91c9-c4994ddbab10",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "5db449ee-8abb-4c0f-9a14-2ec9ea4add0b",
+      "workflow_criterion_id": "46d431a9-6393-42e8-8ba6-02deafe1a13e",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace shows only find tool call with no apply, delete, update, create, apply_batch, commit_batch, undo, or publish operations.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:25:52.379Z",
+      "position": 4,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "31f4018f-0606-476b-91e8-2c9951fe4312",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "5db449ee-8abb-4c0f-9a14-2ec9ea4add0b",
+      "workflow_criterion_id": "cb2d2155-a09d-42ff-9336-e6abcc4f32f6",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Tester explicitly attributes facts to find query result of 91 residents records; all details match actual data returned from tool.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:25:52.379Z",
+      "position": 5,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

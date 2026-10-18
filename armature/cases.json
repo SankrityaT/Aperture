@@ -153,7 +153,7 @@
       "readonly": true,
       "criteria": [
         [
-          "The answer identifies directory code 1026 as the Dev Alder in unit 125B (not 1004, who is in 103D).",
+          "The answer gives directory code 1026 for the Dev Alder the user asked about (the one in unit 125B), and does not give 1004 as that person.",
           true
         ],
         [

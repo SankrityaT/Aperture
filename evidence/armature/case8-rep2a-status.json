@@ -1,0 +1,195 @@
+{
+  "run": {
+    "id": "9c845061-d105-52d0-b27a-e4f4484b9ecc",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "dd602165-3020-49a4-976d-3c9928c19af3",
+    "workflow_version_id": "beae8f1a-10ec-42d5-9cac-d466643b0fe3",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "dd602165-3020-49a4-976d-3c9928c19af3_1792329801869",
+    "idempotency_key": "mcp-run:bd4be02d8c29343728a374e67c174429ee130b8e9aa4474d542d580b35a004e3",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T13:23:13.583Z",
+    "status": "completed",
+    "evaluation_verdict": "passed",
+    "evaluation_summary": "Tester correctly identified directory code 1061 (Kai Alder, Unit 120A), listed exactly devices 01106 and 01167 read from tools, made no changes, and distinguished from the other Kai Alder (1011).",
+    "started_at": "2026-10-18T13:23:21.869Z",
+    "tester_completed_at": "2026-10-18T13:24:07.788Z",
+    "evaluation_completed_at": "2026-10-18T13:24:58.016Z",
+    "completed_at": "2026-10-18T13:24:58.016Z",
+    "duration_ms": 45919,
+    "summary": "Tester: Found Kai Alder in Unit 120A (resident key 1061, directory code 1061). Note there's another Kai Alder on file (key 1011, Unit 110C) — I used the one matching the unit you specified. **Gate devices on file for Kai Alder, Unit 120A:** | Device # | Type | |---|---| | 01106 | Transmitter | | 01167 | Card | No changes were made — this was read-only. The \"remote\" is likely device 01106 (Transmitter), which is the gate remote type — that's probably the one to check/reprogram if it stopped working.\nEvaluator: Tester correctly identified directory code 1061 (Kai Alder, Unit 120A), listed exactly devices 01106 and 01167 read from tools, made no changes, and distinguished from the other Kai Alder (1011).",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Devices for Kai Alder in 120A",
+    "workflow_version_number": 2,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T13:23:13.570Z",
+    "updated_at": "2026-10-18T13:25:44.873Z",
+    "evaluation_score": 5,
+    "evaluation_classification": null,
+    "metadata": {
+      "case": 8,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "Found Kai Alder in Unit 120A (resident key 1061, directory code 1061). Note there's another Kai Alder on file (key 1011, Unit 110C) — I used the one matching the unit you specified.\n\n**Gate devices on file for Kai Alder, Unit 120A:**\n\n| Device # | Type |\n|---|---|\n| 01106 | Transmitter |\n| 01167 | Card |\n\nNo changes were made — this was read-only. The \"remote\" is likely device 01106 (Transmitter), which is the gate remote type — that's probably the one to check/reprogram if it stopped working.",
+        "summary": "Found Kai Alder in Unit 120A (resident key 1061, directory code 1061). Note there's another Kai Alder on file (key 1011, Unit 110C) — I used the one matching the unit you specified. **Gate devices on file for Kai Alder, Unit 120A:** | Device # | Type | |---|---| | 01106 | Transmitter | | 01167 | Card | No changes were made — this was read-only. The \"remote\" is likely device 01106 (Transmitter), which is the gate remote type — that's probably the one to check/reprogram if it stopped working.",
+        "completed_at": "2026-10-18T13:24:07.788Z"
+      },
+      "instance_id": "local:169.254.50.169",
+      "agent_runtime": "lambda",
+      "manual_reason": "repeat rep2a",
+      "scheduled_for": "2026-10-18T13:23:13.583Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:bd4be02d8c29343728a374e67c174429ee130b8e9aa4474d542d580b35a004e3",
+      "agent_sandbox_id": "irrldtvhyntkiu6ogxqix",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "1dae71ff-cf79-4791-a385-be460daf679b",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 46304,
+      "lambda_agent_account_email": "theotzen@gmail.com",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "b59d7c0f-e16f-4a88-9139-d39071bc4062",
+      "lambda_agent_auth_profile_key": "claude-runner-3"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 45919,
+    "total_duration_ms": 96147,
+    "tool_call_count": 9,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 8,
+    "output_tokens": 1372,
+    "cache_read_input_tokens": "156214",
+    "cache_creation_input_tokens": "6121",
+    "cache_write_5m_input_tokens": "6121",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.09042195,
+    "cost_usd": 0.09042195,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "success",
+    "tokens_total": 163715,
+    "usage_breakdown": {
+      "input_tokens": 8,
+      "output_tokens": 1372,
+      "cache_read_input_tokens": 156214,
+      "cache_creation_input_tokens": 6121,
+      "cache_write_5m_input_tokens": 6121,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 8,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "Found Kai Alder in Unit 120A (resident key 1061, directory code 1061). Note there's another Kai Alder on file (key 1011, Unit 110C) — I used the one matching the unit you specified.\n\n**Gate devices on file for Kai Alder, Unit 120A:**\n\n| Device # | Type |\n|---|---|\n| 01106 | Transmitter |\n| 01167 | Card |\n\nNo changes were made — this was read-only. The \"remote\" is likely device 01106 (Transmitter), which is the gate remote type — that's probably the one to check/reprogram if it stopped working.",
+        "summary": "Found Kai Alder in Unit 120A (resident key 1061, directory code 1061). Note there's another Kai Alder on file (key 1011, Unit 110C) — I used the one matching the unit you specified. **Gate devices on file for Kai Alder, Unit 120A:** | Device # | Type | |---|---| | 01106 | Transmitter | | 01167 | Card | No changes were made — this was read-only. The \"remote\" is likely device 01106 (Transmitter), which is the gate remote type — that's probably the one to check/reprogram if it stopped working.",
+        "completed_at": "2026-10-18T13:24:07.788Z"
+      },
+      "instance_id": "local:169.254.50.169",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "repeat rep2a",
+      "scheduled_for": "2026-10-18T13:23:13.583Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "1dae71ff-cf79-4791-a385-be460daf679b",
+      "idempotency_key": "mcp-run:bd4be02d8c29343728a374e67c174429ee130b8e9aa4474d542d580b35a004e3",
+      "agent_sandbox_id": "irrldtvhyntkiu6ogxqix",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 46304,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "Kai Alder in unit 120A says their remote stopped working. Without changing anything, list every gate device on file for them, with device number and type.",
+    "success_criteria_snapshot": [
+      {
+        "id": "580d3f6d-37d1-4b9f-8fc8-378b1c49b5f6",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The answer is about directory code 1061 (Kai Alder, unit 120A), not 1011 (Kai Alder, unit 110C)."
+      },
+      {
+        "id": "034741b7-4cfa-4c99-8a54-50944bffbd7b",
+        "position": 2,
+        "is_required": true,
+        "criterion_text": "The answer lists exactly devices 01106 (Transmitter) and 01167 (Card)."
+      },
+      {
+        "id": "68dbbaf6-ec6a-40d7-821f-de28b310cf6d",
+        "position": 3,
+        "is_required": true,
+        "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine)."
+      },
+      {
+        "id": "dad1f424-0575-435f-853b-51cf15f0e7fa",
+        "position": 4,
+        "is_required": false,
+        "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing."
+      }
+    ]
+  }
+}
