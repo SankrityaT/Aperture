@@ -43,10 +43,13 @@ export class CompositeAdapter implements Adapter {
     const o = this.owner(kind);
     return o?.validate ? o.validate(kind, key, patch) : [];
   }
-  async counts(): Promise<Record<Kind, number>> {
+  /** With a kind, only the system that owns it is read. Counting every system on every write would be slow and fragile. */
+  async counts(forKind?: Kind): Promise<Record<Kind, number>> {
+    if (forKind) { const o = this.owner(forKind); return o ? o.counts(forKind) : {}; }
     return Object.assign({}, ...(await Promise.all(this.parts.map((p) => p.counts()))));
   }
-  async exportAll(): Promise<Record<Kind, Rec[]>> {
+  async exportAll(forKind?: Kind): Promise<Record<Kind, Rec[]>> {
+    if (forKind) { const o = this.owner(forKind); return o ? o.exportAll(forKind) : {}; }
     return Object.assign({}, ...(await Promise.all(this.parts.map((p) => p.exportAll()))));
   }
   async pendingPublish(): Promise<string[]> {

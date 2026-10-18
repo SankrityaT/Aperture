@@ -97,13 +97,13 @@ export class FakeSchool implements Adapter {
     }
   }
 
-  async counts(): Promise<Record<Kind, number>> {
+  async counts(_forKind?: Kind): Promise<Record<Kind, number>> {
     const out: Record<Kind, number> = {};
     for (const k of KINDS) out[k] = this.s.store[k].size;
     return out;
   }
 
-  async exportAll(): Promise<Record<Kind, Rec[]>> {
+  async exportAll(_forKind?: Kind): Promise<Record<Kind, Rec[]>> {
     const out: Record<Kind, Rec[]> = {};
     for (const k of KINDS) out[k] = [...this.s.store[k].values()].map((r) => ({ ...r }));
     return out;

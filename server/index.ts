@@ -5,8 +5,12 @@ import { RuleBook } from "./src/rules.js";
 import { FakeSchool, startingRules } from "./src/adapters/fake-school.js";
 import { CompositeAdapter } from "./src/adapters/composite.js";
 import { FormAdapter, NoBrowser, NotAuthorized } from "./src/generator/form-adapter.js";
+import { TableAdapter, type TableModel } from "./src/generator/tables.js";
 import { OWNER_PAGE } from "./src/owner-page.js";
 import type { Op } from "./src/types.js";
+
+// A failed browser action must never take the whole server down.
+process.on("unhandledRejection", (e) => console.error("[wicket] unhandled rejection:", e instanceof Error ? e.message : e));
 
 const server = new MCPServer({
   name: "wicket",
@@ -18,9 +22,14 @@ const server = new MCPServer({
 // ---- the system under test and the engine ----
 // Today this is a fake school system with invented data. The adapter is swappable: see contract.md.
 const rules = new RuleBook();
-for (const r of startingRules()) rules.set(r.kind, r.op, r.cascades, r.confirmed);
+const seedRules = () => { rules.clear(); for (const r of startingRules()) rules.set(r.kind, r.op, r.cascades, r.confirmed); };
+seedRules();
 const forms = new FormAdapter();
-const wicket = new Wicket(new CompositeAdapter([new FakeSchool(), forms]), { rules });
+const tables = new TableAdapter(() => forms.currentPage());
+const wicket = new Wicket(new CompositeAdapter([new FakeSchool(), forms, tables]), { rules });
+
+/** Small on purpose: an agent pays for every token of this. */
+const tableView = (t: TableModel) => ({ id: t.id, rows: t.rows, columns: t.columns, key: t.keyColumn ?? (t.keyParam ? `link param ${t.keyParam}` : "none found"), actions: t.actions.map((a) => `${a.label} (${a.type})`), add: t.add, ...(t.paged ? { paged: true } : {}) });
 
 const reply = (obj: Record<string, unknown>) => ({
   content: [{ type: "text" as const, text: JSON.stringify(obj) }],
@@ -110,8 +119,9 @@ server.tool(
     try {
       const s = await forms.compile(url);
       for (const f of s.forms) rules.set(f.id, "update", [], true); // filling fields is a reversible draft
+      const t = await tables.attach();
       wicket.flush();
-      return reply({ status: "compiled", ...s, next: ["fill with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)"] });
+      return reply({ status: "compiled", ...s, ...(t.length ? { tables: t.map(tableView) } : {}), next: ["records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
     } catch (e) { return compileFail(e); }
   },
 );
@@ -127,8 +137,9 @@ server.tool(
     try {
       const s = await forms.refresh();
       for (const f of s.forms) rules.set(f.id, "update", [], true);
+      const t = await tables.attach();
       wicket.flush();
-      return reply({ status: "refreshed", ...s });
+      return reply({ status: "refreshed", ...s, ...(t.length ? { tables: t.map(tableView) } : {}) });
     } catch (e) { return compileFail(e); }
   },
 );
@@ -203,7 +214,7 @@ server.tool(
     inputSchema: z.object({}),
     annotations: { destructiveHint: true, idempotentHint: true, openWorldHint: false },
   },
-  async () => { await wicket.resetDemo(); return reply({ status: "reset", note: "Fake data restored." }); },
+  async () => { await wicket.resetDemo(); seedRules(); return reply({ status: "reset", note: "Fake data, counters and what was learned are back to the start." }); },
 );
 
 server.prompt(

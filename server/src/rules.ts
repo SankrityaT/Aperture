@@ -20,6 +20,12 @@ export class RuleBook {
     return `${kind}:${op}`;
   }
 
+  /** Forget everything learned. Used when a demo is reset. */
+  clear(): void {
+    this.cascades.clear();
+    this.confirmed.clear();
+  }
+
   set(kind: Kind, op: OpKey, cascades: Cascade[], confirmed: boolean): void {
     const id = RuleBook.id(kind, op);
     this.cascades.set(id, cascades);

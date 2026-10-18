@@ -83,7 +83,7 @@ const EXPLORE_SCRIPT = `(() => {
   var forms = [];
   var used = {};
   Array.prototype.forEach.call(document.forms, function (form, i) {
-    var fid = form.id, fname = form.getAttribute("name");
+    var fid = form.getAttribute("id"), fname = form.getAttribute("name"); // not form.id: a field named "id" would shadow it
     var selector = fid ? "#" + CSS.escape(fid) : fname ? 'form[name="' + fname + '"]' : "form >> nth=" + i;
     var heading = form.closest("section,fieldset,div");
     var headingEl = heading ? heading.querySelector("h1,h2,h3,legend") : null;

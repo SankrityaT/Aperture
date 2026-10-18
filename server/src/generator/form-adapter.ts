@@ -86,6 +86,11 @@ export class FormAdapter implements Adapter {
     return this.model?.forms.map((f) => f.id) ?? [];
   }
 
+  /** The live browser page, shared with the table adapter so both work in one logged-in session. */
+  currentPage(): Page | null {
+    return this.page;
+  }
+
   async close(): Promise<void> {
     await this.browser?.close().catch(() => undefined);
     this.browser = null; this.page = null;
@@ -219,11 +224,11 @@ export class FormAdapter implements Adapter {
     this.dirty.add(kind);
   }
 
-  async counts(): Promise<Record<Kind, number>> {
+  async counts(_forKind?: Kind): Promise<Record<Kind, number>> {
     return {};
   }
 
-  async exportAll(): Promise<Record<Kind, Rec[]>> {
+  async exportAll(_forKind?: Kind): Promise<Record<Kind, Rec[]>> {
     const out: Record<Kind, Rec[]> = {};
     for (const id of this.formIds()) out[id] = await this.list(id);
     return out;
@@ -254,10 +259,11 @@ export class FormAdapter implements Adapter {
     return { published, notified: 0 };
   }
 
+  /** Forget what was compiled. The browser stays warm for the next compile. */
   async reset(): Promise<void> {
     this.dirty.clear();
     this.lastResult = null;
-    if (this.page && this.model) await this.page.goto(this.model.url, { waitUntil: "load" }).then(() => this.refresh()).catch(() => undefined);
+    this.model = null;
   }
 }
 

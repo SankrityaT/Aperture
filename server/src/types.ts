@@ -20,9 +20,9 @@ export interface Adapter {
   /** Optional: problems with a proposed patch (wrong type, not an option, out of range). Empty means fine. */
   validate?(kind: Kind, key: string, patch: Record<string, unknown>): Promise<string[]>;
   /** Record counts per kind. Used for the predicted-versus-actual check. */
-  counts(): Promise<Record<Kind, number>>;
+  counts(forKind?: Kind): Promise<Record<Kind, number>>;
   /** Everything, used only when a rule has not been confirmed yet. */
-  exportAll(): Promise<Record<Kind, Rec[]>>;
+  exportAll(forKind?: Kind): Promise<Record<Kind, Rec[]>>;
   /** Changes staged since the last publish. */
   pendingPublish(): Promise<string[]>;
   publish(): Promise<{ published: number; notified: number }>;

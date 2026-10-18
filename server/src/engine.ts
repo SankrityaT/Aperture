@@ -275,8 +275,8 @@ export class Wicket {
       return this.r(refuse("policy_denied", "Daily delete limit reached.", ["escalate(reason) to ask the owner for more"]));
     }
 
-    const before = await this.adapter.counts();
-    const fullBefore = plan.confirmed || op.op === "publish" ? null : await this.adapter.exportAll();
+    const before = await this.adapter.counts(op.kind);
+    const fullBefore = plan.confirmed || op.op === "publish" ? null : await this.adapter.exportAll(op.kind);
     const snapshot: Snapshotted[] = op.op === "delete" && plan.subject && op.kind ? [{ kind: op.kind, record: plan.subject }, ...plan.dependents] : [];
     if (op.op === "update" && op.kind && op.key && op.patch && plan.subject) {
       // Only the fields we are about to change need saving.
@@ -296,7 +296,7 @@ export class Wicket {
     this.invalidate();
 
     // Read back and compare with the prediction.
-    const after = await this.adapter.counts();
+    const after = await this.adapter.counts(op.kind);
     const actual: Delta = {};
     for (const k of Object.keys(after)) if ((after[k] ?? 0) !== (before[k] ?? 0)) actual[k] = (after[k] ?? 0) - (before[k] ?? 0);
     const predicted = Object.fromEntries(Object.entries(plan.expectedDelta).filter(([, n]) => n !== 0));
@@ -326,7 +326,7 @@ export class Wicket {
 
     // A surprise becomes a rule, and everything it removed is saved so undo can restore it.
     if (surprises.length && fullBefore && op.kind && op.key && op.op === "delete") {
-      const fullAfter = await this.adapter.exportAll();
+      const fullAfter = await this.adapter.exportAll(op.kind);
       for (const s of surprises) {
         if (s.delta >= 0) continue;
         const gone = (fullBefore[s.kind] ?? []).filter((r) => !(fullAfter[s.kind] ?? []).some((x) => x.key === r.key));
@@ -407,7 +407,7 @@ export class Wicket {
       if (rc.status === "undone") return this.r(refuse("already_undone", "Already undone.", []));
       if (rc.op.op === "publish") return this.r(refuse("not_undoable", "Published changes went to the outside world and cannot be recalled.", ["send a correction as a new change"]));
       if (this.now() > rc.undoUntil) return this.r(refuse("undo_window_closed", "The undo window has closed.", ["make a new change that fixes it"]));
-      const before = await this.adapter.counts();
+      const before = await this.adapter.counts(rc.op.kind);
       if (rc.op.op === "delete") {
         for (const s of rc.snapshot) {
           if (!(await this.adapter.read(s.kind, s.record.key))) await this.adapter.create(s.kind, s.record);
@@ -420,7 +420,7 @@ export class Wicket {
         await this.adapter.update(rc.op.kind, rc.op.key, old);
       }
       this.invalidate();
-      const after = await this.adapter.counts();
+      const after = await this.adapter.counts(rc.op.kind);
       const subject = rc.op.op === "delete" ? rc.snapshot[0] : undefined;
       let restored = subject ? (await this.adapter.read(subject.kind, subject.record.key)) !== null : rc.op.op === "create" && rc.op.kind && rc.op.record ? (await this.adapter.read(rc.op.kind, rc.op.record.key)) === null : false;
       if (rc.op.op === "update" && rc.op.kind && rc.op.key && rc.snapshot[0]) {
