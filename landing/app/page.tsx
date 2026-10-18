@@ -292,6 +292,7 @@ export default function Home() {
                 <article className="flex h-full flex-col rounded-2xl border border-[#1426e6]/15 bg-[#f4f5fb] p-6 md:p-7">
                   <p className="font-newsreader text-[clamp(3rem,6vw,4.5rem)] font-light leading-none tracking-[-0.02em] text-[#1426e6]">{st.big}</p>
                   <p className={`mt-2 font-mono text-base ${GRAY}`}>{st.unit}</p>
+                  <Viz viz={st.viz} />
                   <h3 className="mt-8 font-newsreader text-[1.5rem] leading-tight">{st.head}</h3>
                   <p className={`mt-3 text-pretty text-lg leading-relaxed ${GRAY}`}>{st.text}</p>
                   <ul className="mt-auto flex flex-wrap gap-2 pt-8" aria-label="Run with">
@@ -451,6 +452,63 @@ export default function Home() {
         <div aria-hidden className="relative z-10 -mb-[0.16em] mt-14 select-none text-center font-newsreader text-[clamp(5rem,25vw,24rem)] font-light leading-[0.8] tracking-[-0.03em] text-white">{n}</div>
       </footer>
     </main>
+    </div>
+  );
+}
+
+type VizData = ReturnType<typeof copy.evidence.stats>[number]["viz"];
+
+// a small picture of each measured result, drawn from the same numbers as the copy
+function Viz({ viz }: { viz: VizData }) {
+  if (viz.kind === "bars") {
+    const max = Math.max(...viz.rows.map((r) => r.value));
+    return (
+      <div className="mt-8 min-h-[104px] space-y-3" aria-hidden>
+        {viz.rows.map((r, i) => (
+          <div key={r.label}>
+            <div className="mb-1.5 flex items-baseline justify-between font-mono text-sm">
+              <span className={i === 0 ? "text-[#0b1240]" : GRAY}>{r.label}</span>
+              <span className={`tabular-nums ${i === 0 ? "text-[#1426e6]" : GRAY}`}>{r.text}</span>
+            </div>
+            <div className="h-2.5 rounded-full bg-[#1426e6]/10">
+              <div
+                className={`h-full rounded-full ${i === 0 ? "bg-[#1426e6]" : "bg-[#1426e6]/30"}`}
+                style={{ width: `${(r.value / max) * 100}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (viz.kind === "dots") {
+    const dots = viz.groups.flatMap((g) => Array.from({ length: g.n }, () => g.key));
+    return (
+      <div className="mt-8 min-h-[104px]" aria-hidden>
+        <div className="flex flex-wrap gap-2">
+          {dots.map((k, i) => (
+            <span
+              key={i}
+              className={`h-[22px] w-[22px] rounded-full border border-[#1426e6] ${k === "solid" ? "bg-[#1426e6]" : "bg-[linear-gradient(90deg,#1426e6_50%,transparent_50%)]"}`}
+            />
+          ))}
+        </div>
+        <p className={`mt-3 font-mono text-sm ${GRAY}`}>
+          {viz.groups.filter((g) => g.n > 0).map((g) => `${g.n} ${g.label}`).join(" \u00b7 ")}
+        </p>
+      </div>
+    );
+  }
+  return (
+    <div className="mt-8 min-h-[104px]" aria-hidden>
+      <div className="grid grid-cols-10 gap-1.5">
+        {Array.from({ length: viz.total }, (_, i) => (
+          <span key={i} className={`flex aspect-square items-center justify-center rounded-md ${i < viz.correct ? "bg-[#1426e6]" : "border border-[#1426e6]/30"}`}>
+            <svg viewBox="0 0 12 12" className="h-3 w-3 text-white" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.4 5 8.8l4.5-5" /></svg>
+          </span>
+        ))}
+      </div>
+      <p className={`mt-3 font-mono text-sm ${GRAY}`}>{viz.correct} of {viz.total} {viz.label}</p>
     </div>
   );
 }
