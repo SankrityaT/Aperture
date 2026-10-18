@@ -184,7 +184,12 @@ const TABLES_SCRIPT = String.raw`(() => {
   var abs = function (h) { try { return new URL(h, location.href).href; } catch (e) { return h || ""; } };
   var sel = '${ACTION_SEL}';
   var labelOf = function (a) {
+    // The accessible name: text marked aria-hidden (decorative icons) is not part of a control's label.
+    var hid = Array.prototype.slice.call(a.querySelectorAll('[aria-hidden="true"]'));
+    var keep = hid.map(function (e) { return e.style.display; });
+    hid.forEach(function (e) { e.style.display = "none"; });
     var l = clean(a.innerText || a.value || "");
+    hid.forEach(function (e, i) { e.style.display = keep[i]; });
     var d = clean(a.getAttribute("title") || a.getAttribute("aria-label") || "");
     if (d && (l.length <= 2 || !/[a-z0-9]/i.test(l))) return d; // a symbol such as x or a trash can is not a label; its title is
     if (l) return l;
@@ -326,7 +331,12 @@ const PAGE_ACTIONS_SCRIPT = String.raw`(() => {
   var clean = function (s) { return (s == null ? "" : String(s)).replace(/\s+/g, " ").trim(); };
   var abs = function (h) { try { return new URL(h, location.href).href; } catch (e) { return h || ""; } };
   var labelOf = function (a) {
+    // The accessible name: text marked aria-hidden (decorative icons) is not part of a control's label.
+    var hid = Array.prototype.slice.call(a.querySelectorAll('[aria-hidden="true"]'));
+    var keep = hid.map(function (e) { return e.style.display; });
+    hid.forEach(function (e) { e.style.display = "none"; });
     var l = clean(a.innerText || a.value || "");
+    hid.forEach(function (e, i) { e.style.display = keep[i]; });
     var d = clean(a.getAttribute("title") || a.getAttribute("aria-label") || "");
     if (d && (l.length <= 2 || !/[a-z0-9]/i.test(l))) return d;
     if (l) return l;
@@ -982,11 +992,12 @@ export class TableAdapter implements Adapter {
     const page = this.need();
     if (!m) throw new Error(`unknown kind ${kind}`);
     const oldKeys = new Set((await this.scan(kind)).recs.map((r) => r.key)); // a fresh load of the list, and the keys on it
+    // Go to the list's own page FIRST: after a change elsewhere (a cascade, another list) the browser may be on a different page.
+    await this.follow(page, { goto: m.url }, m);
     const frame = await this.frameFor(m);
     const t = this.pickGrid(await this.rawTables(frame), m);
     const add = t ? pickAdd(t.title, t.adds) : null;
     if (!add) throw new Error(`no add button found for ${kind}`);
-    await this.follow(page, { goto: m.url }, m); // scanning may have moved to a later page, so start again from the first
     const addFrame = await this.frameFor(m);
     const addLabel = add.label;
     if (add.href && !/^(javascript:|#)/i.test(add.href)) { await page.goto(add.href, { waitUntil: "load" }); }

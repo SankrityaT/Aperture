@@ -383,3 +383,29 @@ test("a demo reset clears standing delegations, so authority granted for one run
   const a = (await w.apply({ op: "delete", kind: "class", key: "C101" })) as { status: string };
   assert.equal(a.status, "awaiting_approval", "back to asking the owner");
 });
+
+test("undo that can only put back part of a change says exactly what came back and what did not", async () => {
+  const people = new Map<string, Record<string, unknown>>([["p1", { key: "p1", name: "Ann" }]]);
+  const cards = new Map<string, Record<string, unknown>>([["c1", { key: "c1", owner: "p1" }], ["c2", { key: "c2", owner: "p1" }]]);
+  const tbl = (k: string) => (k === "person" ? people : cards);
+  const stub = {
+    kinds: () => ["person", "card"], read: async (k: string, key: string) => (tbl(k).has(key) ? { ...tbl(k).get(key)! } : null),
+    list: async (k: string, f?: Record<string, unknown>) => [...tbl(k).values()].filter((r) => !f || Object.entries(f).every(([a, b]) => r[a] === b)).map((r) => ({ ...r })),
+    delete: async (k: string, key: string) => { tbl(k).delete(key); if (k === "person") for (const [ck, c] of cards) if (c.owner === key) cards.delete(ck); },
+    create: async (k: string, rec: Record<string, unknown>) => { if (k === "card") throw new Error("no add button found for card"); tbl(k).set(String(rec.key), { ...rec }); },
+    counts: async () => ({ person: people.size, card: cards.size }), exportAll: async () => ({ person: [...people.values()], card: [...cards.values()] }),
+    pendingPublish: async () => [], publish: async () => ({ published: 0, notified: 0 }), reset: async () => undefined,
+  };
+  const rules = new RuleBook(); rules.set("person", "delete", [{ kind: "card", by: "owner" }], false);
+  const w = new Wicket(stub as never, { rules, cacheTtlMs: 0 });
+  w.delegate({ kinds: ["person"], ops: ["delete"], limit: 3, ttlMs: 60_000 });
+  const r = (await w.apply({ op: "delete", kind: "person", key: "p1" })) as { status: string; receipt: string };
+  assert.equal(r.status, "done");
+  const u = await w.undo(r.receipt);
+  assert.ok(isRefusal(u) && u.error === "undo_partial", JSON.stringify(u).slice(0, 200));
+  assert.deepEqual((u as unknown as { restored: { key: string }[] }).restored.map((x) => x.key), ["p1"]);
+  assert.deepEqual((u as unknown as { not_restored: { key: string }[] }).not_restored.map((x) => x.key).sort(), ["c1", "c2"]);
+  assert.ok(people.has("p1"), "the person really is back");
+  const again = await w.undo(r.receipt);
+  assert.ok(isRefusal(again) && again.error === "already_partially_undone");
+});
