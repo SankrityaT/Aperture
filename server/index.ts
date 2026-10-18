@@ -1,5 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { FileLedger } from "./src/ledger.js";
+import { exclusive } from "./src/generator/browser-lock.js";
 import { llmsTxt, quickstartMd, errorsMd, robotsTxt, NAME_LINE } from "./src/agent-docs.js";
 import { MCPServer } from "mcp-use";
 import { z } from "zod";
@@ -145,7 +146,8 @@ server.tool(
     }),
     annotations: { readOnlyHint: true, openWorldHint: true },
   },
-  async ({ url, login, then }) => {
+  // Compiling is several steps on one page (sign in, read the forms, read the tables). Two compiles in parallel must not interleave.
+  ({ url, login, then }) => exclusive(async () => {
     try {
       if (login) {
         const r = await forms.signIn(url, login);
@@ -158,7 +160,7 @@ server.tool(
       wicket.flush();
       return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
     } catch (e) { return compileFail(e); }
-  },
+  }),
 );
 
 server.tool(
@@ -168,7 +170,7 @@ server.tool(
 
 server.tool(
   { name: "refresh_forms", description: "Read the current page again, for example after a submit moved to the next page. Read-only.", inputSchema: z.object({}), annotations: { readOnlyHint: true, openWorldHint: true } },
-  async () => {
+  () => exclusive(async () => {
     try {
       const s = await forms.refresh();
       for (const f of s.forms) rules.set(f.id, "update", [], true);
@@ -176,7 +178,7 @@ server.tool(
       wicket.flush();
       return reply({ status: "refreshed", ...s, ...(t.length ? thisPageTables(t, s.url) : {}) });
     } catch (e) { return compileFail(e); }
-  },
+  }),
 );
 
 server.tool(

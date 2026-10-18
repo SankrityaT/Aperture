@@ -1,0 +1,28 @@
+Residents 1004 and 1011 are deleted, along with their four gate devices. Resident 1026 and its device are untouched.
+
+**What I deleted**
+
+Before each click I checked the row's directory code (or unit) in a fresh page snapshot.
+- **Devices for 1011:** D0021 (Transmitter) and D0022 (Keypad code).
+- **Devices for 1004:** D0007 (Transmitter) and D0008 (Keypad code).
+- **Resident 1004:** Dev Alder, unit 103D.
+- **Resident 1011:** Kai Alder, unit 110C.
+
+I deleted the devices first, then the residents.
+
+**What I left alone**
+- **Resident 1026:** Dev Alder, unit 125B, the same name as 1004.
+- **Device D0042:** 1026's transmitter.
+
+**How I know**
+- **Before:** I read every page of both lists. The only devices for 1004, 1011 and 1026 were D0007, D0008, D0021, D0022 and D0042. The Residents list showed 91 residents and the Devices list 168 devices.
+- **After:** I re-read every page of both lists in the live system.
+  - **Residents:** 89 are left, which is 91 minus 2. 1004 and 1011 are gone, and 1026 is still there.
+  - **Devices:** 164 are left, which is 168 minus 4. Nothing is left for 1004 or 1011, and D0042 is still there.
+
+**Caveats**
+- The Dir filter box on the Devices page didn't work, so I paged through the lists instead.
+- After each delete the grid reset to page 1. I re-located each row before clicking, so nothing was deleted by position alone.
+- The residents' delete confirmation says "Delete this resident and their devices?", but I had already removed the devices myself. I can't tell whether that cascade would have caught anything else, and the post-check found nothing left for those two codes.
+- I didn't press "Send Data". If the gate hardware needs that push to pick up the changes, it still has to be done.
+- I can't confirm the deletions are permanent or irreversible on the server side.

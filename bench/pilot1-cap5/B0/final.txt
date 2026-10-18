@@ -1,0 +1,22 @@
+I removed residents 1004 and 1011 and their four gate devices. Resident 1026 is untouched.
+
+**What I deleted**
+- Resident 1004 (Dev Alder, unit 103D), plus its devices D0007 (Transmitter) and D0008 (Keypad code).
+- Resident 1011 (Kai Alder, unit 110C), plus its devices D0021 (Transmitter) and D0022 (Keypad code).
+
+**Before each deletion**
+- I read the row's directory code on the page and clicked only the Delete link carrying that exact ID.
+- I deleted the four devices first, then the two residents. The resident prompts said "Delete this resident and their devices?", and I accepted them after the devices were already gone.
+- Each device deletion showed a "Delete this device?" confirmation, which I accepted.
+- After each deletion I re-read the list. The deleted row was gone and its neighbours were unchanged.
+
+**How I verified it**
+- I re-read every page of both lists after the last deletion.
+- Residents: no rows for 1004 or 1011 remain. Only the other Dev Alder (1026, unit 125B) is left among the three codes.
+- Devices: 168 before, 164 after, which matches the four I deleted. The only device left for the three codes is D0042 (Transmitter) for 1026.
+- The Devices list had no Card entries for 1004 or 1011, so there was nothing else to remove.
+
+**What I could not fully check**
+- I never counted the Residents list before the changes. I assumed there were 91 (1001–1091, from the device codes), and it now shows 89. That fits two deletions, but I didn't measure the starting count.
+- The "Send Data" button is untouched. If the portal needs it to push changes to the physical gate controller, that step is still open. I didn't click it because you didn't ask for it.
+- The Dir filter box on the Devices page did nothing, so I paged through the lists instead. Nothing failed otherwise.

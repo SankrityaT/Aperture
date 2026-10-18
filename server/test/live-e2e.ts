@@ -81,6 +81,11 @@ check("compiling the second page keeps the first (both kinds stay live)", fr.dat
 // Agents call tools in parallel. Three reads in the same instant must all succeed (one browser page, one lock).
 const par = await Promise.all([tool("find", { kind: "residents" }), tool("find", { kind: "devices" }), tool("find", { kind: "residents", query: "Alder" })]);
 check("three parallel reads all succeed with full data", par[0].data.count === 91 && par[1].data.count === 168 && !par.some((x) => x.isError), `(${Math.max(...par.map((x) => x.ms))} ms for the slowest)`);
+// The exact pattern that broke an agent run: two compile_site calls in the same instant. Both pages must end up compiled.
+await own("/owner/demo", { action: "reset" });
+const pc = await Promise.all([tool("compile_site", { url: "http://127.0.0.1:9104/Residents.aspx" }), tool("compile_site", { url: "http://127.0.0.1:9104/Devices.aspx" })]);
+const pf = await Promise.all([tool("find", { kind: "residents" }), tool("find", { kind: "devices" })]);
+check("two compile_site calls in parallel still leave both pages compiled", pf[0].data.count === 91 && pf[1].data.count === 168 && !pc.some((x) => x.isError), `kinds live: residents=${pf[0].data.count} devices=${pf[1].data.count}`);
 const gate = truth(9104, "/__state");
 const del = await tool("apply", { op: "delete", kind: "residents", key: "1004" });
 const after = truth(9104, "/__state");

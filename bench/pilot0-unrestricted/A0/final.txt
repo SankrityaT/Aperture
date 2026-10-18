@@ -1,0 +1,18 @@
+Residents 1004 and 1011 are removed, along with their four gate devices. Resident 1026 and its device were not touched.
+
+**What changed**
+- **Devices deleted (4):**
+  - D0007 (Transmitter) and D0008 (Keypad code), both belonging to 1004 (Dev Alder, unit 103D).
+  - D0021 (Transmitter) and D0022 (Keypad code), both belonging to 1011 (Kai Alder, unit 110C).
+- **Residents deleted (2):** 1004 (Dev Alder) and 1011 (Kai Alder). I deleted them by directory code, since both 1004 and 1026 are named "Dev Alder".
+- **Left alone:** resident 1026 (Dev Alder, unit 125B) and its device D0042 (Transmitter).
+
+**How I know**
+- Before deleting anything, I read all 17 Devices pages (168 devices) and all Residents pages. I found no other devices, such as cards, linked to 1004 or 1011.
+- After deleting, I read every page of both lists again.
+  - **Devices:** the count went from 168 to 164. None of the four deleted IDs or the codes 1004 and 1011 appear. D0042 for 1026 is still there.
+  - **Residents:** the count is now 89. 1004 and 1011 are gone. 1026 (Dev Alder, 125B) is still listed.
+
+**Not done:** the portal has a "Send Data" button on both pages, and I didn't click it. If the gate hardware only picks up changes after that push, someone will need to click it.
+
+The Dir filter box on the Devices page didn't work. I read the full lists page by page instead.

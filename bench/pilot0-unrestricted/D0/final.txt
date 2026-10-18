@@ -1,0 +1,19 @@
+Both residents and all four of their devices are removed. Resident 1026 was not touched.
+
+**What changed**
+- **Resident 1004 (Dev Alder, unit 103D):** deleted.
+- **Resident 1011 (Kai Alder, unit 110C):** deleted.
+- **Devices deleted (4):**
+  - D0007 (Transmitter) and D0008 (Keypad code), both 1004's.
+  - D0021 (Transmitter) and D0022 (Keypad code), both 1011's.
+
+I deleted the devices first on the Devices page, one at a time. Then I deleted the two residents on the Residents page. Each delete had a confirm prompt, which I accepted.
+
+**How I know**
+- **Before:** I read every page of the Devices list. It had 168 devices (D0001–D0168), and 1004 and 1011 owned exactly those four. Neither had a card.
+- **After:** I re-read every page of both lists. The Residents list no longer has 1004 or 1011, and the Devices list has no rows for either. The device count went from 168 to 164, which is the four I removed.
+- **1026:** the other Dev Alder (unit 125B) is still in the Residents list, and its device D0042 (Transmitter) is still in the Devices list.
+
+I didn't count the residents before I started, so I can't give a before-and-after count for that list. It now has 89.
+
+Nothing blocked me.

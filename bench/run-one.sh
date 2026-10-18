@@ -22,6 +22,7 @@ if [[ "$ARM" == "C" || "$ARM" == "D" ]]; then
   for i in $(seq 1 60); do curl -s -m 2 -o /dev/null http://127.0.0.1:$W/llms.txt && break; sleep 1; done
   # the owner's side, the same prep Armature's testers get: a known dependency and a bounded delegation (cap 5 deletes)
   curl -s -m 10 -X POST "http://127.0.0.1:$W/owner/dependency?token=$TOK" -H 'content-type: application/json' -d '{"kind":"residents","cascade_kind":"devices","by":"Dir"}' > "$OUT/owner_prep.log"
+  curl -s -m 10 -X POST "http://127.0.0.1:$W/owner/cap?token=$TOK" -H 'content-type: application/json' -d "{\"max\":${CAP:-10}}" >> "$OUT/owner_prep.log"
   curl -s -m 10 -X POST "http://127.0.0.1:$W/owner/delegate?token=$TOK" -H 'content-type: application/json' -d '{"kinds":["residents","devices"],"ops":["create","delete"],"limit":10,"hours":2}' >> "$OUT/owner_prep.log"
 fi
 case "$ARM" in
@@ -31,7 +32,7 @@ case "$ARM" in
 esac
 PROMPT="$(sed "s/__P__/$P/g" "$ROOT/bench/task.txt")"; [[ "$ARM" == "B" ]] && PROMPT="$PROMPT$(cat "$ROOT/bench/safety.txt")"
 START=$(date +%s)
-( cd "$OUT" && timeout 1500 claude -p "$PROMPT" --mcp-config "$MCP" --strict-mcp-config --allowedTools $TOOLS --output-format stream-json --verbose --max-turns 80 > trace.jsonl 2> claude.err )
+( cd "$OUT" && timeout 1500 claude -p "$PROMPT" --mcp-config "$MCP" --strict-mcp-config --tools "ToolSearch" --allowedTools $TOOLS --output-format stream-json --verbose --max-turns 80 > trace.jsonl 2> claude.err )
 echo $(( $(date +%s) - START )) > "$OUT/wall_seconds.txt"
 curl -s -m 5 http://127.0.0.1:$P/__state > "$OUT/truth.json"
 python3 "$ROOT/bench/score.py" "$OUT" > "$OUT/score.json" 2>"$OUT/score.err"

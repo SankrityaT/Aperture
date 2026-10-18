@@ -292,6 +292,7 @@ export class Wicket {
     const byKind = new Map<Kind, number>();
     for (const d of dependents) byKind.set(d.kind, (byKind.get(d.kind) ?? 0) + 1);
     for (const [k, n] of byKind) diff.push(`- ${n} ${k}${n > 1 ? "s" : ""}`);
+    if (dependents.length) diff.push(`(the ${[...byKind.keys()].join(", ")} above go with this ${kind} automatically: do not delete them separately; that would use up the daily limit)`);
     const plan: Plan = { ...base, status: reasons.length ? "awaiting_approval" : "previewed", subject, dependents, diff, expectedDelta, needsApproval: reasons.length > 0, reasons, hash: sha({ subject, dependents }), confirmed, asOfMs: ageMs };
     this.applyDelegation(plan);
     this.plans.set(id, plan);
