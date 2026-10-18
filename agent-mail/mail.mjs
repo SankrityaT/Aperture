@@ -134,17 +134,24 @@ switch (cmd) {
 
   case "watch": {
     // Starts from now. Each new email prints one line; run under a monitor to get woken by mail.
+    // Long-polls get reset by the network now and then (ECONNRESET), so only report
+    // an error after several failures in a row.
     let cursor = nowCursor();
+    let failures = 0;
     console.log(`watching ${ME} ...`);
     for (;;) {
       try {
-        const page = tail(cursor, 30);
+        const page = tail(cursor, 20);
         cursor = page.cursor;
+        failures = 0;
         for (const e of page.emails) console.log(`NEW MAIL ${line(e)}`);
       } catch (err) {
-        const detail = `${err.stdout ?? ""} ${err.stderr ?? ""}`.replace(/\s+/g, " ").trim().slice(0, 300);
-        console.error(`watch error: ${detail || err.message.split("\n")[0]}; retrying in 10s`);
-        await new Promise((r) => setTimeout(r, 10_000));
+        failures += 1;
+        if (failures >= 3) {
+          const detail = `${err.stdout ?? ""} ${err.stderr ?? ""}`.replace(/\s+/g, " ").trim().slice(0, 300);
+          console.error(`watch error (${failures} in a row): ${detail || err.message.split("\n")[0]}; retrying in 10s`);
+        }
+        await new Promise((r) => setTimeout(r, failures >= 3 ? 10_000 : 2_000));
       }
     }
   }
