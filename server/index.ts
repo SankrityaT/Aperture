@@ -199,7 +199,7 @@ server.tool(
       rememberSendSteps(s);
       const t = await tables.attach();
       wicket.flush();
-      return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
+      return reply({ status: "compiled", ...s, ...(t.length ? thisPageTables(t, s.url) : {}), next: ["item cards (search results, product grids): find(kind) with the items kind; read-only", "records in a table: find(kind), then apply({op:'delete'|'create', kind, key})", "fill a form with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)", "a delete or create this system has never done asks the owner the first time"] });
     } catch (e) { return compileFail(e); }
   }),
 );

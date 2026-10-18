@@ -8,6 +8,7 @@
 import { serialize } from "./browser-lock.js";
 import type { Browser, Page } from "playwright-core";
 import type { Adapter, Kind, Rec } from "../types.js";
+import { readCards, cardKind, type CardRow } from "./cards.js";
 import { explorePage, type FieldModel, type FormModel, type PageModel } from "./explore.js";
 
 export interface CompileSummary {
@@ -16,6 +17,8 @@ export interface CompileSummary {
   warnings: string[];
   /** Controls on this page that send changes elsewhere. Aperture never presses them; publish does, with the owner. */
   send_steps?: string[];
+  /** Repeated item cards (search results, product grids) read as records: find(kind) lists them. Read-only. */
+  items?: { kind: string; count: number; key: string; fields: string[]; sample: Record<string, unknown>[]; note: string }[];
   forms: {
     id: string;
     title: string;
@@ -111,6 +114,9 @@ export class FormAdapter implements Adapter {
   private browser: Browser | null = null;
   private page: Page | null = null;
   private model: PageModel | null = null;
+  /** Cards seen per site, merged across searches on that site so several searches add up to one list. */
+  private cards = new Map<string, Map<string, CardRow>>();
+  private pageItems: { kind: string; key: string; rows: CardRow[] }[] = [];
   private dirty = new Set<string>();
   private lastResult: Rec | null = null;
 
@@ -176,6 +182,16 @@ export class FormAdapter implements Adapter {
     if (!page) throw new NoBrowser("Nothing compiled yet. Call compile_site first.");
     this.model = await explorePage(page);
     this.dirty.clear();
+    this.pageItems = [];
+    const groups = await readCards(page).catch(() => []);
+    groups.forEach((g, i) => {
+      const kind = cardKind(page.url(), i);
+      const m = this.cards.get(kind) ?? new Map<string, CardRow>();
+      for (const r of g.rows) m.set(r.key, r);
+      while (m.size > 500) m.delete(m.keys().next().value as string);
+      this.cards.set(kind, m);
+      this.pageItems.push({ kind, key: g.attr.replace(/^data-/, ""), rows: g.rows });
+    });
     return this.summary();
   }
 
@@ -184,7 +200,9 @@ export class FormAdapter implements Adapter {
     if (!m) throw new NoBrowser("Nothing compiled yet. Call compile_site first.");
     return {
       url: m.url, title: m.title, warnings: m.warnings, ...(m.sendControls?.length ? { send_steps: m.sendControls } : {}),
-      forms: m.forms.map((f) => ({
+      ...(this.pageItems.length ? { items: this.pageItems.map((g) => ({ kind: g.kind, count: g.rows.length, key: g.key, fields: ["title", "price", "rating", "ratings", "url", "sku", "note"], sample: g.rows.slice(0, 3), note: `find('${g.kind}') lists every card read on this site so far (${this.cards.get(g.kind)?.size ?? g.rows.length}); search again and they add up. Read-only: what the cards show, not the product page.` })) } : {}),
+      // Retail pages carry dozens of hidden widget forms; with item cards present only the first few are worth an agent's tokens.
+      forms: (this.pageItems.length ? m.forms.slice(0, 3) : m.forms).map((f) => ({
         id: f.id, title: f.title, submit: f.submit?.label ?? null,
         fields: f.fields.map((x) => ({
           name: x.name, label: x.label, type: x.type, required: x.required,
@@ -257,11 +275,13 @@ export class FormAdapter implements Adapter {
   // ---------- Adapter ----------
 
   kinds(): Kind[] {
-    return [...this.formIds(), ...(this.lastResult ? ["result"] : [])];
+    return [...this.formIds(), ...this.cards.keys(), ...(this.lastResult ? ["result"] : [])];
   }
 
   async read(kind: Kind, key: string): Promise<Rec | null> {
     if (kind === "result") return key === "latest" ? this.lastResult : null;
+    const cards = this.cards.get(kind);
+    if (cards) return (cards.get(key) as Rec | undefined) ?? null;
     const form = this.form(kind);
     if (!form || key !== "current" || !this.page) return null;
     const values = await this.page.locator(form.selector).evaluate((formEl: HTMLFormElement, fields: FieldModel[]) => {
@@ -280,6 +300,8 @@ export class FormAdapter implements Adapter {
   }
 
   async list(kind: Kind): Promise<Rec[]> {
+    const cards = this.cards.get(kind);
+    if (cards) return [...cards.values()] as Rec[];
     const r = await this.read(kind, kind === "result" ? "latest" : "current");
     return r ? [r] : [];
   }
@@ -407,6 +429,7 @@ export class FormAdapter implements Adapter {
     this.dirty.clear();
     this.lastResult = null;
     this.model = null;
+    this.cards.clear(); this.pageItems = [];
   }
 }
 
