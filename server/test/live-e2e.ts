@@ -65,6 +65,30 @@ check("a government site is refused, with no workaround offered", bad.isError &&
 const byName = await tool("apply", { op: "delete", kind: aspKind, key: "Marlow" });
 check("a name instead of a key is refused with suggestions", byName.isError && byName.data.error === "not_found");
 
+console.log("\n--- 4b. the gate portal: two pages compiled in one session, a resident deleted with the devices that go with it (Armature case 1)");
+const own = (path: string, body: unknown) => fetch(`${base}${path}?token=${process.env.OWNER_TOKEN ?? ""}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+await own("/owner/demo", { action: "reset" });
+await own("/owner/dependency", { kind: "residents", cascade_kind: "devices", by: "Dir" });
+await own("/owner/delegate", { kinds: ["residents", "devices"], ops: ["delete"], limit: 3, hours: 1 });
+const sys = await tool("find_systems", { need: "remove a resident and their gate devices" });
+check("discovery finds both gate-portal pages", (sys.data.matches ?? []).filter((m: any) => String(m.address).includes(":9104")).length >= 2);
+const cr = await tool("compile_site", { url: "http://127.0.0.1:9104/Residents.aspx" });
+const cd = await tool("compile_site", { url: "http://127.0.0.1:9104/Devices.aspx" });
+const bothKinds = [cr.data.tables?.[0]?.id, cd.data.tables?.[0]?.id];
+const fr = await tool("find", { kind: "residents" });
+const fd = await tool("find", { kind: "devices" });
+check("compiling the second page keeps the first (both kinds stay live)", fr.data.count === 91 && fd.data.count === 168, `kinds=${bothKinds.join(",")}`);
+const gate = truth(9104, "/__state");
+const del = await tool("apply", { op: "delete", kind: "residents", key: "1004" });
+const after = truth(9104, "/__state");
+check("the delete went through the owner's delegation and the check matched", del.data.status === "done" && del.data.authority?.startsWith("dlg_") && del.data.verified?.matches_prediction === true, `(${del.ms} ms)`);
+check("ground truth: that resident and their devices are gone, nobody else", after.residents === gate.residents - 1 && after.devices < gate.devices && !truth(9104, "/__state").dirs.includes("1004"));
+const und = await tool("undo", { receipt_id: del.data.receipt });
+check("undo restores them", und.data.status === "undone" && truth(9104, "/__state").dirs.includes("1004"));
+const dep = await own("/owner/dependency", { kind: "residents", cascade_kind: "nonexistent_kind", by: "Dir" });
+const bad = await tool("apply", { op: "delete", kind: "residents", key: "1010" });
+check("a dependency on a page that is not compiled is a typed refusal with next moves", bad.isError && !!bad.data.error && !!bad.data.detail && Array.isArray(bad.data.next), JSON.stringify(bad.data).slice(0, 120));
+
 console.log("\n--- 5. reset for the next judge");
 await fetch(`${base}/owner/demo?token=${process.env.OWNER_TOKEN ?? ""}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "reset" }) });
 check("the demo systems are back to the start", truth(9101, "/__state").people.length === 5 && truth(9103, "/__aspx").residents.length === 14 && truth(9102, "/__zoo").users.length === 11);

@@ -489,15 +489,16 @@ export class TableAdapter implements Adapter {
   /** When undo re-creates a record, the system may give it a new id. Remember the old one points to the new one. */
   private aliases = new Map<string, string>();
   /** A browser dialog is accepted only while we are expecting one (a delete confirmation). Any other is dismissed. */
-  private expectDialog = false;
-  private hooked = new WeakSet<Page>();
+  /** A browser dialog is accepted only while a delete confirmation is expected. This is per PAGE and shared by every adapter on it, so one adapter's handler can never dismiss the confirmation another is waiting for. */
+  private static dialogs = new WeakMap<Page, { expect: number }>();
 
   constructor(private readonly getPage: () => Page | null) {}
 
   private hookDialogs(page: Page): void {
-    if (this.hooked.has(page)) return;
-    this.hooked.add(page);
-    page.on("dialog", (d) => { (this.expectDialog ? d.accept() : d.dismiss()).catch(() => undefined); });
+    if (TableAdapter.dialogs.has(page)) return;
+    const state = { expect: 0 };
+    TableAdapter.dialogs.set(page, state);
+    page.on("dialog", (d) => { (state.expect > 0 ? d.accept() : d.dismiss()).catch(() => undefined); });
   }
 
   private need(): Page {
@@ -544,7 +545,9 @@ export class TableAdapter implements Adapter {
   async attach(): Promise<TableModel[]> {
     this.memo.clear();
     const page = this.need();
-    this.models.clear();
+    // Compiling a page replaces what was compiled from THAT page. Lists compiled from other pages stay, so an agent can work in several pages at once.
+    const here = page.url();
+    for (const [id, m] of [...this.models]) if (m.url === here) this.models.delete(id);
     await this.settle(page);
     // A grid with headers but no rows yet is usually still loading. Give it a few moments before deciding it is empty.
     for (let tries = 0; tries < 8; tries++) {
@@ -552,7 +555,7 @@ export class TableAdapter implements Adapter {
       if (!all.some((t) => t.headers.filter(Boolean).length >= 2 && t.rows.length === 0)) break;
       await page.waitForTimeout(400);
     }
-    const used = new Set<string>();
+    const used = new Set<string>(this.models.keys());
     for (const frame of page.frames()) {
       let raw: RawTable[] = [];
       try { raw = await this.rawTables(frame); } catch { continue; }
@@ -625,11 +628,32 @@ export class TableAdapter implements Adapter {
     const { recs, where, partial } = await this.scanFresh(kind, 120, stopAt);
     const v = { recs, where };
     if (this.scanTtl > 0 && !partial) this.memo.set(kind, { at: Date.now(), v });
+    if (!partial && recs.length > 0) this.checkIdentity(kind, recs);
     // Remember a few real records from a scan that matched the contract. A repair is later tested against them.
     if (!partial && recs.length > 0 && !(this.driftNotes.get(kind) ?? []).some((d) => d.blocking)) this.golden.set(kind, recs.slice(0, 6).map((r) => ({ ...r })));
     return v;
   }
 
+
+  /**
+   * Structure can stay identical while the MEANING of a key changes (ids reused or renumbered). Records seen earlier are the check:
+   * if the same keys now hold completely different data, stop, because a change aimed at a key would hit a different record.
+   */
+  private checkIdentity(kind: Kind, recs: Rec[]): void {
+    const golden = this.golden.get(kind);
+    if (!golden || golden.length < 3) return;
+    // A value equal to the key says nothing (the key is often one of the columns), so only the OTHER values count as evidence.
+    const vals = (r: Rec) => Object.entries(r).filter(([f, v]) => f !== "key" && String(v ?? "").trim() !== "" && String(v).trim() !== String(r.key)).map(([, v]) => String(v).trim());
+    const found = golden.map((g) => ({ g, r: recs.find((x) => x.key === g.key) })).filter((x): x is { g: Rec; r: Rec } => !!x.r);
+    if (found.length < 3) return;
+    const bad = found.filter(({ g, r }) => { const gv = vals(g); if (gv.length < 2) return false; const rv = new Set(vals(r)); return !gv.some((v) => rv.has(v)); });
+    if (bad.length >= Math.max(2, Math.ceil(found.length / 2))) {
+      const m = this.models.get(kind);
+      const item: DriftItem = { what: "records with the same keys now hold different data: keys may have been reused or renumbered", expected: bad.slice(0, 2).map((b) => b.g), observed: bad.slice(0, 2).map((b) => b.r), blocking: true };
+      this.driftNotes.set(kind, [item]);
+      throw new CapabilityDrift(kind, "ui_changed", [item], `The same keys now identify different records in '${kind}'. Changes are stopped so one is not applied to the wrong record.${m ? "" : ""}`);
+    }
+  }
 
   invalidate(): void { this.memo.clear(); }
 
@@ -868,11 +892,12 @@ export class TableAdapter implements Adapter {
   /** Press a delete control and answer whatever confirmation follows: a browser dialog, a modal, or a confirm page. Never cancel. */
   private async pressAndConfirm(page: Page, click: () => Promise<void>): Promise<void> {
     const before = page.url();
-    this.expectDialog = true;
+    const dialogState = TableAdapter.dialogs.get(page);
+    if (dialogState) dialogState.expect++;
     try {
       await click();
       await this.settle(page, 250, 3000);
-    } finally { this.expectDialog = false; }
+    } finally { if (dialogState) dialogState.expect--; }
     if (await this.confirmModal(page)) {
       await this.settle(page, 250, 3000);
       return;

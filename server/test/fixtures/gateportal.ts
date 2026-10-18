@@ -54,6 +54,7 @@ export async function startGatePortal(port = 0): Promise<GatePortal & { reset():
   //   rename_col  a non-key column is renamed          rename_key  the key column is renamed
   //   no_delete   the Delete control becomes 'Archive' decoy      a different table is inserted before the real one
   //   signedout   the page asks for a sign-in          archive     'Delete' stays on the page but no longer deletes
+  //   renumber    the key shown on each row now belongs to the next resident (keys reused); Delete still acts on the row's own resident
   //   paging      smaller pages
   let drift = "";
   const PAGE_FOR = () => (drift === "paging" ? 5 : BASE_PAGE);
@@ -78,7 +79,8 @@ ${nav}<div id="toolbar"><input type="submit" name="btnSend" value="Send Data" id
     const PAGE = PAGE_FOR();
     const pages = Math.max(1, Math.ceil(list.length / PAGE));
     const slice = list.slice((v.page - 1) * PAGE, v.page * PAGE);
-    const rows = slice.map((r, i) => `<tr class="rgRow"><td>${(v.page - 1) * PAGE + i + 1}</td><td>${esc(r.name)}</td><td>${r.dir}</td><td>${esc(r.unit)}</td><td>${drift === "no_delete" ? `<a href="javascript:__doPostBack('gv','Archive$${r.dir}')" onclick="return confirm('Archive this resident?');">Archive</a>` : `<a href="javascript:__doPostBack('gv','Delete$${r.dir}')" onclick="return confirm('Delete this resident and their devices?');">Delete</a>`}</td></tr>`).join("");
+    const shownDir = (r: Resident) => (drift === "renumber" ? state.residents[(state.residents.indexOf(r) + 1) % state.residents.length]!.dir : r.dir);
+    const rows = slice.map((r, i) => `<tr class="rgRow"><td>${(v.page - 1) * PAGE + i + 1}</td><td>${esc(r.name)}</td><td>${shownDir(r)}</td><td>${esc(r.unit)}</td><td>${drift === "no_delete" ? `<a href="javascript:__doPostBack('gv','Archive$${r.dir}')" onclick="return confirm('Archive this resident?');">Archive</a>` : `<a href="javascript:__doPostBack('gv','Delete$${r.dir}')" onclick="return confirm('Delete this resident and their devices?');">Delete</a>`}</td></tr>`).join("");
     const panel = v.addOpen ? `<div id="pnlAdd"><h3>Add resident</h3>${v.error ? `<span class="err">${esc(v.error)}</span>` : ""}<label for="txtName">Name</label><input type="text" id="txtName" name="txtName"><label for="txtDir">Dir</label><input type="text" id="txtDir" name="txtDir"><label for="txtUnit">Unit</label><input type="text" id="txtUnit" name="txtUnit"><input type="submit" name="btnSave" value="Save" id="btnSave"><input type="submit" name="btnCancel" value="Cancel" id="btnCancel"></div>` : "";
     if (drift === "signedout") return `<!doctype html><html><body><form method="post"><h2>Sign in</h2><input type="text" name="user"><input type="password" name="pw"><input type="submit" value="Sign in"></form></body></html>`;
     const decoy = drift === "decoy" ? `<table id="notices"><tr><th>Notice</th><th>Date</th></tr><tr><td>Gate closed Friday</td><td>10/20</td></tr><tr><td>Pool open</td><td>10/21</td></tr></table>` : "";

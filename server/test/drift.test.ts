@@ -119,3 +119,55 @@ test("a proactive check finds the change before any task does, and re-enables wh
   assert.equal(back.matches_contract, true);
   assert.equal(cap()?.status, "active");
 });
+
+test("keys that now point at different people stop the capability, and nothing is deleted", async () => {
+  await fresh(); g.setDrift("renumber");
+  const f = await w.find(kind);
+  assert.ok(isRefusal(f) && f.error === "capability_changed", JSON.stringify(f).slice(0, 240));
+  assert.equal(cap()?.status, "disabled");
+  const del = await w.preview({ op: "delete", kind, key: "1005" });
+  assert.ok(isRefusal(del) && del.error === "capability_disabled");
+  assert.equal(g.state.residents.length, 91, "no one was deleted");
+});
+
+test("compiling a second page adds to what is compiled instead of replacing it (the Armature case 1 bug)", async () => {
+  await fresh();
+  assert.deepEqual(ta.kinds(), ["residents"]);
+  await fa.open(`${g.url}/Devices.aspx`); await fa.refresh();
+  await ta.attach();
+  assert.deepEqual(ta.kinds().sort(), ["devices", "residents"], "residents must still be live after devices is compiled");
+  const r = (await w.find("residents", undefined, 2)) as { count: number };
+  assert.equal(r.count, 91);
+  const d = (await w.find("devices", undefined, 2)) as { count: number };
+  assert.equal(d.count, 168);
+});
+
+test("a declared dependency on a page that is not compiled is a typed refusal, never a raw error", async () => {
+  await fresh();
+  w.declareDependency(kind, { kind: "devices", by: "Dir" });
+  w.delegate({ kinds: [kind], ops: ["delete"], limit: 3, ttlMs: 60_000 });
+  const a = await w.apply({ op: "delete", kind, key: "1004" });
+  assert.ok(isRefusal(a) && a.error === "dependency_not_compiled", JSON.stringify(a).slice(0, 300));
+  assert.ok((a as { next: string[] }).next.some((n) => /compile_site/.test(n)));
+  assert.ok((a as { detail: string }).detail.length > 10);
+  const b = (await w.applyBatch([{ op: "delete", kind, key: "1004" }], true, { dryRun: true })) as { refused: number; refused_items: { error: string }[] };
+  assert.equal(b.refused, 1);
+  assert.equal(b.refused_items[0]!.error, "dependency_not_compiled");
+  assert.equal(g.state.residents.length, 91, "nothing was deleted");
+});
+
+test("once both pages are compiled, the same delete predicts the devices, commits, and the check agrees with the system", async () => {
+  await fresh();
+  w.declareDependency(kind, { kind: "devices", by: "Dir" });
+  await fa.open(`${g.url}/Devices.aspx`); await fa.refresh(); await ta.attach();
+  w.delegate({ kinds: [kind], ops: ["delete"], limit: 3, ttlMs: 60_000 });
+  const dry = (await w.applyBatch([{ op: "delete", kind, key: "1004" }], true, { dryRun: true })) as { would_remove: Record<string, number> };
+  assert.equal(dry.would_remove.residents, 1);
+  assert.ok((dry.would_remove.devices ?? 0) >= 1, "the devices that go with the resident are predicted");
+  const before = g.state.devices.filter((d) => d.dir === "1004").length;
+  const done = (await w.apply({ op: "delete", kind, key: "1004" })) as { status: string; verified?: { matches_prediction?: boolean } };
+  assert.equal(done.status, "done", JSON.stringify(done).slice(0, 300));
+  assert.equal(done.verified?.matches_prediction, true);
+  assert.equal(g.state.devices.filter((d) => d.dir === "1004").length, 0);
+  assert.ok(before >= 1);
+});

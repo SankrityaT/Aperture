@@ -176,7 +176,7 @@ export class Wicket {
     if (!this.adapter.kinds().includes(kind)) return this.r(refuse("unknown_kind", `No kind '${kind}'.`, [`find with one of: ${this.adapter.kinds().join(", ")}`]));
     const blocked = this.gate(kind); if (blocked) return blocked;
     let loaded: { data: Rec[]; ageMs: number };
-    try { loaded = await this.cached(`list:${kind}`, () => this.adapter.list(kind)); } catch (e) { if (isDrift(e)) return this.onDrift(kind, e); throw e; }
+    try { loaded = await this.cached(`list:${kind}`, () => this.adapter.list(kind)); } catch (e) { if (isDrift(e)) return this.onDrift(kind, e); return this.unexpected(e); }
     const { data, ageMs } = loaded;
     const q = query?.toLowerCase().trim();
     const hits = q ? data.filter((r) => Object.values(r).some((v) => typeof v === "string" && v.toLowerCase().includes(q))) : data;
@@ -192,7 +192,7 @@ export class Wicket {
     const t0 = performance.now();
     const blocked = this.gate(op.kind); if (blocked) return blocked;
     let out: Plan | Refusal;
-    try { out = await this.previewInner(op, batchDeletes); } catch (e) { if (isDrift(e) && op.kind) return this.onDrift(op.kind, e); throw e; }
+    try { out = await this.previewInner(op, batchDeletes); } catch (e) { if (isDrift(e) && op.kind) return this.onDrift(op.kind, e); return this.unexpected(e); }
     if (!isRefusal(out)) { this.metrics.previews++; this.metrics.previewMs.push(performance.now() - t0); }
     return out;
   }
@@ -280,6 +280,7 @@ export class Wicket {
     const expectedDelta: Delta = {};
     addDelta(expectedDelta, kind, -1);
     for (const c of this.rules.cascadesFor(kind, "delete")) {
+      if (!this.adapter.kinds().includes(c.kind)) return this.r(refuse("dependency_not_compiled", `Deleting a ${kind} also removes ${c.kind}, but the ${c.kind} page has not been compiled, so what would go with it cannot be shown or checked.`, [`compile_site the page for '${c.kind}' (find_systems lists it), then try again`, "nothing was changed"], { kind, needs: c.kind, compiled: this.adapter.kinds() }));
       const deps = await this.adapter.list(c.kind, { [c.by]: key });
       for (const d of deps) dependents.push({ kind: c.kind, record: d });
       addDelta(expectedDelta, c.kind, -deps.length);
@@ -306,7 +307,7 @@ export class Wicket {
       const blocked = this.gate(k); if (blocked) return blocked;
       try { return await this.commitInner(planId); }
       catch (e) {
-        if (!isDrift(e) || !k) throw e;
+        if (!isDrift(e) || !k) { const plan = this.plans.get(planId); if (plan?.status === "executing") { plan.status = "unknown"; plan.reasons = ["The server hit an error while this was running. Whether it happened is not known."]; this.persist(); return this.r(refuse("outcome_unknown", "An error happened while this change was running, so it is not known whether it happened.", ["call reconcile with this plan_id", "never commit it again"], { plan_id: planId })); } return this.unexpected(e); }
         // If the change had already started, we no longer know whether it happened: say so, never retry.
         const plan = this.plans.get(planId);
         if (plan?.status === "executing") { plan.status = "unknown"; plan.reasons = ["The page changed while this was running. Whether it happened is not known."]; this.persist(); }
@@ -342,7 +343,10 @@ export class Wicket {
       const cur = await this.adapter.read(op.kind, op.key);
       if (!cur) { plan.status = "stale"; return this.r(refuse("changed_since_preview", "The record is already gone.", ["run find to see the current state"])); }
       const deps: Snapshotted[] = [];
-      for (const c of this.rules.cascadesFor(op.kind, "delete")) for (const d of await this.adapter.list(c.kind, { [c.by]: op.key })) deps.push({ kind: c.kind, record: d });
+      for (const c of this.rules.cascadesFor(op.kind, "delete")) {
+        if (!this.adapter.kinds().includes(c.kind)) return this.r(refuse("dependency_not_compiled", `The ${c.kind} page is no longer compiled, so the effect of this delete cannot be checked.`, [`compile_site the page for '${c.kind}' again`, "nothing was changed"], { needs: c.kind }));
+        for (const d of await this.adapter.list(c.kind, { [c.by]: op.key })) deps.push({ kind: c.kind, record: d });
+      }
       currentHash = sha({ subject: cur, dependents: deps });
     } else if (op.op === "update" && op.kind && op.key) {
       const cur = await this.adapter.read(op.kind, op.key);
@@ -521,6 +525,14 @@ export class Wicket {
       if (i < canary && out.status !== "done") halted = { at: i, receipt: out.receipt, status: out.status, surprise: out.surprise ?? null, why: "A canary item did not do exactly what was predicted, so the rest was not attempted. Undo it with the receipt, or approve the surprise and run the rest." };
     }
     return { status: halted ? "halted_by_canary" : "batch_done", committed: committed.length, refused: refused.length, not_attempted: notAttempted, ...(halted ? { canary_halt: halted } : {}), items: { committed, refused } };
+  }
+
+  /** No tool ever answers with a bare error. Anything unexpected becomes a refusal with a code, a detail and next moves. */
+  private unexpected(e: unknown): Refusal {
+    const msg = String((e as Error)?.message ?? e).split("\n")[0] ?? "error";
+    const m = /unknown kind (\S+)/.exec(msg);
+    if (m) return this.r(refuse("unknown_kind", `No kind '${m[1]}' is compiled.`, [`compile_site the page that holds '${m[1]}' (find_systems lists the systems)`, `compiled now: ${this.adapter.kinds().join(", ") || "nothing"}`]));
+    return this.r(refuse("internal_error", `Something failed inside Wicket: ${msg}`, ["nothing is known to have changed by this call unless a receipt says so", "try again once; if it repeats, escalate with this message"], { detail_for_owner: msg }));
   }
 
   // ---------- contracts: a compiled capability is only trusted while the page still matches it ----------

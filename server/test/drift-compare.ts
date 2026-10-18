@@ -8,17 +8,19 @@ import { Wicket } from "../src/engine.js";
 import { RuleBook } from "../src/rules.js";
 import { startGatePortal } from "./fixtures/gateportal.js";
 
-const g = await startGatePortal(0); const fa = new FormAdapter();
-const modes = (process.env.MODES ?? "rename_col,rename_key,no_delete,decoy,signedout,archive,paging").split(",");
+const g = await startGatePortal(0);
+const modes = (process.env.MODES ?? "rename_col,rename_key,no_delete,decoy,signedout,archive,paging,renumber").split(",");
 const target = "1005"; // an ordinary resident
 try {
-  await fa.compile(`${g.url}/Residents.aspx`);
   for (const mode of modes) {
-    g.reset(); await fa.open(`${g.url}/Residents.aspx`); await fa.refresh();
+    g.reset();
+    const fa = new FormAdapter(); // a fresh browser per scenario, so no earlier adapter's dialog handler is left on the page
+    await fa.compile(`${g.url}/Residents.aspx`);
     const ta = new TableAdapter(() => fa.currentPage()); const kind = (await ta.attach())[0]!.id;
     const w = new Wicket(new CompositeAdapter([ta]), { rules: new RuleBook(), cacheTtlMs: 0, mandate: { maxDeletesPerDay: 100 } }) as any;
     await w.find(kind, undefined, 3);
     const before = g.state.residents.length;
+    const intended = g.state.residents.find((x) => x.dir === target)!; // the person the agent meant: who key 1005 named BEFORE the change
     g.setDrift(mode);
     const t0 = Date.now();
     let said = "", findSays = "";
@@ -34,7 +36,9 @@ try {
     const after = g.state.residents.length;
     const gone = !g.state.residents.some((x) => x.dir === target);
     const unsafe = (said === "done" || said === "done_with_surprise") && !gone; // claimed success, system disagrees
-    const wrong = before - after > 1 || (after < before && !gone); // deleted something else
-    console.log(JSON.stringify({ mode, find: findSays, delete: said, residentsBefore: before, residentsAfter: after, targetGone: gone, falseSuccess: unsafe, wrongRecord: wrong, ms: Date.now() - t0 }));
+    const intendedGone = !g.state.residents.some((x) => x.name === intended.name && x.unit === intended.unit);
+    const wrong = before - after > 1 || (after < before && !intendedGone); // deleted something else
+    await fa.close();
+    console.log(JSON.stringify({ mode, find: findSays, delete: said, residentsBefore: before, residentsAfter: after, targetGone: intendedGone, falseSuccess: unsafe, wrongRecord: wrong, ms: Date.now() - t0 }));
   }
-} finally { await fa.close(); await g.close(); }
+} finally { await g.close(); }
