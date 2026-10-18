@@ -11,6 +11,7 @@ import { CompositeAdapter } from "./src/adapters/composite.js";
 import { FormAdapter, HumanRequired, NoBrowser, NoSecret, NotAuthorized, type CompileSummary } from "./src/generator/form-adapter.js";
 import { TableAdapter, type TableModel } from "./src/generator/tables.js";
 import { RemoteWorker } from "./src/worker/remote.js";
+import { split } from "./src/worker/split.js";
 import type { Adapter } from "./src/types.js";
 import { OWNER_PAGE } from "./src/owner-page.js";
 import type { Op } from "./src/types.js";
@@ -47,6 +48,11 @@ let worker: RemoteWorker | null = null;
 if (process.env.WICKET_WORKER_URL) {
   worker = new RemoteWorker(process.env.WICKET_WORKER_URL, process.env.WICKET_WORKER_TOKEN ?? "");
   forms = worker.forms; tables = worker.tables;
+  // Optional second browser for public pages on an ordinary connection (see src/worker/split.ts). Without it, one worker does both.
+  if (process.env.WICKET_PUBLIC_WORKER_URL) {
+    const s = split(worker, new RemoteWorker(process.env.WICKET_PUBLIC_WORKER_URL, process.env.WICKET_PUBLIC_WORKER_TOKEN ?? ""));
+    forms = s.forms; tables = s.tables;
+  }
 } else {
   const local = new FormAdapter();
   forms = local; tables = new TableAdapter(() => local.currentPage());
