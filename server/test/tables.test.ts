@@ -110,3 +110,22 @@ test("deleting by a name is refused with suggestions, on both apps", async () =>
     } finally { await fa.close(); }
   }
 });
+
+test("a name column that links to a profile page is data, so the list still gets a key (Moodle-shaped list)", async () => {
+  const { createServer } = await import("node:http");
+  const rows = [["Admin User", "2"], ["Ada Byron", "3"], ["Grace Hopper", "4"], ["Alan Turing", "5"]];
+  const html = `<!doctype html><title>Users</title><table class="generaltable"><thead><tr><th>Select all</th><th>First name / Last name</th><th>Email address</th><th>Actions</th></tr></thead><tbody>${rows.map(([n, id]) => `<tr><td><label>${n}<input type="checkbox"></label></td><td><a href="/user/profile.php?id=${id}">${n}</a></td><td>${n.split(" ")[0]!.toLowerCase()}@x.test</td><td><a href="/user/editadvanced.php?id=${id}">Edit</a> <a href="/admin/user.php?delete=${id}">Delete</a></td></tr>`).join("")}</tbody></table>`;
+  const srv = createServer((_, res) => { res.setHeader("content-type", "text/html"); res.end(html); });
+  await new Promise<void>((r) => srv.listen(0, "127.0.0.1", r));
+  const port = (srv.address() as { port: number }).port;
+  const fa = new FormAdapter();
+  try {
+    await fa.compile(`http://127.0.0.1:${port}/`);
+    const ta = new TableAdapter(() => fa.currentPage());
+    const [m] = await ta.attach();
+    assert.ok(m!.columns.some((c) => /first name/i.test(c)), `name column kept: ${m!.columns.join(" | ")}`);
+    assert.notEqual(m!.keySource, "none");
+    const recs = await ta.list(m!.id);
+    assert.equal(recs.length, 4);
+  } finally { await fa.close(); srv.close(); }
+});

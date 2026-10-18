@@ -397,8 +397,8 @@ function linkParams(rows: RawRow[]): Map<string, string[]> {
 }
 
 function dataColumns(t: RawTable): number[] {
-  // Only real verbs (delete, edit, view...) mark an actions column. A company name that happens to be a link is data.
-  const acts = new Set(t.rows.flatMap((r) => r.actions.filter((a) => classifyAction(a) !== "other").map((a) => a.label.toLowerCase())).filter(Boolean));
+  // Only real verbs (delete, edit, view...) mark an actions column, judged by the words on the link, not its address: a name that links to /profile?id=2 is data. A company name that happens to be a link is data.
+  const acts = new Set(t.rows.flatMap((r) => r.actions.filter((a) => classifyAction({ label: a.label, href: "", onclick: "", cls: "" }) !== "other").map((a) => a.label.toLowerCase())).filter(Boolean));
   const idx: number[] = [];
   t.headers.forEach((h, i) => {
     if (!h) return;
