@@ -100,7 +100,7 @@ function Button({ href, children, solid, onLight }: { href: string; children: Re
       ? "bg-white text-[#1426e6] hover:bg-[#e8ebff]"
       : "border border-white/60 hover:border-white";
   return (
-    <a href={href} className={`rounded-full px-6 py-3 text-base ${solid ? "font-medium" : ""} transition ${cls}`}>
+    <a href={href} className={`whitespace-nowrap rounded-full px-6 py-3 text-base ${solid ? "font-medium" : ""} transition ${cls}`}>
       {children}
     </a>
   );

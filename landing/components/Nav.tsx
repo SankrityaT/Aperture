@@ -103,10 +103,10 @@ export function Nav({ name, links, docs, github, start, cta }: { name: string; l
             ))}
           </nav>
 
-          <div className="flex items-center justify-end gap-6 text-[0.95rem]">
+          <div className="flex shrink-0 items-center justify-end gap-4 text-[0.95rem] md:gap-6">
             <a href={docs} className="hidden text-[#f2f0ff]/90 transition hover:text-white lg:inline">Docs</a>
             <a href={github} className="hidden text-[#f2f0ff]/90 transition hover:text-white lg:inline">GitHub</a>
-            <a href={start} className="hidden rounded-full bg-white px-4 py-1.5 font-medium text-[#1426e6] transition hover:bg-[#e8ebff] md:inline-block">{cta}</a>
+            <a href={start} className="hidden shrink-0 whitespace-nowrap rounded-full bg-white px-4 py-1.5 font-medium text-[#1426e6] transition hover:bg-[#e8ebff] md:inline-block">{cta}</a>
             <button
               ref={burgerRef}
               type="button"
