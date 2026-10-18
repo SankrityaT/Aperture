@@ -13,6 +13,12 @@ export interface Adapter {
   list(kind: Kind, filter?: Record<string, unknown>): Promise<Rec[]>;
   create(kind: Kind, record: Rec): Promise<void>;
   delete(kind: Kind, key: string): Promise<void>;
+  /** Change fields on an existing record. Optional: not every system supports edits. */
+  update?(kind: Kind, key: string, patch: Record<string, unknown>): Promise<void>;
+  /** Optional: put an agent's values in the form the system stores them in (17 -> "17", "Year 10" -> "10"). */
+  normalize?(kind: Kind, patch: Record<string, unknown>): Promise<Record<string, unknown>>;
+  /** Optional: problems with a proposed patch (wrong type, not an option, out of range). Empty means fine. */
+  validate?(kind: Kind, key: string, patch: Record<string, unknown>): Promise<string[]>;
   /** Record counts per kind. Used for the predicted-versus-actual check. */
   counts(): Promise<Record<Kind, number>>;
   /** Everything, used only when a rule has not been confirmed yet. */
@@ -23,13 +29,15 @@ export interface Adapter {
   reset(): Promise<void>;
 }
 
-export type OpName = "delete" | "create" | "publish";
+export type OpName = "delete" | "create" | "update" | "publish";
 
 export interface Op {
   op: OpName;
   kind?: Kind;
   key?: string;
   record?: Rec;
+  /** For update: the fields to change. */
+  patch?: Record<string, unknown>;
 }
 
 export type Delta = Record<Kind, number>;

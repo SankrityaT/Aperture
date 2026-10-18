@@ -93,6 +93,11 @@ export class Wicket {
     this.cache.clear();
   }
 
+  /** Forget cached reads, for example after a new system was compiled. */
+  flush(): void {
+    this.cache.clear();
+  }
+
   // ---------- reads ----------
 
   instructions(): Record<string, unknown> {
@@ -108,6 +113,7 @@ export class Wicket {
         "A receipt has verified facts from a read-back. If verified is false, say so. Do not claim success.",
         "undo(receipt_id) reverses a change within the undo window. Published changes cannot be recalled.",
         "A refusal always lists next moves. Follow one of them.",
+        "Web forms: compile_site(url) reads a page's forms (only hosts the operator authorized). Each form is a kind with key 'current'. Fill with apply({op:'update', patch}). Submit with publish, which always needs the owner. A CAPTCHA is a human step.",
       ],
       mandate: this.mandate,
     };
@@ -139,6 +145,14 @@ export class Wicket {
     return x;
   }
 
+  /** A helpful not_found: keys are not names, so suggest likely matches. */
+  private async notFound(kind: Kind, key: string): Promise<Refusal> {
+    const { data: all } = await this.cached(`list:${kind}`, () => this.adapter.list(kind));
+    const q = key.toLowerCase();
+    const maybe = all.filter((r) => Object.values(r).some((v) => typeof v === "string" && v.toLowerCase().includes(q))).slice(0, 5);
+    return refuse("not_found", `No ${kind} with key '${key}'. Keys are not names.`, [`find ${kind} with a query, then use the key`], maybe.length ? { did_you_mean: maybe.map((r) => ({ key: r.key, name: r.name ?? r.title })) } : {});
+  }
+
   private async previewInner(op: Op, batchDeletes: number): Promise<Plan | Refusal> {
     const t = this.now();
     const id = `pln_${(++this.seq.pln).toString(36)}`;
@@ -147,7 +161,7 @@ export class Wicket {
     if (op.op === "publish") {
       const pending = await this.adapter.pendingPublish();
       if (pending.length === 0) return this.r(refuse("nothing_to_publish", "No changes are staged.", ["make a change first"]));
-      const plan: Plan = { ...base, status: "awaiting_approval", subject: null, diff: [`~ ${pending.length} staged changes go to the outside world`, ...pending.slice(0, 5).map((p) => `~ ${p}`), ...(pending.length > 5 ? [`~ and ${pending.length - 5} more`] : [])], needsApproval: true, reasons: ["publish always needs the owner"], hash: sha(pending), confirmed: true };
+      const plan: Plan = { ...base, status: "awaiting_approval", subject: null, diff: [`~ ${pending.length} staged change${pending.length === 1 ? "" : "s"} go${pending.length === 1 ? "es" : ""} to the outside world`, ...pending.slice(0, 5).map((p) => `~ ${p}`), ...(pending.length > 5 ? [`~ and ${pending.length - 5} more`] : [])], needsApproval: true, reasons: ["publish always needs the owner"], hash: sha(pending), confirmed: true };
       this.plans.set(id, plan);
       return plan;
     }
@@ -167,16 +181,36 @@ export class Wicket {
       return plan;
     }
 
+    if (op.op === "update") {
+      const key = op.key;
+      const patch = op.patch;
+      if (!this.adapter.update) return this.r(refuse("unsupported", "This system does not support edits through Wicket.", ["use create and delete instead"]));
+      if (!key) return this.r(refuse("missing_key", "update needs a key.", [`find ${kind} to get one`]));
+      if (!patch || Object.keys(patch).length === 0) return this.r(refuse("empty_patch", "Nothing to change.", ["pass patch: { field: value }"]));
+      const { data: subject, ageMs } = await this.cached(`read:${kind}:${key}`, () => this.adapter.read(kind, key));
+      if (!subject) return this.r(await this.notFound(kind, key));
+      const bad = Object.keys(patch).filter((f) => f === "key" || !(f in subject));
+      if (bad.length) return this.r(refuse("unknown_field", `Cannot set: ${bad.join(", ")}.`, [`valid fields: ${Object.keys(subject).filter((f) => f !== "key").join(", ")}`], { valid_fields: Object.keys(subject).filter((f) => f !== "key") }));
+      if (this.adapter.validate) {
+        const problems = await this.adapter.validate(kind, key, patch);
+        if (problems.length) return this.r(refuse("invalid_value", problems.join("; "), ["fix the values and try again", "describe_forms lists each field's type and allowed values"], { problems }));
+      }
+      // Compare, show, commit and verify in the system's own form of each value.
+      const canonical = this.adapter.normalize ? await this.adapter.normalize(kind, patch) : patch;
+      const changed = Object.entries(canonical).filter(([f, v]) => stable(subject[f]) !== stable(v));
+      if (changed.length === 0) return this.r(refuse("no_change", "Those values are already set.", ["nothing to do"]));
+      const confirmed = this.rules.isConfirmed(kind, "update");
+      const reasons = confirmed ? [] : [`editing a ${kind} has not been confirmed yet, so the owner decides`];
+      const plan: Plan = { ...base, op: { ...op, patch: canonical }, status: reasons.length ? "awaiting_approval" : "previewed", subject, dependents: [], diff: changed.map(([f, v]) => `~ ${f}: ${JSON.stringify(subject[f])} -> ${JSON.stringify(v)}`), expectedDelta: {}, needsApproval: reasons.length > 0, reasons, hash: sha(subject), confirmed, asOfMs: ageMs };
+      this.plans.set(id, plan);
+      return plan;
+    }
+
     // delete
     const key = op.key;
     if (!key) return this.r(refuse("missing_key", "delete needs a key.", [`find ${kind} to get one`]));
     const { data: subject, ageMs } = await this.cached(`read:${kind}:${key}`, () => this.adapter.read(kind, key));
-    if (!subject) {
-      const { data: all } = await this.cached(`list:${kind}`, () => this.adapter.list(kind));
-      const q = key.toLowerCase();
-      const maybe = all.filter((r) => Object.values(r).some((v) => typeof v === "string" && v.toLowerCase().includes(q))).slice(0, 5);
-      return this.r(refuse("not_found", `No ${kind} with key '${key}'. Keys are not names.`, [`find ${kind} with a query, then use the key`], maybe.length ? { did_you_mean: maybe.map((r) => ({ key: r.key, name: r.name ?? r.title })) } : {}));
-    }
+    if (!subject) return this.r(await this.notFound(kind, key));
     if (this.deletesToday + batchDeletes + 1 > this.mandate.maxDeletesPerDay) {
       return this.r(refuse("policy_denied", `Daily delete limit reached: ${this.deletesToday + batchDeletes} of ${this.mandate.maxDeletesPerDay}.`, ["escalate(reason) to ask the owner for more", "wait until the limit resets"], { rule: "max_deletes_per_day", used: this.deletesToday + batchDeletes, limit: this.mandate.maxDeletesPerDay }));
     }
@@ -227,6 +261,10 @@ export class Wicket {
       const deps: Snapshotted[] = [];
       for (const c of this.rules.cascadesFor(op.kind, "delete")) for (const d of await this.adapter.list(c.kind, { [c.by]: op.key })) deps.push({ kind: c.kind, record: d });
       currentHash = sha({ subject: cur, dependents: deps });
+    } else if (op.op === "update" && op.kind && op.key) {
+      const cur = await this.adapter.read(op.kind, op.key);
+      if (!cur) { plan.status = "stale"; return this.r(refuse("changed_since_preview", "The record is gone.", ["run find to see the current state"])); }
+      currentHash = sha(cur);
     } else if (op.op === "create" && op.record && op.kind) {
       if (await this.adapter.read(op.kind, op.record.key)) { plan.status = "stale"; return this.r(refuse("changed_since_preview", "That key now exists.", ["run a new dry_run"])); }
     } else if (op.op === "publish") {
@@ -240,10 +278,15 @@ export class Wicket {
     const before = await this.adapter.counts();
     const fullBefore = plan.confirmed || op.op === "publish" ? null : await this.adapter.exportAll();
     const snapshot: Snapshotted[] = op.op === "delete" && plan.subject && op.kind ? [{ kind: op.kind, record: plan.subject }, ...plan.dependents] : [];
+    if (op.op === "update" && op.kind && op.key && op.patch && plan.subject) {
+      // Only the fields we are about to change need saving.
+      snapshot.push({ kind: op.kind, record: { key: op.key, ...Object.fromEntries(Object.keys(op.patch).map((f) => [f, plan.subject![f]])) } });
+    }
 
     // Do the change.
     try {
-      if (op.op === "delete" && op.kind && op.key) await this.adapter.delete(op.kind, op.key);
+      if (op.op === "update" && op.kind && op.key && op.patch && this.adapter.update) await this.adapter.update(op.kind, op.key, op.patch);
+      else if (op.op === "delete" && op.kind && op.key) await this.adapter.delete(op.kind, op.key);
       else if (op.op === "create" && op.kind && op.record) await this.adapter.create(op.kind, op.record);
       else if (op.op === "publish") await this.adapter.publish();
     } catch (e) {
@@ -260,6 +303,13 @@ export class Wicket {
     let verified: Record<string, unknown> = {};
     if (op.op === "delete" && op.kind && op.key) verified.subject_present = (await this.adapter.read(op.kind, op.key)) !== null;
     if (op.op === "create" && op.kind && op.record) verified.subject_present = (await this.adapter.read(op.kind, op.record.key)) !== null;
+    if (op.op === "update" && op.kind && op.key && op.patch) {
+      const now = await this.adapter.read(op.kind, op.key);
+      const mismatched = Object.entries(op.patch).filter(([f, v]) => !now || stable(now[f]) !== stable(v)).map(([f]) => f);
+      verified.subject_present = now !== null;
+      verified.fields_match = mismatched.length === 0;
+      if (mismatched.length) verified.mismatched = mismatched;
+    }
     if (op.op === "publish") verified.still_pending = (await this.adapter.pendingPublish()).length;
 
     const surprises: { kind: Kind; delta: number }[] = [];
@@ -271,7 +321,7 @@ export class Wicket {
     }
     verified.counts_after = after;
     verified.matches_prediction = surprises.length === 0;
-    const okSubject = op.op === "delete" ? verified.subject_present === false : op.op === "create" ? verified.subject_present === true : verified.still_pending === 0;
+    const okSubject = op.op === "delete" ? verified.subject_present === false : op.op === "create" ? verified.subject_present === true : op.op === "update" ? verified.fields_match === true : verified.still_pending === 0;
     verified.ok = okSubject && surprises.length === 0;
 
     // A surprise becomes a rule, and everything it removed is saved so undo can restore it.
@@ -365,14 +415,22 @@ export class Wicket {
         if (this.deletesToday > 0) this.deletesToday--;
       } else if (rc.op.op === "create" && rc.op.kind && rc.op.record) {
         await this.adapter.delete(rc.op.kind, rc.op.record.key);
+      } else if (rc.op.op === "update" && rc.op.kind && rc.op.key && this.adapter.update && rc.snapshot[0]) {
+        const { key: _k, ...old } = rc.snapshot[0].record;
+        await this.adapter.update(rc.op.kind, rc.op.key, old);
       }
       this.invalidate();
       const after = await this.adapter.counts();
       const subject = rc.op.op === "delete" ? rc.snapshot[0] : undefined;
-      const restored = subject ? (await this.adapter.read(subject.kind, subject.record.key)) !== null : rc.op.op === "create" && rc.op.kind && rc.op.record ? (await this.adapter.read(rc.op.kind, rc.op.record.key)) === null : false;
+      let restored = subject ? (await this.adapter.read(subject.kind, subject.record.key)) !== null : rc.op.op === "create" && rc.op.kind && rc.op.record ? (await this.adapter.read(rc.op.kind, rc.op.record.key)) === null : false;
+      if (rc.op.op === "update" && rc.op.kind && rc.op.key && rc.snapshot[0]) {
+        const now = await this.adapter.read(rc.op.kind, rc.op.key);
+        const { key: _k2, ...old } = rc.snapshot[0].record;
+        restored = !!now && Object.entries(old).every(([f, v]) => stable(now[f]) === stable(v));
+      }
       rc.status = "undone";
       this.metrics.undos++;
-      return { status: "undone", receipt: rc.id, verified: { restored, counts_before: before, counts_after: after }, note: rc.op.op === "delete" ? "Restored from the copy saved before the change." : "Removed what was created." };
+      return { status: "undone", receipt: rc.id, verified: { restored, counts_before: before, counts_after: after }, note: rc.op.op === "delete" ? "Restored from the copy saved before the change." : rc.op.op === "update" ? "Put the old values back." : "Removed what was created." };
     });
   }
 

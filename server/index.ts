@@ -3,6 +3,8 @@ import { z } from "zod";
 import { Wicket } from "./src/engine.js";
 import { RuleBook } from "./src/rules.js";
 import { FakeSchool, startingRules } from "./src/adapters/fake-school.js";
+import { CompositeAdapter } from "./src/adapters/composite.js";
+import { FormAdapter, NoBrowser, NotAuthorized } from "./src/generator/form-adapter.js";
 import { OWNER_PAGE } from "./src/owner-page.js";
 import type { Op } from "./src/types.js";
 
@@ -17,7 +19,8 @@ const server = new MCPServer({
 // Today this is a fake school system with invented data. The adapter is swappable: see contract.md.
 const rules = new RuleBook();
 for (const r of startingRules()) rules.set(r.kind, r.op, r.cascades, r.confirmed);
-const wicket = new Wicket(new FakeSchool(), { rules });
+const forms = new FormAdapter();
+const wicket = new Wicket(new CompositeAdapter([new FakeSchool(), forms]), { rules });
 
 const reply = (obj: Record<string, unknown>) => ({
   content: [{ type: "text" as const, text: JSON.stringify(obj) }],
@@ -86,7 +89,62 @@ server.tool(
   },
 );
 
-const opSchema = z.object({ op: z.enum(["delete", "create", "publish"]), kind: z.string().optional(), key: z.string().optional(), record: z.record(z.string(), z.unknown()).optional() });
+const opSchema = z.object({ op: z.enum(["delete", "create", "update", "publish"]), kind: z.string().optional(), key: z.string().optional(), record: z.record(z.string(), z.unknown()).optional(), patch: z.record(z.string(), z.unknown()).optional().describe("For update: the fields to change, like { city: 'Leeds' }.") });
+
+// ---- compiling a web system on demand (the generator) ----
+
+const compileFail = (e: unknown) => {
+  if (e instanceof NotAuthorized) return reply({ status: "refused", error: "not_authorized", detail: e.message, next: ["ask the operator to add the host they own or have permission to use", "never try to get around this"] });
+  if (e instanceof NoBrowser) return reply({ status: "refused", error: "no_browser", detail: e.message, next: ["run the worker on a machine with a browser (see BRIEF.md)"] });
+  return reply({ status: "refused", error: "compile_failed", detail: String((e as Error).message).split("\n")[0], next: ["check the address loads in a normal browser", "try compile_site again"] });
+};
+
+server.tool(
+  {
+    name: "compile_site",
+    description: "Point Wicket at a web page and it reads the page's forms, read-only, and turns each one into a typed record you can fill. Only works on hosts the operator has authorized. It never submits anything and never tries to get past a CAPTCHA: a person does that. Returns each form's id, fields (label, type, required, allowed values) and submit button.",
+    inputSchema: z.object({ url: z.string().describe("The page address, like http://host/signup") }),
+    annotations: { readOnlyHint: true, openWorldHint: true },
+  },
+  async ({ url }) => {
+    try {
+      const s = await forms.compile(url);
+      for (const f of s.forms) rules.set(f.id, "update", [], true); // filling fields is a reversible draft
+      wicket.flush();
+      return reply({ status: "compiled", ...s, next: ["fill with apply({op:'update', kind:<form id>, key:'current', patch:{...}})", "submit with publish (always needs the owner)"] });
+    } catch (e) { return compileFail(e); }
+  },
+);
+
+server.tool(
+  { name: "describe_forms", description: "List the compiled forms again: ids, fields, types, allowed values, hints. Use it when you are unsure what a field accepts.", inputSchema: z.object({}), annotations: { readOnlyHint: true, openWorldHint: false } },
+  async () => { try { return reply({ status: "ok", ...forms.summary() }); } catch (e) { return compileFail(e); } },
+);
+
+server.tool(
+  { name: "refresh_forms", description: "Read the current page again, for example after a submit moved to the next page. Read-only.", inputSchema: z.object({}), annotations: { readOnlyHint: true, openWorldHint: true } },
+  async () => {
+    try {
+      const s = await forms.refresh();
+      for (const f of s.forms) rules.set(f.id, "update", [], true);
+      wicket.flush();
+      return reply({ status: "refreshed", ...s });
+    } catch (e) { return compileFail(e); }
+  },
+);
+
+server.tool(
+  {
+    name: "update",
+    description: "Change fields on one record, or fill a compiled form (kind is the form id, key is 'current'). With dry_run: true it previews old -> new for each field and checks the values. Commit with plan_id. For most jobs use apply with op 'update'. Filling a form never submits it.",
+    inputSchema: z.object({ kind: z.string().describe(kindDoc), key: z.string().default("current").describe(keyDoc), patch: z.record(z.string(), z.unknown()), dry_run: z.boolean().optional(), plan_id: z.string().optional() }),
+    annotations: { destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  async ({ kind, key, patch, plan_id }) => {
+    if (plan_id) return reply(wicket.present(await wicket.commit(plan_id)));
+    return reply(wicket.present(await wicket.preview({ op: "update", kind, key, patch })));
+  },
+);
 
 server.tool(
   {

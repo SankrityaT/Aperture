@@ -10,7 +10,7 @@ export interface Cascade {
   by: string;
 }
 
-type OpKey = "delete" | "create";
+type OpKey = "delete" | "create" | "update";
 
 export class RuleBook {
   private cascades = new Map<string, Cascade[]>();
