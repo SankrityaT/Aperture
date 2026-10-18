@@ -1,0 +1,62 @@
+{
+  "evaluation": {
+    "id": "0411eda7-878b-4c19-84bb-8fc9cbce9dec",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "0fddff7f-0ffe-5a09-9788-002e5be8c9ec",
+    "evaluator_agent_run_id": "466bf543-7779-402c-9599-e392a05c0953",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester correctly identified Eli Cole's four gate devices (01076, 01077, 01078, 01151) using only read operations, with all facts sourced from tool results.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:58:05.400Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "745e8aa8-6ef3-4dc8-a32f-acd13170db59",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "0411eda7-878b-4c19-84bb-8fc9cbce9dec",
+      "workflow_criterion_id": "832ec4ba-2280-4657-9cf6-b973a9a3603a",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Final output states exactly: Eli Cole (Dir 1045) holds 4 devices: 01076 (Transmitter), 01077 (Keypad code), 01078 (Card), 01151 (Card).",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:05.400Z",
+      "position": 1,
+      "criterion_text": "The answer says Eli Cole (directory code 1045) holds four devices: 01076 (Transmitter), 01077 (Keypad code), 01078 (Card) and 01151 (Card).",
+      "is_required": true
+    },
+    {
+      "id": "d70a3431-5e7e-4c29-8e69-305d2920d2c3",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "0411eda7-878b-4c19-84bb-8fc9cbce9dec",
+      "workflow_criterion_id": "f4e95a8d-8ea5-466c-99ec-a5882b318dbc",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace contains only read-only tool calls (get_instructions, find). No create, delete, update, apply, apply_batch, undo, or publish operations executed.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:05.400Z",
+      "position": 2,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "27ef6677-8030-40ab-8b7e-ca84383a867b",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "0411eda7-878b-4c19-84bb-8fc9cbce9dec",
+      "workflow_criterion_id": "97ddf083-58ff-4abd-aeef-a3ee6209b4b3",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Final find() call returned 4 device records with exact fields used in answer (device numbers, types, directory 1045, resident name).",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:05.400Z",
+      "position": 3,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

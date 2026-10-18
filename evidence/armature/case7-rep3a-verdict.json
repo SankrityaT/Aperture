@@ -1,0 +1,62 @@
+{
+  "evaluation": {
+    "id": "942eec69-947b-48de-a016-3db6780f4155",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "57d6e427-2a80-5e77-bf94-5c5015e3e74e",
+    "evaluator_agent_run_id": "2153a979-5a03-43ae-9156-ccc2fa606bb9",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester correctly identified all three residents for unit 107D with directory codes via read-only find operation; no changes committed.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:55:15.649Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "9b14ce20-7637-4439-a99f-ad462d43ed70",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "942eec69-947b-48de-a016-3db6780f4155",
+      "workflow_criterion_id": "ed89ef3e-04a0-4cd3-ad1a-7922379ae623",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Final output lists exactly three residents with matching names and codes: Hal Alder (1008), Hal Cole (1048), Hal Ellis (1088), sourced from mcp__yc_hack__find result.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:55:15.649Z",
+      "position": 1,
+      "criterion_text": "The answer lists exactly three residents for unit 107D: Hal Alder (1008), Hal Cole (1048) and Hal Ellis (1088).",
+      "is_required": true
+    },
+    {
+      "id": "93971073-d23b-47b4-974f-7b1cdcb50031",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "942eec69-947b-48de-a016-3db6780f4155",
+      "workflow_criterion_id": "8a6554d9-3ed6-4fb8-b0f3-e6bb451c076a",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace contains only read-only operations: get_instructions, find_systems, compile_site, and find. No create, delete, update, apply, apply_batch, undo, or publish calls executed.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:55:15.649Z",
+      "position": 2,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "444fc429-c22d-457a-82b4-c018a238676f",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "942eec69-947b-48de-a016-3db6780f4155",
+      "workflow_criterion_id": "87c994d0-0cb3-4a8f-9134-d7a8da407a61",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "All resident names, directory codes, unit, system name, and property name derive from tool results: find_systems identified GateAdmin/Harbor View, compile_site retrieved system…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:55:15.649Z",
+      "position": 3,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

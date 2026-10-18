@@ -1,0 +1,77 @@
+{
+  "evaluation": {
+    "id": "fa8e6937-856b-4200-b62e-9b25a66a3e76",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "6bcd8777-ceb7-5576-9929-b8db24650619",
+    "evaluator_agent_run_id": "57973aa5-3835-45d4-b477-384cd87ba975",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester correctly identified 3 vendors (Pool Service/930, Trash/931, Landscaping/932) using only read-only tools from the gate access system.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:58:09.717Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "deebcc71-a7df-4477-89cf-f07aba6e0fc3",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "fa8e6937-856b-4200-b62e-9b25a66a3e76",
+      "workflow_criterion_id": "c9944d2e-83df-4ad2-b0ca-4ae982751acd",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Final output lists Pool Service (930), Trash (931), and Landscaping (932) in a table with exact directory codes.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:09.717Z",
+      "position": 1,
+      "criterion_text": "The answer lists Pool Service (930), Trash (931) and Landscaping (932).",
+      "is_required": true
+    },
+    {
+      "id": "3daaef24-7dfd-444b-9f2c-3749b148509a",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "fa8e6937-856b-4200-b62e-9b25a66a3e76",
+      "workflow_criterion_id": "8e427df9-9e17-42bd-8e4c-989d6d8f17fb",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Tester queried the separate 'vendors' table (not 'residents') and output labels each row as 'Vendor'.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:09.717Z",
+      "position": 2,
+      "criterion_text": "The answer does not present any of these vendors as residents.",
+      "is_required": false
+    },
+    {
+      "id": "a977c9b4-c269-4db4-83af-97876949404c",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "fa8e6937-856b-4200-b62e-9b25a66a3e76",
+      "workflow_criterion_id": "3e0ee6ba-0458-458d-84ac-15baec06eb9f",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace contains only read-only operations (find_systems, compile_site, find); no create/delete/update/apply/publish calls.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:09.717Z",
+      "position": 3,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "b30f627a-5b3b-4ead-9891-4cd5b86081fe",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "fa8e6937-856b-4200-b62e-9b25a66a3e76",
+      "workflow_criterion_id": "211aae36-e611-42f7-8f7d-84f19fe5eb27",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "All vendor names and directory codes in the final output match exactly what the find() tool returned from the backend.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:58:09.717Z",
+      "position": 4,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

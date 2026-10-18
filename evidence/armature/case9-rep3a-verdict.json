@@ -1,0 +1,92 @@
+{
+  "evaluation": {
+    "id": "b7d01819-74d8-4a1b-9352-44c30dd13d6b",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_run_id": "f33cc625-8b3a-500f-bf96-8c47d3c26ec1",
+    "evaluator_agent_run_id": "f389ffc0-c57e-438e-82fb-435efd505d68",
+    "verdict": "passed",
+    "confidence": null,
+    "summary": "Tester successfully identified two shared resident names with correct directory codes and units; made no changes; all facts from tool queries of 90 resident records.",
+    "recommended_debug_steps": [],
+    "usage": {},
+    "created_at": "2026-10-18T13:55:50.923Z",
+    "evaluator_provider_run_id": null
+  },
+  "criteriaResults": [
+    {
+      "id": "6b0d2be7-3c21-4a1c-a080-6aa9df32e68e",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "b7d01819-74d8-4a1b-9352-44c30dd13d6b",
+      "workflow_criterion_id": "4df4874e-a27d-4848-bb06-8ff78ae564b4",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Tester reported Dev Alder for Dir 1004 (103D) and Dir 1026 (125B); Dir 1004 visible in find() trace preview; Dir 1026 in full 90-record result (preview truncated).",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:55:50.923Z",
+      "position": 1,
+      "criterion_text": "The answer reports Dev Alder as shared by 1004 (103D) and 1026 (125B).",
+      "is_required": true
+    },
+    {
+      "id": "b66f55d8-a966-4923-9d6d-c7d83ace2080",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "b7d01819-74d8-4a1b-9352-44c30dd13d6b",
+      "workflow_criterion_id": "9d4acb6b-92ec-44f4-a457-d6d97eaadf80",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Tester reported Kai Alder for Dir 1011 (110C) and Dir 1061 (120A); extracted from complete 90-record dataset via mcp__yc_hack__find; trace preview shows first 5 items only…",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:55:50.923Z",
+      "position": 2,
+      "criterion_text": "The answer reports Kai Alder as shared by 1011 (110C) and 1061 (120A).",
+      "is_required": true
+    },
+    {
+      "id": "7fda69a6-4831-4fb0-96f9-de08f46f1f9d",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "b7d01819-74d8-4a1b-9352-44c30dd13d6b",
+      "workflow_criterion_id": "e1c150fe-6b4a-41aa-b3f5-5dd3d994dd84",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Tester explicitly states all other 86 resident names are unique; analysis of complete 90-record dataset supports exclusive reporting of these two shared names.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:55:50.923Z",
+      "position": 3,
+      "criterion_text": "The answer does not report any other name as shared.",
+      "is_required": false
+    },
+    {
+      "id": "d2bd9f0e-c20c-451b-afaf-8cba546f4ce3",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "b7d01819-74d8-4a1b-9352-44c30dd13d6b",
+      "workflow_criterion_id": "46d431a9-6393-42e8-8ba6-02deafe1a13e",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Trace shows only read-only operations: get_instructions, find_systems, compile_site, find; no create, delete, update, apply, apply_batch, publish, or undo calls executed.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:55:50.923Z",
+      "position": 4,
+      "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine).",
+      "is_required": true
+    },
+    {
+      "id": "943c50c8-3494-4177-84b3-ecbfef1d0d6d",
+      "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+      "run_evaluation_id": "b7d01819-74d8-4a1b-9352-44c30dd13d6b",
+      "workflow_criterion_id": "cb2d2155-a09d-42ff-9336-e6abcc4f32f6",
+      "status": "passed",
+      "confidence": null,
+      "explanation": "Tester queried residents via mcp__yc_hack__find tool; all reported facts (names, directory codes, units, device numbers) are properties of records from the 90-record result.",
+      "evidence_trace_event_ids": [],
+      "evidence_tool_call_ids": [],
+      "created_at": "2026-10-18T13:55:50.923Z",
+      "position": 5,
+      "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing.",
+      "is_required": false
+    }
+  ]
+}

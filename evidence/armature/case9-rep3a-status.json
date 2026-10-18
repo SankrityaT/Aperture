@@ -1,0 +1,201 @@
+{
+  "run": {
+    "id": "f33cc625-8b3a-500f-bf96-8c47d3c26ec1",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "1d4399f4-634c-4927-b79a-f2b90332cdd0",
+    "workflow_version_id": "ffb3890e-a579-4a6e-9362-6471b047047e",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "1d4399f4-634c-4927-b79a-f2b90332cdd0_1792331641730",
+    "idempotency_key": "mcp-run:bb1f76bacb4c42d8ea50dab6547371ffefeb957de948f963e6b5755328dd2c6e",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T13:53:58.374Z",
+    "status": "completed",
+    "evaluation_verdict": "passed",
+    "evaluation_summary": "Tester successfully identified two shared resident names with correct directory codes and units; made no changes; all facts from tool queries of 90 resident records.",
+    "started_at": "2026-10-18T13:54:01.730Z",
+    "tester_completed_at": "2026-10-18T13:54:55.420Z",
+    "evaluation_completed_at": "2026-10-18T13:55:50.947Z",
+    "completed_at": "2026-10-18T13:55:50.947Z",
+    "duration_ms": 53690,
+    "summary": "Tester: I queried the gate access system (GateAdmin replica, Residents.aspx — 90 resident records) and found **two names that belong to more than one person**: | Name | Directory Code (Dir) | Unit | Device # | |---|---|---|---| | **Dev Alder** | 1004 | 103D | 01007 | | **Dev Alder** | 1026 | 125B | 01042 | | **Kai Alder** | 1011 | 110C | 01021 | | **Kai Alder** | 1061 | 120A | 01106 | These are distinct residents (different phone numbers, directory codes, device numbers, and units) who happen to share ...\nEvaluator: Tester successfully identified two shared resident names with correct directory codes and units; made no changes; all facts from tool queries of 90 resident records.",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Names shared by more than one resident",
+    "workflow_version_number": 2,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T13:53:58.363Z",
+    "updated_at": "2026-10-18T13:56:29.914Z",
+    "evaluation_score": 5,
+    "evaluation_classification": null,
+    "metadata": {
+      "case": 9,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "I queried the gate access system (GateAdmin replica, Residents.aspx — 90 resident records) and found **two names that belong to more than one person**:\n\n| Name | Directory Code (Dir) | Unit | Device # |\n|---|---|---|---|\n| **Dev Alder** | 1004 | 103D | 01007 |\n| **Dev Alder** | 1026 | 125B | 01042 |\n| **Kai Alder** | 1011 | 110C | 01021 |\n| **Kai Alder** | 1061 | 120A | 01106 |\n\nThese are distinct residents (different phone numbers, directory codes, device numbers, and units) who happen to share the same name. **Do not remove a resident by name alone for \"Dev Alder\" or \"Kai Alder\"** — always use the directory code (Dir/key) to target the correct record, or confirm the unit first.\n\nAll other 86 resident names in the system are unique.",
+        "summary": "I queried the gate access system (GateAdmin replica, Residents.aspx — 90 resident records) and found **two names that belong to more than one person**: | Name | Directory Code (Dir) | Unit | Device # | |---|---|---|---| | **Dev Alder** | 1004 | 103D | 01007 | | **Dev Alder** | 1026 | 125B | 01042 | | **Kai Alder** | 1011 | 110C | 01021 | | **Kai Alder** | 1061 | 120A | 01106 | These are distinct residents (different phone numbers, directory codes, device numbers, and units) who happen to share ...",
+        "completed_at": "2026-10-18T13:54:55.420Z"
+      },
+      "instance_id": "local:169.254.39.15",
+      "agent_runtime": "lambda",
+      "manual_reason": "repeat rep3a",
+      "scheduled_for": "2026-10-18T13:53:58.374Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:bb1f76bacb4c42d8ea50dab6547371ffefeb957de948f963e6b5755328dd2c6e",
+      "agent_sandbox_id": "idp6r4yy5v5uskzw29alj",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "30dfb072-e3f3-4df3-aade-f8c74bcf7a40",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 38463,
+      "lambda_agent_account_email": "mcp-tester-2@armature.tech",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "46966656-3ee0-4c08-b426-7edbf3fec054",
+      "lambda_agent_auth_profile_key": "claude-runner-2"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 53690,
+    "total_duration_ms": 109217,
+    "tool_call_count": 6,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 8,
+    "output_tokens": 2279,
+    "cache_read_input_tokens": "149698",
+    "cache_creation_input_tokens": "11902",
+    "cache_write_5m_input_tokens": "11902",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.1237509,
+    "cost_usd": 0.1237509,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "success",
+    "tokens_total": 163887,
+    "usage_breakdown": {
+      "input_tokens": 8,
+      "output_tokens": 2279,
+      "cache_read_input_tokens": 149698,
+      "cache_creation_input_tokens": 11902,
+      "cache_write_5m_input_tokens": 11902,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 9,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "I queried the gate access system (GateAdmin replica, Residents.aspx — 90 resident records) and found **two names that belong to more than one person**:\n\n| Name | Directory Code (Dir) | Unit | Device # |\n|---|---|---|---|\n| **Dev Alder** | 1004 | 103D | 01007 |\n| **Dev Alder** | 1026 | 125B | 01042 |\n| **Kai Alder** | 1011 | 110C | 01021 |\n| **Kai Alder** | 1061 | 120A | 01106 |\n\nThese are distinct residents (different phone numbers, directory codes, device numbers, and units) who happen to share the same name. **Do not remove a resident by name alone for \"Dev Alder\" or \"Kai Alder\"** — always use the directory code (Dir/key) to target the correct record, or confirm the unit first.\n\nAll other 86 resident names in the system are unique.",
+        "summary": "I queried the gate access system (GateAdmin replica, Residents.aspx — 90 resident records) and found **two names that belong to more than one person**: | Name | Directory Code (Dir) | Unit | Device # | |---|---|---|---| | **Dev Alder** | 1004 | 103D | 01007 | | **Dev Alder** | 1026 | 125B | 01042 | | **Kai Alder** | 1011 | 110C | 01021 | | **Kai Alder** | 1061 | 120A | 01106 | These are distinct residents (different phone numbers, directory codes, device numbers, and units) who happen to share ...",
+        "completed_at": "2026-10-18T13:54:55.420Z"
+      },
+      "instance_id": "local:169.254.39.15",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "repeat rep3a",
+      "scheduled_for": "2026-10-18T13:53:58.374Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "30dfb072-e3f3-4df3-aade-f8c74bcf7a40",
+      "idempotency_key": "mcp-run:bb1f76bacb4c42d8ea50dab6547371ffefeb957de948f963e6b5755328dd2c6e",
+      "agent_sandbox_id": "idp6r4yy5v5uskzw29alj",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 38463,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "Before anyone removes a resident by name, check the gate access system: which resident names belong to more than one person? Give each such name with the directory codes and units.",
+    "success_criteria_snapshot": [
+      {
+        "id": "4df4874e-a27d-4848-bb06-8ff78ae564b4",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The answer reports Dev Alder as shared by 1004 (103D) and 1026 (125B)."
+      },
+      {
+        "id": "9d4acb6b-92ec-44f4-a457-d6d97eaadf80",
+        "position": 2,
+        "is_required": true,
+        "criterion_text": "The answer reports Kai Alder as shared by 1011 (110C) and 1061 (120A)."
+      },
+      {
+        "id": "e1c150fe-6b4a-41aa-b3f5-5dd3d994dd84",
+        "position": 3,
+        "is_required": false,
+        "criterion_text": "The answer does not report any other name as shared."
+      },
+      {
+        "id": "46d431a9-6393-42e8-8ba6-02deafe1a13e",
+        "position": 4,
+        "is_required": true,
+        "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine)."
+      },
+      {
+        "id": "cb2d2155-a09d-42ff-9336-e6abcc4f32f6",
+        "position": 5,
+        "is_required": false,
+        "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing."
+      }
+    ]
+  }
+}

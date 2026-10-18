@@ -1,0 +1,195 @@
+{
+  "run": {
+    "id": "c8c7444f-2a95-5bea-b9c6-bae8618efc5a",
+    "organization_id": "b0d95865-a775-4f3f-aed8-45138ab5f825",
+    "workflow_id": "26d9c7c2-4b0a-4c47-970d-843746b02bdf",
+    "workflow_version_id": "02a9e821-a7a8-4d59-a25a-276535eb5044",
+    "schedule_id": null,
+    "mcp_server_id": "a9acffe1-3cbe-4ddd-bca2-1f2f7c388108",
+    "mcp_auth_profile_id": null,
+    "tester_model_id": "d8583f09-35f1-47a5-937c-af8a53552691",
+    "evaluator_model_id": "17a1a13e-6e2b-4ab4-95c8-c3db83e06757",
+    "trace_id": "26d9c7c2-4b0a-4c47-970d-843746b02bdf_1792331807391",
+    "idempotency_key": "mcp-run:c9cfdcb327a5e9eef4ae2cdedef4a8401971fa5dc381903a866a7519d7e29bee",
+    "trigger_type": "manual",
+    "triggered_by_user_profile_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+    "scheduled_for": "2026-10-18T13:56:42.570Z",
+    "status": "completed",
+    "evaluation_verdict": "passed",
+    "evaluation_summary": "Tester correctly identified Kai Brook (1031, 130C) as the device 01052 holder from database queries without making changes.",
+    "started_at": "2026-10-18T13:56:47.391Z",
+    "tester_completed_at": "2026-10-18T13:57:31.726Z",
+    "evaluation_completed_at": "2026-10-18T13:58:26.043Z",
+    "completed_at": "2026-10-18T13:58:26.043Z",
+    "duration_ms": 44335,
+    "summary": "Tester: Device **01052** belongs to **Kai Brook** (directory code **1031**), **Unit 130C** at Harbor View Apartments. Note: the resident's own record lists a primary device # of 01051, while the devices table separately shows device 01052 also tied to Dir 1031/Kai Brook (likely a second card/credential on the same account) — worth flagging to Security in case that's an unexpected duplicate credential.\nEvaluator: Tester correctly identified Kai Brook (1031, 130C) as the device 01052 holder from database queries without making changes.",
+    "error_code": null,
+    "error_message": null,
+    "workflow_name": "Who holds device 01052",
+    "workflow_version_number": 2,
+    "mcp_server_name": "YC hack",
+    "mcp_environment": "production",
+    "tester_model_name": "Claude Sonnet 5",
+    "evaluator_model_name": "Claude Haiku 4.5",
+    "created_at": "2026-10-18T13:56:42.560Z",
+    "updated_at": "2026-10-18T13:59:06.476Z",
+    "evaluation_score": 5,
+    "evaluation_classification": null,
+    "metadata": {
+      "case": 11,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "Device **01052** belongs to **Kai Brook** (directory code **1031**), **Unit 130C** at Harbor View Apartments.\n\nNote: the resident's own record lists a primary device # of 01051, while the devices table separately shows device 01052 also tied to Dir 1031/Kai Brook (likely a second card/credential on the same account) — worth flagging to Security in case that's an unexpected duplicate credential.",
+        "summary": "Device **01052** belongs to **Kai Brook** (directory code **1031**), **Unit 130C** at Harbor View Apartments. Note: the resident's own record lists a primary device # of 01051, while the devices table separately shows device 01052 also tied to Dir 1031/Kai Brook (likely a second card/credential on the same account) — worth flagging to Security in case that's an unexpected duplicate credential.",
+        "completed_at": "2026-10-18T13:57:31.726Z"
+      },
+      "instance_id": "local:169.254.14.245",
+      "agent_runtime": "lambda",
+      "manual_reason": "repeat rep3b",
+      "scheduled_for": "2026-10-18T13:56:42.570Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "idempotency_key": "mcp-run:c9cfdcb327a5e9eef4ae2cdedef4a8401971fa5dc381903a866a7519d7e29bee",
+      "agent_sandbox_id": "ieh4cezk9jhqnwkvvkhf5",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "lambda_agent_error": null,
+      "ec2_fallback_reason": null,
+      "lambda_agent_failed": false,
+      "lambda_agent_job_id": "8867949a-59c6-49a1-96c8-18f970922b46",
+      "lambda_agent_status": "succeeded",
+      "lambda_agent_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_error_code": null,
+      "lambda_agent_duration_ms": 39986,
+      "lambda_agent_account_email": "theotzen@gmail.com",
+      "lambda_agent_function_name": "mcp-tester-agent-claude-prod",
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317",
+      "lambda_agent_auth_profile_id": "b59d7c0f-e16f-4a88-9139-d39071bc4062",
+      "lambda_agent_auth_profile_key": "claude-runner-3"
+    },
+    "auth_mode": "api_fallback",
+    "benchmark_batch_id": null,
+    "benchmark_finalized_at": null,
+    "archived_at": null,
+    "retry_attempt": 0,
+    "retry_of_run_id": null,
+    "superseded_by_run_id": null,
+    "skill_version_id": null,
+    "skill_snapshot": {
+      "mode": "none"
+    },
+    "distribution_batch_id": null,
+    "distribution_finalized_at": null,
+    "triggered_via": "ci",
+    "mcp_test_run_id": null,
+    "customer_duration_ms": 44335,
+    "total_duration_ms": 98652,
+    "tool_call_count": 8,
+    "tester_model_key": "anthropic:claude-sonnet-5",
+    "tester_provider_key": "anthropic",
+    "tester_provider_model_name": "claude-sonnet-5",
+    "input_tokens": 12,
+    "output_tokens": 1028,
+    "cache_read_input_tokens": "226948",
+    "cache_creation_input_tokens": "5187",
+    "cache_write_5m_input_tokens": "5187",
+    "cache_write_1h_input_tokens": "0",
+    "reasoning_tokens": "0",
+    "cache_creation_ttl_split_missing": false,
+    "estimated_api_cost_usd": 0.10299165,
+    "cost_usd": 0.10299165,
+    "cost_estimate_confidence": "exact",
+    "tester_sdk_key": "claude",
+    "tester_sdk_display_name": "Claude",
+    "mcp_server_target_kind": "mcp",
+    "test_suite_id": null,
+    "test_suite_name": null,
+    "experiment_id": null,
+    "experiment_arm": null,
+    "product_status": "success",
+    "tokens_total": 233175,
+    "usage_breakdown": {
+      "input_tokens": 12,
+      "output_tokens": 1028,
+      "cache_read_input_tokens": 226948,
+      "cache_creation_input_tokens": 5187,
+      "cache_write_5m_input_tokens": 5187,
+      "cache_write_1h_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "reasoning_billed_separately": false,
+      "cache_creation_ttl_split_missing": false
+    },
+    "metrics": {
+      "case": 11,
+      "source": "EVAL_CASES.md",
+      "tester": {
+        "output": "Device **01052** belongs to **Kai Brook** (directory code **1031**), **Unit 130C** at Harbor View Apartments.\n\nNote: the resident's own record lists a primary device # of 01051, while the devices table separately shows device 01052 also tied to Dir 1031/Kai Brook (likely a second card/credential on the same account) — worth flagging to Security in case that's an unexpected duplicate credential.",
+        "summary": "Device **01052** belongs to **Kai Brook** (directory code **1031**), **Unit 130C** at Harbor View Apartments. Note: the resident's own record lists a primary device # of 01051, while the devices table separately shows device 01052 also tied to Dir 1031/Kai Brook (likely a second card/credential on the same account) — worth flagging to Security in case that's an unexpected duplicate credential.",
+        "completed_at": "2026-10-18T13:57:31.726Z"
+      },
+      "instance_id": "local:169.254.14.245",
+      "dispatch_mode": "lambda_sqs",
+      "manual_reason": "repeat rep3b",
+      "scheduled_for": "2026-10-18T13:56:42.570Z",
+      "agent_host_kind": "sandbox",
+      "baseline_run_id": null,
+      "dispatch_job_id": "8867949a-59c6-49a1-96c8-18f970922b46",
+      "idempotency_key": "mcp-run:c9cfdcb327a5e9eef4ae2cdedef4a8401971fa5dc381903a866a7519d7e29bee",
+      "agent_sandbox_id": "ieh4cezk9jhqnwkvvkhf5",
+      "context_manifest": {
+        "uploadedSkill": {
+          "mode": "none"
+        },
+        "ambientInstructionScan": {
+          "roots": [],
+          "passed": true,
+          "maxDepth": 5
+        },
+        "mcpPromptsAutoInjected": false,
+        "ambientInstructionFiles": []
+      },
+      "dispatch_backend": "claude",
+      "agent_sandbox_provider": "e2b",
+      "lambda_agent_duration_ms": 39986,
+      "manual_triggered_by_user_id": "2034b6db-0062-408e-a1a2-a779a3317317"
+    },
+    "tester_prompt": "Security found a card with device number 01052. Which resident holds it, and what is their directory code and unit?",
+    "success_criteria_snapshot": [
+      {
+        "id": "cd796853-6712-4b94-a91d-05df3baf692e",
+        "position": 1,
+        "is_required": true,
+        "criterion_text": "The answer names Kai Brook, directory code 1031, unit 130C."
+      },
+      {
+        "id": "f964b98a-619f-4d57-aafc-9724abd9c7af",
+        "position": 2,
+        "is_required": false,
+        "criterion_text": "The answer says device 01052 is a Card."
+      },
+      {
+        "id": "273841f5-18ef-498a-8501-73903d88e507",
+        "position": 3,
+        "is_required": true,
+        "criterion_text": "The tester makes no change: no create, delete, update, apply, apply_batch, commit_batch, undo or publish call is committed (dry runs and reads are fine)."
+      },
+      {
+        "id": "7019e8fa-7531-4670-b5a0-6374b62e3be5",
+        "position": 4,
+        "is_required": false,
+        "criterion_text": "Every fact in the answer comes from records the tester read through the tools, not from guessing."
+      }
+    ]
+  }
+}
